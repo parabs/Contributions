@@ -332,7 +332,7 @@ export async function syncDonationToGoogleSheet(
   const config = { ...DEFAULT_SHEETS_CONFIG, ...customConfig };
   const webhookUrl = (config.webhookUrl || localStorage.getItem('sjst_sheets_webhook_url') || DEFAULT_WEBHOOK_URL)?.trim();
   const spreadsheetId = (config.spreadsheetId || localStorage.getItem('sjst_sheets_spreadsheet_id') || TARGET_SPREADSHEET_ID).trim();
-  const sheetName = Donations'
+  const sheetName = 'Donations'
 
   // Resolve token from parameter, sessionStorage, or localStorage
   const effectiveToken = (
