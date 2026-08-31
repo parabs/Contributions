@@ -9,11 +9,11 @@ export interface GoogleSheetsSyncConfig {
 
 export const TARGET_SPREADSHEET_ID = '1NA-Lj0fWSZYgmXDr-wNtZMAVhbnlo6MjlW1LuqJX3PE';
 export const TARGET_SPREADSHEET_URL = 'https://docs.google.com/spreadsheets/d/1NA-Lj0fWSZYgmXDr-wNtZMAVhbnlo6MjlW1LuqJX3PE/edit?resourcekey=&gid=1334305026#gid=1334305026';
-export const DEFAULT_WEBHOOK_URL = '';
+export const DEFAULT_WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbykO6OOQGNsJr4AZ9z6lGHQ06WX3YJDBJgbFKtOCdyGbHGd8fjncm5TT0dy28U0_ye1/exec';
 
 export const DEFAULT_SHEETS_CONFIG: GoogleSheetsSyncConfig = {
   spreadsheetId: localStorage.getItem('sjst_sheets_spreadsheet_id') || TARGET_SPREADSHEET_ID,
-  sheetName: localStorage.getItem('sjst_sheets_tab_name') || 'Form Responses 1',
+  sheetName: 'Donations',
   webhookUrl: (localStorage.getItem('sjst_sheets_webhook_url') || '').trim(),
   autoSync: true
 };
@@ -332,7 +332,7 @@ export async function syncDonationToGoogleSheet(
   const config = { ...DEFAULT_SHEETS_CONFIG, ...customConfig };
   const webhookUrl = (config.webhookUrl || localStorage.getItem('sjst_sheets_webhook_url') || DEFAULT_WEBHOOK_URL)?.trim();
   const spreadsheetId = (config.spreadsheetId || localStorage.getItem('sjst_sheets_spreadsheet_id') || TARGET_SPREADSHEET_ID).trim();
-  const sheetName = config.sheetName || localStorage.getItem('sjst_sheets_tab_name') || 'Form Responses 1';
+  const sheetName = Donations'
 
   // Resolve token from parameter, sessionStorage, or localStorage
   const effectiveToken = (
