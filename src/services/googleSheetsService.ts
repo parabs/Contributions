@@ -357,54 +357,38 @@ export async function syncDonationToGoogleSheet(
 
   let webhookSuccess = false;
 
-  // 1. Google Apps Script Webhook Dispatch (Guaranteed append regardless of browser OAuth state)
+// 1. Google Apps Script Webhook Dispatch
   if (webhookUrl && webhookUrl.startsWith('https://script.google.com/')) {
     try {
       const webhookPayload = {
-        action: isPaid ? 'confirm_donation' : 'sync_donation',
+        action: isPaid ? 'verifyDonation' : 'sync_donation',
         donationId: donation.donationId,
         timestamp: formattedTimestamp,
-        Timestamp: formattedTimestamp,
         donorName: donation.donorName || 'Devotee',
-        'Donor Name': donation.donorName || 'Devotee',
-        contributorName: donation.donorName || 'Devotee',
-        'Contributor Name': donation.donorName || 'Devotee',
         email: donation.email || '',
-        'Email ID': donation.email || '',
         amount: Number(donation.amount || 0),
-        'Amount (₹)': Number(donation.amount || 0),
         paymentMode: donation.paymentMode || 'UPI',
-        'Payment Mode': donation.paymentMode || 'UPI',
-        'Payment Mode (Cash / UPI)': donation.paymentMode || 'UPI',
         towards: sevaName,
-        sevaHead: sevaName,
-        sevaCategory: donation.sevaCategory || sevaName,
-        'Towards': sevaName,
-        'Towards (Seva Head / Category)': sevaName,
         confirmationCode: donation.confirmationCode || '',
-        pin: donation.confirmationCode || '',
-        'Confirmation Code': donation.confirmationCode || '',
-        PIN: donation.confirmationCode || '',
         paymentStatus: isPaid ? 'Paid' : 'Pending',
-        'Payment Status': isPaid ? 'Paid' : 'Pending',
         confirmedBy: donation.confirmedBy || '',
-        'Confirmed by': donation.confirmedBy || '',
         receiptUrl: donation.receiptUrl || '',
         submittedAt: donation.submittedAt || new Date().toISOString(),
-        targetSheet: isFormResponses ? 'Form Responses 1' : 'Donations',
         record: donation
       };
 
-      // Send as text/plain to avoid preflight CORS block on Google Apps Script
-      await fetch(webhookUrl, {
+      const whRes = await fetch(webhookUrl, {
         method: 'POST',
-        mode: 'no-cors',
         headers: {
-          'Content-Type': 'text/plain;charset=utf-8'
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify(webhookPayload)
       });
-      webhookSuccess = true;
+
+      const whJson = await whRes.json().catch(() => ({}));
+      if (whJson.success || whRes.ok) {
+        webhookSuccess = true;
+      }
     } catch (whErr: any) {
       console.warn('Google Apps Script Webhook dispatch notice:', whErr);
     }
