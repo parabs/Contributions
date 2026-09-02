@@ -854,25 +854,26 @@ export async function fetchDonationsFromGoogleSheet(
     const headers = allRows[0].map((h: any) => String(h || '').toLowerCase().trim());
     const dataRows = allRows.slice(1);
 
-    const findCol = (terms: string[]) => headers.findIndex(h => terms.some(t => h.includes(t)));
+const findCol = (terms: string[]) => headers.findIndex(h => terms.some(t => h === t || h.includes(t)));
 
-    const idIdx = findCol(['donation id', 'id']);
-    const timeIdx = findCol(['submitted', 'date', 'time']);
-    const sevaIdx = findCol(['towards', 'seva', 'head', 'category']);
-    const nameIdx = findCol(['donor', 'contributor', 'name', 'devotee']);
-    const emailIdx = findCol(['email', 'mail']);
-    const amtIdx = findCol(['amount', 'rupee', '₹', 'rs']);
-    const modeIdx = findCol(['mode', 'payment mode', 'cash', 'upi']);
-    const statusIdx = findCol(['status', 'payment status']);
-    const refIdx = findCol(['reference', 'ref']);
-    const receiptIdx = findCol(['receipt', 'url', 'drive']);
-    const emailStatusIdx = findCol(['whatsapp status', 'email status']);
+    const idIdx = findCol(['donation id']);
+    const timeIdx = findCol(['submitted at', 'submitted']);
+    const sevaIdx = findCol(['towards', 'seva head', 'seva']);
+    const nameIdx = findCol(['donor name', 'donor']);
+    const emailIdx = findCol(['email']);
+    const amtIdx = findCol(['amount']);
+    const modeIdx = findCol(['payment mode', 'mode']);
+    const statusIdx = findCol(['payment status', 'status']);
+    const refIdx = findCol(['payment reference', 'reference', 'ref']);
+    const receiptIdx = findCol(['final receipt url', 'receipt', 'url']);
+    const emailStatusIdx = findCol(['communication status', 'email status', 'whatsapp status']);
     const msgIdIdx = findCol(['message id', 'msg']);
-    const createIdx = findCol(['created']);
-    const updateIdx = findCol(['updated']);
+    const createIdx = findCol(['created at', 'created']);
+    const updateIdx = findCol(['updated at', 'updated']);
     const confirmIdx = findCol(['confirmed by', 'volunteer']);
-
-    const donations: DonationRecord[] = dataRows.map((row, index) => {
+    const codeIdx = findCol(['confirmation code', 'code', 'pin']);
+    
+     const donations: DonationRecord[] = dataRows.map((row, index) => {
       const donationId = (idIdx >= 0 && row[idIdx]) ? String(row[idIdx]).trim() : `SJST-${Date.now()}-${index}`;
       const submittedAt = (timeIdx >= 0 && row[timeIdx]) ? String(row[timeIdx]).trim() : new Date().toISOString();
       const sevaHead = (sevaIdx >= 0 && row[sevaIdx]) ? String(row[sevaIdx]).trim() : 'General Seva';
@@ -889,13 +890,15 @@ export async function fetchDonationsFromGoogleSheet(
       const createdAt = (createIdx >= 0 && row[createIdx]) ? String(row[createIdx]).trim() : submittedAt;
       const updatedAt = (updateIdx >= 0 && row[updateIdx]) ? String(row[updateIdx]).trim() : new Date().toISOString();
       const confirmedBy = (confirmIdx >= 0 && row[confirmIdx]) ? String(row[confirmIdx]).trim() : '';
-
-      let confirmationCode = '';
-      const codeMatch = paymentReference.match(/\b\d{6}\b/);
-      if (codeMatch) {
-        confirmationCode = codeMatch[0];
-      }
-
+      
+      // Resolve confirmation code cleanly from its dedicated column, with fallback to reference regex
+      const confirmationCode = (codeIdx >= 0 && row[codeIdx]) 
+        ? String(row[codeIdx]).trim() 
+        : (() => {
+            const codeMatch = paymentReference.match(/\b\d{6}\b/);
+            return codeMatch ? codeMatch[0] : '';
+          })();
+          
       return {
         donationId,
         submittedAt,
@@ -949,7 +952,8 @@ export function exportDonationsToCsv(donations: DonationRecord[]): string {
     'WhatsApp Message ID',
     'Created At',
     'Updated At',
-    'Confirmed by'
+    'Confirmed by',
+    'Confirmation code'
   ];
 
   const rows = donations.map(d => {
