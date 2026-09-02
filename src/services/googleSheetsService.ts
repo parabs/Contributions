@@ -7,9 +7,9 @@ export interface GoogleSheetsSyncConfig {
   autoSync: boolean;
 }
 
-export const TARGET_SPREADSHEET_ID = '1NA-Lj0fWSZYgmXDr-wNtZMAVhbnlo6MjlW1LuqJX3PE';
-export const TARGET_SPREADSHEET_URL = 'https://docs.google.com/spreadsheets/d/1NA-Lj0fWSZYgmXDr-wNtZMAVhbnlo6MjlW1LuqJX3PE/edit?resourcekey=&gid=1334305026#gid=1334305026';
-export const DEFAULT_WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbykO6OOQGNsJr4AZ9z6lGHQ06WX3YJDBJgbFKtOCdyGbHGd8fjncm5TT0dy28U0_ye1/exec';
+export const TARGET_SPREADSHEET_ID = '1VfbM7FPXIniD_WftrFbNK6bmdd05GZAr6eluazShJBc';
+export const TARGET_SPREADSHEET_URL = 'https://docs.google.com/spreadsheets/d/1VfbM7FPXIniD_WftrFbNK6bmdd05GZAr6eluazShJBc/edit?gid=0#gid=0';
+export const DEFAULT_WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbwo2HwQRNS8R5Vm81jHn87QFU75_xT64hdaTjEcvQfU84VAVchMwL7_JlP9EcNU2-w/exec';
 
 export const DEFAULT_SHEETS_CONFIG: GoogleSheetsSyncConfig = {
   spreadsheetId: localStorage.getItem('sjst_sheets_spreadsheet_id') || TARGET_SPREADSHEET_ID,
