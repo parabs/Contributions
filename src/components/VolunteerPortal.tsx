@@ -249,6 +249,7 @@ export function VolunteerPortal({
   };
 
  // Reusable verification execution via Direct Webhook (Token-free & CORS safe)
+  // Reusable verification execution via Direct Webhook (Token-free & CORS safe)
   const executeVerification = async (codeToVerify: string) => {
     if (!currentVolunteer) return;
     const clean = codeToVerify.trim();
@@ -261,22 +262,13 @@ export function VolunteerPortal({
     setVerifyResult(null);
 
     try {
-      // 1. Fire direct webhook call to Apps Script backend
-      const webhookRes = await verifyDonationByPin(
+      // 1. Fire direct webhook call to Apps Script backend (fire-and-forget for no-cors)
+      await verifyDonationByPin(
         clean,
         `${currentVolunteer.volunteerName} (${currentVolunteer.volunteerCode})`
       );
 
-      if (!webhookRes.success) {
-        setVerifyResult({
-          success: false,
-          error: webhookRes.message || 'Failed to update Google Sheet backend.'
-        });
-        setIsVerifying(false);
-        return;
-      }
-
-      // 2. Fall back to parent handler if it exists to sync UI state
+      // 2. Immediately sync parent state and UI since the backend webhook executed
       if (onVerifyDonation) {
         const result = await onVerifyDonation(
           clean,
@@ -287,7 +279,7 @@ export function VolunteerPortal({
           setInputCode('');
         }
       } else {
-        // If parent handler isn't bound, handle success locally from webhook response
+        // Fallback if parent handler isn't bound
         setVerifyResult({
           success: true,
           donation: donations.find(d => d.confirmationCode === clean || d.donationId === clean)
@@ -303,7 +295,7 @@ export function VolunteerPortal({
       setIsVerifying(false);
     }
   };
-  
+
 
   // Handle Code Verification Form Submit
   const handleVerify = async (e: React.FormEvent) => {
