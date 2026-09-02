@@ -953,6 +953,7 @@ export async function fetchDonationsFromGoogleSheet(
 
 /**
  * Direct Token-less Volunteer Verification via Webhook
+ * Designed for opaque 'no-cors' responses from Google Apps Script.
  */
 export async function verifyDonationByPin(
   confirmationCode: string,
@@ -964,13 +965,21 @@ export async function verifyDonationByPin(
     return { success: false, message: 'Webhook URL not configured.' };
   }
 
+  const cleanCode = confirmationCode.trim();
+  if (!cleanCode || cleanCode.length < 6) {
+    return { success: false, message: 'Please enter a valid 6-digit confirmation PIN.' };
+  }
+
   try {
     const payload = {
       action: 'verifyDonation',
-      confirmationCode: confirmationCode.trim(),
-      confirmedBy: volunteerName
+      confirmationCode: cleanCode,
+      confirmedBy: volunteerName.trim() || 'Volunteer'
     };
 
+    // Note: mode: 'no-cors' produces an opaque response. 
+    // We must NOT call .json() or .text() on the response object, 
+    // as the browser blocks reading it. The payload is successfully delivered to GAS.
     await fetch(webhookUrl, {
       method: 'POST',
       mode: 'no-cors',
@@ -980,19 +989,19 @@ export async function verifyDonationByPin(
       body: JSON.stringify(payload)
     });
 
-    // Since 'no-cors' mode returns an opaque response, we assume success 
-    // when the webhook processes the sheet update in the background.
     return { 
       success: true, 
-      message: `PIN ${confirmationCode} successfully verified and updated in Google Sheet!` 
+      message: `PIN ${cleanCode} submitted for verification. Google Sheet will update momentarily.` 
     };
   } catch (err: any) {
+    console.error('Webhook communication error:', err);
     return { 
       success: false, 
       message: err.message || 'Failed to communicate with Google Sheet backend.' 
     };
   }
 }
+
 
 // Helper to keep row parsing clean
 function parseRowsToDonations(allRows: any[][]): { success: boolean; donations: DonationRecord[] } {

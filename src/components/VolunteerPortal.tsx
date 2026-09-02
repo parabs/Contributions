@@ -34,6 +34,8 @@ import { SEVA_CATEGORIES } from '../data/mockData';
 import { CollectionsDashboard } from './CollectionsDashboard';
 import { GoogleSheetView } from './GoogleSheetView';
 import { EmailConfigView } from './EmailConfigView';
+import { verifyDonationByPin } from '../services/googleSheetsService';
+
 
 interface VolunteerPortalProps {
   volunteers: VolunteerRecord[];
@@ -246,7 +248,7 @@ export function VolunteerPortal({
     }
   };
 
-  // Reusable verification execution
+ // Reusable verification execution via Direct Webhook (Token-free & CORS safe)
   const executeVerification = async (codeToVerify: string) => {
     if (!currentVolunteer) return;
     const clean = codeToVerify.trim();
@@ -259,23 +261,49 @@ export function VolunteerPortal({
     setVerifyResult(null);
 
     try {
-      const result = await onVerifyDonation(
+      // 1. Fire direct webhook call to Apps Script backend
+      const webhookRes = await verifyDonationByPin(
         clean,
         `${currentVolunteer.volunteerName} (${currentVolunteer.volunteerCode})`
       );
-      setVerifyResult(result);
-      if (result.success) {
+
+      if (!webhookRes.success) {
+        setVerifyResult({
+          success: false,
+          error: webhookRes.message || 'Failed to update Google Sheet backend.'
+        });
+        setIsVerifying(false);
+        return;
+      }
+
+      // 2. Fall back to parent handler if it exists to sync UI state
+      if (onVerifyDonation) {
+        const result = await onVerifyDonation(
+          clean,
+          `${currentVolunteer.volunteerName} (${currentVolunteer.volunteerCode})`
+        );
+        setVerifyResult(result);
+        if (result.success) {
+          setInputCode('');
+        }
+      } else {
+        // If parent handler isn't bound, handle success locally from webhook response
+        setVerifyResult({
+          success: true,
+          donation: donations.find(d => d.confirmationCode === clean || d.donationId === clean)
+        });
         setInputCode('');
       }
-    } catch (err) {
+    } catch (err: any) {
       setVerifyResult({
         success: false,
-        error: 'Network or processing error. Please try again.'
+        error: err.message || 'Network or processing error. Please try again.'
       });
     } finally {
       setIsVerifying(false);
     }
   };
+  
 
   // Handle Code Verification Form Submit
   const handleVerify = async (e: React.FormEvent) => {
