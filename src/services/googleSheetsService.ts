@@ -955,25 +955,26 @@ export async function fetchDonationsFromGoogleSheet(
  * Direct Token-less Volunteer Verification via Webhook
  * Designed for opaque 'no-cors' responses from Google Apps Script.
  */
-
 export async function verifyDonationByPin(confirmationCode: string, volunteerName: string) {
   const webhookUrl = localStorage.getItem('sjst_sheets_webhook_url') || DEFAULT_WEBHOOK_URL;
   
-  if (!webhookUrl || webhookUrl.includes('AKfycbwo2HwQRNS8R5Vm81jHn87QFU75_xT64hdaTjEcvQfU84VAVchMwL7_JlP9EcNU2-w')) {
+  if (!webhookUrl) {
     return { success: false, error: 'Webhook URL is not configured.' };
   }
 
   try {
-    await fetch(webhookUrl, {
-      method: 'POST',
-      mode: 'no-cors',
-      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-      body: JSON.stringify({
-        action: 'verifyDonation',
-        confirmationCode: confirmationCode.trim(),
-        confirmedBy: volunteerName
-      })
+    // Append parameters to URL so it hits doGet natively without POST redirect dropouts
+    const params = new URLSearchParams({
+      action: 'verifyDonation',
+      confirmationCode: confirmationCode.trim(),
+      confirmedBy: volunteerName
     });
+
+    await fetch(`${webhookUrl}?${params.toString()}`, {
+      method: 'GET',
+      mode: 'no-cors'
+    });
+
     return { success: true, message: 'Verified successfully' };
   } catch (err: any) {
     return { success: false, error: err.message };
