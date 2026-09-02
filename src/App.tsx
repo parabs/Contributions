@@ -42,7 +42,7 @@ export default function App() {
 
   const [donations, setDonations] = useState<DonationRecord[]>(() => {
     const saved = localStorage.getItem('sjst_donations');
-    return saved ? JSON.parse(saved) : INITIAL_DONATIONS;
+    return saved ? JSON.parse(saved) : [];
   });
 
   const [volunteers, setVolunteers] = useState<VolunteerRecord[]>(() => {
@@ -84,6 +84,14 @@ export default function App() {
     };
   }, []);
 
+  // ---> PLACE IT RIGHT HERE <---
+  // Auto-fetch live records from Google Sheets on app load if token exists
+  React.useEffect(() => {
+    if (googleAccessToken && donations.length === 0) {
+      handleRefreshFromGoogleSheet();
+    }
+  }, [googleAccessToken]);
+  
   // Persist state changes to localStorage and broadcast
   React.useEffect(() => {
     localStorage.setItem('sjst_donations', JSON.stringify(donations));
