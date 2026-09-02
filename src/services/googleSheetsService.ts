@@ -828,8 +828,7 @@ export async function fetchDonationsFromGoogleSheet(
   sheetName = 'Donations'
 ): Promise<{ success: boolean; donations?: DonationRecord[]; error?: string }> {
   try {
-    const isDonations = sheetName.toLowerCase().includes('donations');
-    const range = isDonations ? formatA1Range(sheetName, 'A1:O') : formatA1Range(sheetName, 'A1:Z');
+    const range = formatA1Range(sheetName, 'A1:O');
     const url = `https://sheets.googleapis.com/v4/spreadsheets/${encodeURIComponent(spreadsheetId)}/values/${encodeURIComponent(range)}`;
 
     const response = await fetch(url, {
@@ -855,144 +854,74 @@ export async function fetchDonationsFromGoogleSheet(
     const headers = allRows[0].map((h: any) => String(h || '').toLowerCase().trim());
     const dataRows = allRows.slice(1);
 
-    // Map column indices
     const findCol = (terms: string[]) => headers.findIndex(h => terms.some(t => h.includes(t)));
 
-    if (isDonations) {
-      const idIdx = findCol(['donation id', 'id']);
-      const timeIdx = findCol(['submitted', 'date', 'time']);
-      const sevaIdx = findCol(['towards', 'seva', 'head', 'category']);
-      const nameIdx = findCol(['donor', 'contributor', 'name', 'devotee']);
-      const emailIdx = findCol(['email', 'mail']);
-      const amtIdx = findCol(['amount', 'rupee', '₹', 'rs']);
-      const modeIdx = findCol(['mode', 'payment mode', 'cash', 'upi']);
-      const statusIdx = findCol(['status', 'payment status']);
-      const refIdx = findCol(['reference', 'ref']);
-      const receiptIdx = findCol(['receipt', 'url', 'drive']);
-      const emailStatusIdx = findCol(['whatsapp status', 'email status']);
-      const msgIdIdx = findCol(['message id', 'msg']);
-      const createIdx = findCol(['created']);
-      const updateIdx = findCol(['updated']);
-      const confirmIdx = findCol(['confirmed by', 'volunteer']);
+    const idIdx = findCol(['donation id', 'id']);
+    const timeIdx = findCol(['submitted', 'date', 'time']);
+    const sevaIdx = findCol(['towards', 'seva', 'head', 'category']);
+    const nameIdx = findCol(['donor', 'contributor', 'name', 'devotee']);
+    const emailIdx = findCol(['email', 'mail']);
+    const amtIdx = findCol(['amount', 'rupee', '₹', 'rs']);
+    const modeIdx = findCol(['mode', 'payment mode', 'cash', 'upi']);
+    const statusIdx = findCol(['status', 'payment status']);
+    const refIdx = findCol(['reference', 'ref']);
+    const receiptIdx = findCol(['receipt', 'url', 'drive']);
+    const emailStatusIdx = findCol(['whatsapp status', 'email status']);
+    const msgIdIdx = findCol(['message id', 'msg']);
+    const createIdx = findCol(['created']);
+    const updateIdx = findCol(['updated']);
+    const confirmIdx = findCol(['confirmed by', 'volunteer']);
 
-      const donations: DonationRecord[] = dataRows.map((row, index) => {
-        const donationId = (idIdx >= 0 && row[idIdx]) ? String(row[idIdx]).trim() : `SJST-${Date.now()}-${index}`;
-        const submittedAt = (timeIdx >= 0 && row[timeIdx]) ? String(row[timeIdx]).trim() : new Date().toISOString();
-        const sevaHead = (sevaIdx >= 0 && row[sevaIdx]) ? String(row[sevaIdx]).trim() : 'General Seva';
-        const donorName = (nameIdx >= 0 && row[nameIdx]) ? String(row[nameIdx]).trim() : 'Devotee';
-        const email = (emailIdx >= 0 && row[emailIdx]) ? String(row[emailIdx]).trim() : '';
-        const amount = (amtIdx >= 0 && row[amtIdx]) ? Number(String(row[amtIdx]).replace(/[^0-9.]/g, '')) || 0 : 0;
-        const paymentMode = (modeIdx >= 0 && String(row[modeIdx]).toLowerCase().includes('cash')) ? 'Cash' : 'UPI';
-        const statusVal = (statusIdx >= 0 && row[statusIdx]) ? String(row[statusIdx]).trim().toLowerCase() : '';
-        const paymentStatus = (statusVal === 'paid' || statusVal === 'completed' || statusVal === 'confirmed') ? 'Paid' : 'Confirmation Pending';
-        const paymentReference = (refIdx >= 0 && row[refIdx]) ? String(row[refIdx]).trim() : '';
-        const receiptUrl = (receiptIdx >= 0 && row[receiptIdx]) ? String(row[receiptIdx]).trim() : '';
-        const emailStatus = (emailStatusIdx >= 0 && String(row[emailStatusIdx]).toLowerCase().includes('sent')) ? 'Sent' : 'Pending';
-        const emailMessageId = (msgIdIdx >= 0 && row[msgIdIdx]) ? String(row[msgIdIdx]).trim() : '';
-        const createdAt = (createIdx >= 0 && row[createIdx]) ? String(row[createIdx]).trim() : submittedAt;
-        const updatedAt = (updateIdx >= 0 && row[updateIdx]) ? String(row[updateIdx]).trim() : new Date().toISOString();
-        const confirmedBy = (confirmIdx >= 0 && row[confirmIdx]) ? String(row[confirmIdx]).trim() : '';
+    const donations: DonationRecord[] = dataRows.map((row, index) => {
+      const donationId = (idIdx >= 0 && row[idIdx]) ? String(row[idIdx]).trim() : `SJST-${Date.now()}-${index}`;
+      const submittedAt = (timeIdx >= 0 && row[timeIdx]) ? String(row[timeIdx]).trim() : new Date().toISOString();
+      const sevaHead = (sevaIdx >= 0 && row[sevaIdx]) ? String(row[sevaIdx]).trim() : 'General Seva';
+      const donorName = (nameIdx >= 0 && row[nameIdx]) ? String(row[nameIdx]).trim() : 'Devotee';
+      const email = (emailIdx >= 0 && row[emailIdx]) ? String(row[emailIdx]).trim() : '';
+      const amount = (amtIdx >= 0 && row[amtIdx]) ? Number(String(row[amtIdx]).replace(/[^0-9.]/g, '')) || 0 : 0;
+      const paymentMode = (modeIdx >= 0 && String(row[modeIdx]).toLowerCase().includes('cash')) ? 'Cash' : 'UPI';
+      const statusVal = (statusIdx >= 0 && row[statusIdx]) ? String(row[statusIdx]).trim().toLowerCase() : '';
+      const paymentStatus = (statusVal === 'paid' || statusVal === 'completed' || statusVal === 'confirmed') ? 'Paid' : 'Confirmation Pending';
+      const paymentReference = (refIdx >= 0 && row[refIdx]) ? String(row[refIdx]).trim() : '';
+      const receiptUrl = (receiptIdx >= 0 && row[receiptIdx]) ? String(row[receiptIdx]).trim() : '';
+      const emailStatus = (emailStatusIdx >= 0 && String(row[emailStatusIdx]).toLowerCase().includes('sent')) ? 'Sent' : 'Pending';
+      const emailMessageId = (msgIdIdx >= 0 && row[msgIdIdx]) ? String(row[msgIdIdx]).trim() : '';
+      const createdAt = (createIdx >= 0 && row[createIdx]) ? String(row[createIdx]).trim() : submittedAt;
+      const updatedAt = (updateIdx >= 0 && row[updateIdx]) ? String(row[updateIdx]).trim() : new Date().toISOString();
+      const confirmedBy = (confirmIdx >= 0 && row[confirmIdx]) ? String(row[confirmIdx]).trim() : '';
 
-        // Extract 6-digit confirmation code from ref if present
-        let confirmationCode = '';
-        const codeMatch = paymentReference.match(/\b\d{6}\b/);
-        if (codeMatch) {
-          confirmationCode = codeMatch[0];
-        }
+      let confirmationCode = '';
+      const codeMatch = paymentReference.match(/\b\d{6}\b/);
+      if (codeMatch) {
+        confirmationCode = codeMatch[0];
+      }
 
-        return {
-          donationId,
-          submittedAt,
-          donorName,
-          mobile: '',
-          email,
-          phone: '',
-          amount,
-          paymentMode,
-          paymentStatus,
-          paymentReference,
-          receiptUrl,
-          whatsappStatus: emailStatus === 'Sent' ? 'Sent' : 'Pending',
-          whatsappMessageId: emailMessageId,
-          emailStatus,
-          emailMessageId,
-          createdAt,
-          updatedAt,
-          confirmedBy,
-          confirmationCode,
-          sevaHead,
-          sevaCategory: sevaHead
-        };
-      });
+      return {
+        donationId,
+        submittedAt,
+        donorName,
+        mobile: '',
+        email,
+        phone: '',
+        amount,
+        paymentMode,
+        paymentStatus,
+        paymentReference,
+        receiptUrl,
+        whatsappStatus: emailStatus === 'Sent' ? 'Sent' : 'Pending',
+        whatsappMessageId: emailMessageId,
+        emailStatus,
+        emailMessageId,
+        createdAt,
+        updatedAt,
+        confirmedBy,
+        confirmationCode,
+        sevaHead,
+        sevaCategory: sevaHead
+      };
+    });
 
-      return { success: true, donations };
-    } else {
-      // Form Responses Tab (7 Columns: Timestamp, Contributor Name, Email ID, Amount, Payment Mode, Towards, Confirmation Code)
-      const timeIdx = findCol(['timestamp', 'date', 'time']);
-      const nameIdx = findCol(['contributor', 'donor', 'name', 'devotee']);
-      const emailIdx = findCol(['email', 'mail']);
-      const amtIdx = findCol(['amount', 'rupee', '₹', 'rs']);
-      const modeIdx = findCol(['mode', 'payment', 'cash', 'upi']);
-      const sevaIdx = findCol(['towards', 'seva', 'head', 'category', 'purpose']);
-      const codeIdx = findCol(['code', 'pin', 'confirm', 'otp']);
-
-      const rawDonations: (DonationRecord | null)[] = dataRows.map((row, index) => {
-        const rawTime = (timeIdx >= 0 && row[timeIdx]) ? row[timeIdx] : (row[0] || '');
-        const submittedAt = rawTime ? String(rawTime).trim() : new Date().toISOString();
-
-        const rawName = (nameIdx >= 0 && row[nameIdx]) ? row[nameIdx] : (row[1] || '');
-        const donorName = rawName ? String(rawName).trim() : 'Devotee';
-
-        const rawEmail = (emailIdx >= 0 && row[emailIdx]) ? row[emailIdx] : (row[2] || '');
-        const email = rawEmail ? String(rawEmail).trim() : '';
-
-        const rawAmt = (amtIdx >= 0 && row[amtIdx]) ? row[amtIdx] : (row[3] || 0);
-        const amount = Number(String(rawAmt).replace(/[^0-9.]/g, '')) || 0;
-
-        const rawMode = (modeIdx >= 0 && row[modeIdx]) ? row[modeIdx] : (row[4] || 'UPI');
-        const paymentMode = String(rawMode).toLowerCase().includes('cash') ? 'Cash' : 'UPI';
-
-        const rawSeva = (sevaIdx >= 0 && row[sevaIdx]) ? row[sevaIdx] : (row[5] || 'General Seva');
-        const sevaHead = rawSeva ? String(rawSeva).trim() : 'General Seva';
-
-        const rawCode = (codeIdx >= 0 && row[codeIdx]) ? row[codeIdx] : (row[6] || '');
-        const confirmationCode = String(rawCode).trim().replace(/\D/g, '');
-
-        // Only include Form Responses rows where a confirmation code is present (and hasn't been cleared upon verification)
-        if (!confirmationCode || confirmationCode.length < 4) {
-          return null;
-        }
-
-        const donationId = `SJST-${new Date(submittedAt).getTime() || Date.now()}-${String(index + 1).padStart(4, '0')}`;
-
-        return {
-          donationId,
-          submittedAt,
-          donorName,
-          mobile: '',
-          email,
-          phone: '',
-          amount,
-          paymentMode,
-          paymentStatus: 'Confirmation Pending' as const,
-          paymentReference: `UPI-PIN-${confirmationCode}`,
-          receiptUrl: '',
-          whatsappStatus: 'Pending' as const,
-          whatsappMessageId: '',
-          emailStatus: email ? ('Pending' as const) : ('Not Required' as const),
-          emailMessageId: '',
-          createdAt: submittedAt,
-          updatedAt: submittedAt,
-          confirmedBy: '',
-          confirmationCode,
-          sevaHead,
-          sevaCategory: sevaHead
-        };
-      });
-
-      const donations: DonationRecord[] = rawDonations.filter((d): d is DonationRecord => d !== null);
-      return { success: true, donations };
-    }
+    return { success: true, donations };
   } catch (e: any) {
     return {
       success: false,
