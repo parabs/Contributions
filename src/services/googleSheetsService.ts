@@ -1130,7 +1130,7 @@ export function downloadCsvFile(content: string, fileName = 'SHREE_JAGANNATH_SEV
 export function saveSheetsConfig(config: GoogleSheetsSyncConfig) {
   if (config.spreadsheetId) localStorage.setItem('sjst_sheets_spreadsheet_id', config.spreadsheetId.trim());
   if (config.sheetName) localStorage.setItem('sjst_sheets_tab_name', config.sheetName.trim());
-  if (config.webhookUrl) localStorage.setItem('sjst_sheets_webhook_url', config.webhookUrl.trim());
+  if (config.webhookUrl) localStorage.setItem('sjst_sheets_webhook_url', 'https://script.google.com/macros/s/AKfycbwo2HwQRNS8R5Vm81jHn87QFU75_xT64hdaTjEcvQfU84VAVchMwL7_JlP9EcNU2-w/exec');
   localStorage.setItem('sjst_sheets_auto_sync', config.autoSync ? 'true' : 'false');
 }
 
