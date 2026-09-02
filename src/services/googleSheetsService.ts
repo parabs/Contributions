@@ -822,31 +822,50 @@ export async function repairAndAlignGoogleSheetHeaders(
 /**
  * Fetch live rows from Google Sheets (Header-Aware)
  */
+/**
+ * Fetch live rows from Google Sheets (Header-Aware with Webhook Fallback)
+ */
 export async function fetchDonationsFromGoogleSheet(
-  accessToken: string,
+  accessToken: string | null | undefined,
   spreadsheetId: string,
   sheetName = 'Donations'
 ): Promise<{ success: boolean; donations?: DonationRecord[]; error?: string }> {
   try {
-    const range = formatA1Range(sheetName, 'A1:O');
-    const url = `https://sheets.googleapis.com/v4/spreadsheets/${encodeURIComponent(spreadsheetId)}/values/${encodeURIComponent(range)}`;
+    const webhookUrl = localStorage.getItem('sjst_sheets_webhook_url') || DEFAULT_WEBHOOK_URL;
+    let allRows: any[][] = [];
 
-    const response = await fetch(url, {
-      headers: {
-        Authorization: `Bearer ${accessToken}`
+    // If no access token is present, fetch via the Google Apps Script Webhook (GET)
+    if (!accessToken && webhookUrl) {
+      const res = await fetch(webhookUrl);
+      const json = await res.json();
+      if (json.success && json.values) {
+        allRows = json.values;
+      } else {
+        return { success: false, error: json.error || 'Failed to fetch sheet data via webhook' };
       }
-    });
+    } else {
+      // Standard Google Sheets API fetch when OAuth token is available
+      const range = formatA1Range(sheetName, 'A1:O');
+      const url = `https://sheets.googleapis.com/v4/spreadsheets/${encodeURIComponent(spreadsheetId)}/values/${encodeURIComponent(range)}`;
 
-    if (!response.ok) {
-      const err = await response.json().catch(() => ({}));
-      return {
-        success: false,
-        error: err?.error?.message || `Failed to fetch sheet HTTP ${response.status}`
-      };
+      const response = await fetch(url, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`
+        }
+      });
+
+      if (!response.ok) {
+        const err = await response.json().catch(() => ({}));
+        return {
+          success: false,
+          error: err?.error?.message || `Failed to fetch sheet HTTP ${response.status}`
+        };
+      }
+
+      const data = await response.json();
+      allRows = data.values || [];
     }
 
-    const data = await response.json();
-    const allRows: any[][] = data.values || [];
     if (allRows.length === 0) {
       return { success: true, donations: [] };
     }
@@ -854,7 +873,7 @@ export async function fetchDonationsFromGoogleSheet(
     const headers = allRows[0].map((h: any) => String(h || '').toLowerCase().trim());
     const dataRows = allRows.slice(1);
 
-const findCol = (terms: string[]) => headers.findIndex(h => terms.some(t => h === t || h.includes(t)));
+    const findCol = (terms: string[]) => headers.findIndex(h => terms.some(t => h === t || h.includes(t)));
 
     const idIdx = findCol(['donation id']);
     const timeIdx = findCol(['submitted at', 'submitted']);
@@ -873,7 +892,7 @@ const findCol = (terms: string[]) => headers.findIndex(h => terms.some(t => h ==
     const confirmIdx = findCol(['confirmed by', 'volunteer']);
     const codeIdx = findCol(['confirmation code', 'code', 'pin']);
     
-     const donations: DonationRecord[] = dataRows.map((row, index) => {
+    const donations: DonationRecord[] = dataRows.map((row, index) => {
       const donationId = (idIdx >= 0 && row[idIdx]) ? String(row[idIdx]).trim() : `SJST-${Date.now()}-${index}`;
       const submittedAt = (timeIdx >= 0 && row[timeIdx]) ? String(row[timeIdx]).trim() : new Date().toISOString();
       const sevaHead = (sevaIdx >= 0 && row[sevaIdx]) ? String(row[sevaIdx]).trim() : 'General Seva';
@@ -891,7 +910,6 @@ const findCol = (terms: string[]) => headers.findIndex(h => terms.some(t => h ==
       const updatedAt = (updateIdx >= 0 && row[updateIdx]) ? String(row[updateIdx]).trim() : new Date().toISOString();
       const confirmedBy = (confirmIdx >= 0 && row[confirmIdx]) ? String(row[confirmIdx]).trim() : '';
       
-      // Resolve confirmation code cleanly from its dedicated column, with fallback to reference regex
       const confirmationCode = (codeIdx >= 0 && row[codeIdx]) 
         ? String(row[codeIdx]).trim() 
         : (() => {
@@ -931,6 +949,83 @@ const findCol = (terms: string[]) => headers.findIndex(h => terms.some(t => h ==
       error: e.message || 'Error fetching records from Google Sheet'
     };
   }
+}
+
+// Helper to keep row parsing clean
+function parseRowsToDonations(allRows: any[][]): { success: boolean; donations: DonationRecord[] } {
+  if (allRows.length === 0) return { success: true, donations: [] };
+  
+  const headers = allRows[0].map((h: any) => String(h || '').toLowerCase().trim());
+  const dataRows = allRows.slice(1);
+
+  const findCol = (terms: string[]) => headers.findIndex(h => terms.some(t => h === t || h.includes(t)));
+  const idIdx = findCol(['donation id']);
+  const timeIdx = findCol(['submitted at', 'submitted']);
+  const sevaIdx = findCol(['towards', 'seva head', 'seva']);
+  const nameIdx = findCol(['donor name', 'donor']);
+  const emailIdx = findCol(['email']);
+  const amtIdx = findCol(['amount']);
+  const modeIdx = findCol(['payment mode', 'mode']);
+  const statusIdx = findCol(['payment status', 'status']);
+  const refIdx = findCol(['payment reference', 'reference', 'ref']);
+  const receiptIdx = findCol(['final receipt url', 'receipt', 'url']);
+  const emailStatusIdx = findCol(['communication status', 'email status', 'whatsapp status']);
+  const msgIdIdx = findCol(['message id', 'msg']);
+  const createIdx = findCol(['created at', 'created']);
+  const updateIdx = findCol(['updated at', 'updated']);
+  const confirmIdx = findCol(['confirmed by', 'volunteer']);
+  const codeIdx = findCol(['confirmation code', 'code', 'pin']);
+
+  const donations: DonationRecord[] = dataRows.map((row, index) => {
+    const donationId = (idIdx >= 0 && row[idIdx]) ? String(row[idIdx]).trim() : `SJST-${Date.now()}-${index}`;
+    const submittedAt = (timeIdx >= 0 && row[timeIdx]) ? String(row[timeIdx]).trim() : new Date().toISOString();
+    const sevaHead = (sevaIdx >= 0 && row[sevaIdx]) ? String(row[sevaIdx]).trim() : 'General Seva';
+    const donorName = (nameIdx >= 0 && row[nameIdx]) ? String(row[nameIdx]).trim() : 'Devotee';
+    const email = (emailIdx >= 0 && row[emailIdx]) ? String(row[emailIdx]).trim() : '';
+    const amount = (amtIdx >= 0 && row[amtIdx]) ? Number(String(row[amtIdx]).replace(/[^0-9.]/g, '')) || 0 : 0;
+    const paymentMode = (modeIdx >= 0 && String(row[modeIdx]).toLowerCase().includes('cash')) ? 'Cash' : 'UPI';
+    const statusVal = (statusIdx >= 0 && row[statusIdx]) ? String(row[statusIdx]).trim().toLowerCase() : '';
+    const paymentStatus = (statusVal === 'paid' || statusVal === 'completed' || statusVal === 'confirmed') ? 'Paid' : 'Confirmation Pending';
+    const paymentReference = (refIdx >= 0 && row[refIdx]) ? String(row[refIdx]).trim() : '';
+    const receiptUrl = (receiptIdx >= 0 && row[receiptIdx]) ? String(row[receiptIdx]).trim() : '';
+    const emailStatus = (emailStatusIdx >= 0 && String(row[emailStatusIdx]).toLowerCase().includes('sent')) ? 'Sent' : 'Pending';
+    const emailMessageId = (msgIdIdx >= 0 && row[msgIdIdx]) ? String(row[msgIdIdx]).trim() : '';
+    const createdAt = (createIdx >= 0 && row[createIdx]) ? String(row[createIdx]).trim() : submittedAt;
+    const updatedAt = (updateIdx >= 0 && row[updateIdx]) ? String(row[updateIdx]).trim() : new Date().toISOString();
+    const confirmedBy = (confirmIdx >= 0 && row[confirmIdx]) ? String(row[confirmIdx]).trim() : '';
+    const confirmationCode = (codeIdx >= 0 && row[codeIdx]) 
+      ? String(row[codeIdx]).trim() 
+      : (() => {
+          const codeMatch = paymentReference.match(/\b\d{6}\b/);
+          return codeMatch ? codeMatch[0] : '';
+        })();
+
+    return {
+      donationId,
+      submittedAt,
+      donorName,
+      mobile: '',
+      email,
+      phone: '',
+      amount,
+      paymentMode,
+      paymentStatus,
+      paymentReference,
+      receiptUrl,
+      whatsappStatus: emailStatus === 'Sent' ? 'Sent' : 'Pending',
+      whatsappMessageId: emailMessageId,
+      emailStatus,
+      emailMessageId,
+      createdAt,
+      updatedAt,
+      confirmedBy,
+      confirmationCode,
+      sevaHead,
+      sevaCategory: sevaHead
+    };
+  });
+
+  return { success: true, donations };
 }
 
 /**
