@@ -955,50 +955,28 @@ export async function fetchDonationsFromGoogleSheet(
  * Direct Token-less Volunteer Verification via Webhook
  * Designed for opaque 'no-cors' responses from Google Apps Script.
  */
-export async function verifyDonationByPin(
-  confirmationCode: string,
-  volunteerName = 'Volunteer'
-): Promise<{ success: boolean; message: string }> {
-  const webhookUrl = (localStorage.getItem('sjst_sheets_webhook_url') || DEFAULT_WEBHOOK_URL).trim();
-  
-  if (!webhookUrl) {
-    return { success: false, message: 'Webhook URL not configured.' };
-  }
 
-  const cleanCode = confirmationCode.trim();
-  if (!cleanCode || cleanCode.length < 6) {
-    return { success: false, message: 'Please enter a valid 6-digit confirmation PIN.' };
+export async function verifyDonationByPin(confirmationCode: string, volunteerName: string) {
+  const webhookUrl = localStorage.getItem('sjst_sheets_webhook_url') || DEFAULT_WEBHOOK_URL;
+  
+  if (!webhookUrl || webhookUrl.includes('AKfycbwo2HwQRNS8R5Vm81jHn87QFU75_xT64hdaTjEcvQfU84VAVchMwL7_JlP9EcNU2-w')) {
+    return { success: false, error: 'Webhook URL is not configured.' };
   }
 
   try {
-    const payload = {
-      action: 'verifyDonation',
-      confirmationCode: cleanCode,
-      confirmedBy: volunteerName.trim() || 'Volunteer'
-    };
-
-    // Note: mode: 'no-cors' produces an opaque response. 
-    // We must NOT call .json() or .text() on the response object, 
-    // as the browser blocks reading it. The payload is successfully delivered to GAS.
     await fetch(webhookUrl, {
       method: 'POST',
       mode: 'no-cors',
-      headers: {
-        'Content-Type': 'text/plain;charset=utf-8'
-      },
-      body: JSON.stringify(payload)
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({
+        action: 'verifyDonation',
+        confirmationCode: confirmationCode.trim(),
+        confirmedBy: volunteerName
+      })
     });
-
-    return { 
-      success: true, 
-      message: `PIN ${cleanCode} submitted for verification. Google Sheet will update momentarily.` 
-    };
+    return { success: true, message: 'Verified successfully' };
   } catch (err: any) {
-    console.error('Webhook communication error:', err);
-    return { 
-      success: false, 
-      message: err.message || 'Failed to communicate with Google Sheet backend.' 
-    };
+    return { success: false, error: err.message };
   }
 }
 
