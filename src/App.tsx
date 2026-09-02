@@ -448,37 +448,6 @@ export default function App() {
   };
 
   // ----------------------------------------------------
-  // REFRESH / SYNC FROM GOOGLE SHEET
-  // ----------------------------------------------------
-  const handleRefreshFromGoogleSheet = async (): Promise<{ count: number; error?: string }> => {
-    if (!googleAccessToken) {
-      return { count: 0, error: 'Please connect Google account in the top bar to fetch directly from Google Sheet.' };
-    }
-
-    try {
-      const donRes = await fetchDonationsFromGoogleSheet(googleAccessToken, TARGET_SPREADSHEET_ID, 'Donations');
-      const freshList = donRes.donations || [];
-
-      setDonations(freshList);
-      try {
-        localStorage.setItem('sjst_donations', JSON.stringify(freshList));
-      } catch (e) {}
-
-      try {
-        if (typeof BroadcastChannel !== 'undefined') {
-          const bc = new BroadcastChannel('sjst_donations_channel');
-          bc.postMessage({ type: 'DONATIONS_UPDATED' });
-          bc.close();
-        }
-      } catch (e) {}
-
-      return { count: freshList.length };
-    } catch (e: any) {
-      return { count: 0, error: e.message || 'Failed to refresh from Google Sheet' };
-    }
-  };
-
-  // ----------------------------------------------------
   // LIVESHEET DIRECT PAYMENT CONFIRMATION HANDLER
   // ----------------------------------------------------
   const handleConfirmDonationFromSheet = async (donationId: string, volunteerName: string) => {
