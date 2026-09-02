@@ -118,13 +118,7 @@ export default function App() {
     };
   }, []);
 
-  // Auto-fetch live records from Google Sheets on app load if token exists
-  React.useEffect(() => {
-    if (googleAccessToken && donations.length === 0) {
-      handleRefreshFromGoogleSheet();
-    }
-  }, [googleAccessToken]);
-  
+ 
   // Persist state changes to localStorage and broadcast
   React.useEffect(() => {
     localStorage.setItem('sjst_donations', JSON.stringify(donations));
