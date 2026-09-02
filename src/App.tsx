@@ -50,6 +50,9 @@ export default function App() {
     return saved ? JSON.parse(saved) : INITIAL_VOLUNTEERS;
   });
 
+  // Real Google & Gmail Auth Context
+  const { isAuthenticated: isGmailAuthenticated, accessToken: googleAccessToken, sendDonationReceipt } = useGmailAuth();
+  
   // Cross-tab real-time sync with BroadcastChannel and storage events
   React.useEffect(() => {
     let channel: BroadcastChannel | null = null;
