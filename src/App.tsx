@@ -417,50 +417,20 @@ export default function App() {
   // ----------------------------------------------------
   // REFRESH / SYNC FROM GOOGLE SHEET
   // ----------------------------------------------------
-  const handleRefreshDonationsFromGoogleSheet = async (): Promise<{ count: number; error?: string }> => {
+  const handleRefreshFromGoogleSheet = async (): Promise<{ count: number; error?: string }> => {
     if (!googleAccessToken) {
       return { count: 0, error: 'Please connect Google account in the top bar to fetch directly from Google Sheet.' };
     }
 
     try {
-      // 1. Fetch Form Responses 1 (Raw Devotee Submissions)
-      const formRes = await fetchDonationsFromGoogleSheet(googleAccessToken, TARGET_SPREADSHEET_ID, 'Form Responses 1');
-      // 2. Fetch Donations (Master Ledger)
       const donRes = await fetchDonationsFromGoogleSheet(googleAccessToken, TARGET_SPREADSHEET_ID, 'Donations');
-
-      const incomingDonations = donRes.donations || [];
-      const incomingFormSubmissions = formRes.donations || [];
-
-      // Authoritative State Update:
-      // Construct master records directly from live Google Sheet tabs.
-      const map = new Map<string, DonationRecord>();
-
-      // 1. Add all records from Donations master tab (authoritative master ledger)
-      incomingDonations.forEach(d => map.set(d.donationId, d));
-
-      // 2. Add pending submissions from Form Responses 1 that have an active confirmation code and are not yet marked Paid in master
-      incomingFormSubmissions.forEach(f => {
-        const alreadyPaid = Array.from(map.values()).some(
-          d => d.paymentStatus === 'Paid' && (
-            (f.confirmationCode && (d.confirmationCode === f.confirmationCode || (d.paymentReference && d.paymentReference.includes(f.confirmationCode)))) ||
-            d.donationId === f.donationId
-          )
-        );
-        if (!alreadyPaid && !map.has(f.donationId)) {
-          map.set(f.donationId, f);
-        }
-      });
-
-      const freshList = Array.from(map.values()).sort((a, b) => 
-        new Date(b.submittedAt).getTime() - new Date(a.submittedAt).getTime()
-      );
+      const freshList = donRes.donations || [];
 
       setDonations(freshList);
       try {
         localStorage.setItem('sjst_donations', JSON.stringify(freshList));
       } catch (e) {}
 
-      // Broadcast update across tabs
       try {
         if (typeof BroadcastChannel !== 'undefined') {
           const bc = new BroadcastChannel('sjst_donations_channel');
@@ -469,9 +439,7 @@ export default function App() {
         }
       } catch (e) {}
 
-      return { 
-        count: freshList.length 
-      };
+      return { count: freshList.length };
     } catch (e: any) {
       return { count: 0, error: e.message || 'Failed to refresh from Google Sheet' };
     }
