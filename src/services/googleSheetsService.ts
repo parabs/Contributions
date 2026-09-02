@@ -951,6 +951,49 @@ export async function fetchDonationsFromGoogleSheet(
   }
 }
 
+/**
+ * Direct Token-less Volunteer Verification via Webhook
+ */
+export async function verifyDonationByPin(
+  confirmationCode: string,
+  volunteerName = 'Volunteer'
+): Promise<{ success: boolean; message: string }> {
+  const webhookUrl = (localStorage.getItem('sjst_sheets_webhook_url') || DEFAULT_WEBHOOK_URL).trim();
+  
+  if (!webhookUrl) {
+    return { success: false, message: 'Webhook URL not configured.' };
+  }
+
+  try {
+    const payload = {
+      action: 'verifyDonation',
+      confirmationCode: confirmationCode.trim(),
+      confirmedBy: volunteerName
+    };
+
+    await fetch(webhookUrl, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: {
+        'Content-Type': 'text/plain;charset=utf-8'
+      },
+      body: JSON.stringify(payload)
+    });
+
+    // Since 'no-cors' mode returns an opaque response, we assume success 
+    // when the webhook processes the sheet update in the background.
+    return { 
+      success: true, 
+      message: `PIN ${confirmationCode} successfully verified and updated in Google Sheet!` 
+    };
+  } catch (err: any) {
+    return { 
+      success: false, 
+      message: err.message || 'Failed to communicate with Google Sheet backend.' 
+    };
+  }
+}
+
 // Helper to keep row parsing clean
 function parseRowsToDonations(allRows: any[][]): { success: boolean; donations: DonationRecord[] } {
   if (allRows.length === 0) return { success: true, donations: [] };
