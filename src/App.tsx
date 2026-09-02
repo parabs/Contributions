@@ -41,8 +41,8 @@ export default function App() {
   });
 
   const [donations, setDonations] = useState<DonationRecord[]>(() => {
-    const saved = localStorage.getItem('sjst_donations');
-    return saved ? JSON.parse(saved) : [];
+    // Return empty array to prevent loading old test cache
+    return[];
   });
 
   const [volunteers, setVolunteers] = useState<VolunteerRecord[]>(() => {
