@@ -37,7 +37,7 @@ import { uploadReceiptToGoogleDrive } from './services/googleDriveService';
 export default function App() {
   const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
     const saved = localStorage.getItem('sjst_trust_config');
-    return saved ? JSON.parse(saved) : TRUST_CONFIG;
+    return saved ? JSON.parse(saved) : []];
   });
 
   const [donations, setDonations] = useState<DonationRecord[]>(() => {
@@ -135,6 +135,14 @@ export default function App() {
       }
     } catch (e) {}
   }, [donations]);
+
+  // Automatically pull live rows from the single master Donations sheet on load if authenticated
+  React.useEffect(() => {
+    if (googleAccessToken) {
+      handleRefreshFromGoogleSheet();
+    }
+  }, [googleAccessToken]);
+  
 
   React.useEffect(() => {
     localStorage.setItem('sjst_volunteers', JSON.stringify(volunteers));
