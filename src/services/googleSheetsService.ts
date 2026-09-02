@@ -386,10 +386,6 @@ export async function syncDonationToGoogleSheet(
         body: JSON.stringify(webhookPayload)
       });
      webhookSuccess = true;
-      const whJson = await whRes.json().catch(() => ({}));
-      if (whJson.success || whRes.ok) {
-        webhookSuccess = true;
-      }
     } catch (whErr: any) {
       console.warn('Google Apps Script Webhook dispatch notice:', whErr);
     }
