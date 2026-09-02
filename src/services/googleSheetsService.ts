@@ -377,10 +377,11 @@ export async function syncDonationToGoogleSheet(
         record: donation
       };
 
-      const whRes = await fetch(webhookUrl, {
+      await fetch(webhookUrl, {
         method: 'POST',
+        mode: 'no-cors', // Crucial: Bypasses browser CORS preflight check
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'text/plain;charset=utf-8' // Crucial: Avoids triggering JSON preflight headers
         },
         body: JSON.stringify(webhookPayload)
       });
