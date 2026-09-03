@@ -278,17 +278,60 @@ const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
     return newRecord;
   };
 
-  const handleVolunteerVerify = async (
+    const handleVolunteerVerify = async (
     confirmationCode: string,
     volunteerName: string
   ): Promise<{ success: boolean; donation?: DonationRecord; error?: string }> => {
     const cleanCode = confirmationCode.trim();
 
     try {
+      const webhookUrl = "https://script.google.com/macros/s/AKfycbwo2HwQRNS8R5Vm81jHn87QFU75_xt64hdaTJecvQfU84VAVchMwL7_JIP9EcNU2-w/exec";
+      
+      const response = await fetch(`${webhookUrl}?action=verifyDonation&confirmationCode=${encodeURIComponent(cleanCode)}&confirmedBy=${encodeURIComponent(volunteerName)}`, {
+        method: "GET"
+      });
+      
+      const result = await response.json();
+
+      if (!result.success) {
+        return {
+          success: false,
+          error: result.error || `PIN or ID "${confirmationCode}" not found in records.`
+        };
+      }
+
+      const updatedRecord: DonationRecord = result.donation;
+
+      setDonations(prev => {
+        const updated = prev.some(d => d.donationId === updatedRecord.donationId)
+          ? prev.map(d => (d.donationId === updatedRecord.donationId ? updatedRecord : d))
+          : [updatedRecord, ...prev];
+        
+        try {
+          localStorage.setItem("sjst_donations", JSON.stringify(updated));
+        } catch (e) {}
+        return updated;
+      });
+
+      return {
+        success: true,
+        donation: updatedRecord
+      };
+
+    } catch (err: any) {
+      return {
+        success: false,
+        error: `Verification failed: ${err.message || "Server error"}`
+      };
+    }
+  };> => {
+    const cleanCode = confirmationCode.trim();
+
+    try {
       // Hardcoded absolute URL to prevent any undefined variable concatenation bugs
       const webhookUrl = 'https://script.google.com/macros/s/AKfycbwo2HwQRNS8R5Vm81jHn87QFU75_xt64hdaTJecvQfU84VAVchMwL7_JIP9EcNU2-w/exec';
       
-      const response = await fetch(`${webhookUrl}?action=verifyDonation&confirmationCode=${encodeURIComponent(cleanCode)}&confirmedBy=${encodeURIComponent(volunteerName)}`, {
+      const response = await fetch('https://script.google.com/macros/s/AKfycbwo2HwQRNS8R5Vm81jHn87QFU75_xt64hdaTJecvQfU84VAVchMwL7_JIP9EcNU2-w/exec?action=verifyDonation&confirmationCode=${encodeURIComponent(cleanCode)}&confirmedBy=${encodeURIComponent(volunteerName)}`, {
         method: 'GET'
       });
       
