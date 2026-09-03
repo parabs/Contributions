@@ -324,7 +324,10 @@ const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
         error: `Verification failed: ${err.message || "Server error"}`
       };
     }
-  };> => {
+    const handleVolunteerVerify = async (
+    confirmationCode: string,
+    volunteerName: string
+  ): Promise<{ success: boolean; donation?: DonationRecord; error?: string }> => {
     const cleanCode = confirmationCode.trim();
 
     try {
