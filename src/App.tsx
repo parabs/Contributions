@@ -332,7 +332,7 @@ const handleVolunteerVerify = async (
       };
     }
   };
-  
+
 
   const handleAddVolunteer = (newVolunteer: VolunteerRecord) => {
     setVolunteers(prev => [...prev, newVolunteer]);
@@ -353,6 +353,55 @@ const handleVolunteerVerify = async (
     }));
   };
 
+  const handleConfirmDonationFromSheet = async (donationId: string, volunteerName: string) => {
+    const target = donations.find(d => d.donationId === donationId);
+    if (!target) return;
+
+    let emailStatus: 'Pending' | 'Sent' | 'Not Required' | 'Failed' = target.email ? 'Pending' : 'Not Required';
+    let emailMessageId = '';
+    let driveReceiptUrl = target.receiptUrl || `https://drive.google.com/file/d/receipt-${target.donationId}/view`;
+
+    if (googleAccessToken) {
+      try {
+        const driveRes = await uploadReceiptToGoogleDrive(target, trustConfig, googleAccessToken);
+        if (driveRes.success && driveRes.webViewLink) {
+          driveReceiptUrl = driveRes.webViewLink;
+        }
+      } catch (driveErr) {}
+    }
+
+    if (target.email && isGmailAuthenticated) {
+      const candidate: DonationRecord = {
+        ...target,
+        paymentStatus: 'Paid',
+        confirmedBy: volunteerName,
+        receiptUrl: driveReceiptUrl,
+        updatedAt: new Date().toISOString()
+      };
+
+      try {
+        const sendResult = await sendDonationReceipt(candidate, trustConfig);
+        if (sendResult.success) {
+          emailStatus = 'Sent';
+          emailMessageId = sendResult.messageId || `msg-${Date.now()}`;
+        }
+      } catch (e) {}
+    }
+
+    const updatedRecord: DonationRecord = {
+      ...target,
+      paymentStatus: 'Paid',
+      confirmedBy: volunteerName,
+      receiptUrl: driveReceiptUrl,
+      emailStatus,
+      emailMessageId,
+      updatedAt: new Date().toISOString()
+    };
+
+    setDonations(prev => prev.map(d => (d.donationId === donationId ? updatedRecord : d)));
+    syncDonationToGoogleSheet(updatedRecord, googleAccessToken).catch(err => {});
+  };
+  
   return (
     <div className="min-h-screen bg-amber-50/30 text-slate-900 flex flex-col font-sans relative overflow-x-hidden">
       <div className="fixed inset-0 pointer-events-none flex items-center justify-center z-0 overflow-hidden select-none">
