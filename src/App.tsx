@@ -738,3 +738,5 @@ const result = await response.json();
     </div>
   );
 }
+
+export default App;
