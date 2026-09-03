@@ -740,5 +740,4 @@ const result = await response.json();
 }
 
 ;
-
-export default App;
+}
