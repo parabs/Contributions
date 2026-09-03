@@ -287,7 +287,7 @@ const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
     try {
       const webhookUrl = "https://script.google.com/macros/s/AKfycbwo2HwQRNS8R5Vm81jHn87QFU75_xt64hdaTJecvQfU84VAVchMwL7_JIP9EcNU2-w/exec";
       
-      const response = await fetch(`https://script.google.com/macros/s/AKfycbwo2HwQRNS8R5Vm81jHn87QFU75_xt64hdaTJecvQfU84VAVchMwL7_JIP9EcNU2-w/exec?action=verifyDonation&confirmationCode=${encodeURIComponent(cleanCode)}&confirmedBy=${encodeURIComponent(volunteerName)}`, {
+      const response = await fetch(`${webhookUrl}?action=verifyDonation&confirmationCode=${encodeURIComponent(cleanCode)}&confirmedBy=${encodeURIComponent(volunteerName)}`, {
         method: "GET"
       });
 const result = await response.json();
