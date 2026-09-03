@@ -278,15 +278,17 @@ const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
     return newRecord;
   };
 
-const handleVolunteerVerify = async (
+  const handleVolunteerVerify = async (
     confirmationCode: string,
     volunteerName: string
   ): Promise<{ success: boolean; donation?: DonationRecord; error?: string }> => {
     const cleanCode = confirmationCode.trim();
 
     try {
-      // Call your Google Apps Script backend directly to handle lookup & status update on the sheet
-      const response = await fetch(`${TARGET_WEBHOOK_URL}?action=verifyDonation&confirmationCode=${encodeURIComponent(cleanCode)}&confirmedBy=${encodeURIComponent(volunteerName)}`, {
+      // Hardcoded absolute URL to prevent any undefined variable concatenation bugs
+      const webhookUrl = 'https://script.google.com/macros/s/AKfycbwo2HwQRNS8R5Vm81jHn87QFU75_xt64hdaTJecvQfU84VAVchMwL7_JIP9EcNU2-w/exec';
+      
+      const response = await fetch(`${webhookUrl}?action=verifyDonation&confirmationCode=${encodeURIComponent(cleanCode)}&confirmedBy=${encodeURIComponent(volunteerName)}`, {
         method: 'GET'
       });
       
@@ -301,7 +303,6 @@ const handleVolunteerVerify = async (
 
       const updatedRecord: DonationRecord = result.donation;
 
-      // Update local state with the verified record returned from backend
       setDonations(prev => {
         const updated = prev.some(d => d.donationId === updatedRecord.donationId)
           ? prev.map(d => (d.donationId === updatedRecord.donationId ? updatedRecord : d))
@@ -313,7 +314,6 @@ const handleVolunteerVerify = async (
         return updated;
       });
 
-      // Handle optional Gmail receipt dispatch if configured
       if (updatedRecord.email && isGmailAuthenticated) {
         try {
           await sendDonationReceipt(updatedRecord, trustConfig);
