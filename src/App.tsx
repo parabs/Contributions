@@ -279,101 +279,116 @@ const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
   };
 
   const handleVolunteerVerify = async (
-    confirmationCode: string,
-    volunteerName: string
-  ): Promise<{ success: boolean; donation?: DonationRecord; error?: string }> => {
-    const cleanCode = confirmationCode.trim().toUpperCase().replace(/\s+/g, '');
-    let target = donations.find(
-      d => (d.paymentStatus !== 'Paid') && (
-        (d.confirmationCode && d.confirmationCode.trim().toUpperCase() === cleanCode) ||
-        (d.donationId && d.donationId.trim().toUpperCase() === cleanCode) ||
-        (d.donationId && d.donationId.endsWith(cleanCode))
-      )
-    );
-
-    if (!target) {
-      target = donations.find(
-        d => (d.confirmationCode && d.confirmationCode.trim().toUpperCase() === cleanCode) ||
-             (d.donationId && d.donationId.trim().toUpperCase() === cleanCode) ||
-             (d.donationId && d.donationId.endsWith(cleanCode))
+      confirmationCode: string,
+      volunteerName: string
+    ): Promise<{ success: boolean; donation?: DonationRecord; error?: string }> => {
+      const cleanCode = confirmationCode.trim().toUpperCase().replace(/\s+/g, '');
+      let target = donations.find(
+        d => (d.paymentStatus !== 'Paid') && (
+          (d.confirmationCode && d.confirmationCode.trim().toUpperCase() === cleanCode) ||
+          (d.donationId && d.donationId.trim().toUpperCase() === cleanCode) ||
+          (d.donationId && d.donationId.endsWith(cleanCode))
+        )
       );
-    }
 
-    if (!target) {
-      return {
-        success: false,
-        error: `PIN or ID "${confirmationCode}" not found in records.`
-      };
-    }
+      if (!target) {
+        target = donations.find(
+          d => (d.confirmationCode && d.confirmationCode.trim().toUpperCase() === cleanCode) ||
+              (d.donationId && d.donationId.trim().toUpperCase() === cleanCode) ||
+              (d.donationId && d.donationId.endsWith(cleanCode))
+        );
+      }
 
-    if (target.paymentStatus === 'Paid') {
-      return {
-        success: true,
-        donation: target,
-        error: `Notice: This offering was already verified.`
-      };
-    }
+      // Fallback: If not found in local state, try refreshing from Google Sheet once
+      if (!target && googleAccessToken) {
+        try {
+          const freshRes = await fetchDonationsFromGoogleSheet(googleAccessToken, TARGET_SPREADSHEET_ID, 'Donations');
+          if (freshRes.donations) {
+            setDonations(freshRes.donations);
+            target = freshRes.donations.find(
+              d => (d.confirmationCode && d.confirmationCode.trim().toUpperCase() === cleanCode) ||
+                  (d.donationId && d.donationId.trim().toUpperCase() === cleanCode) ||
+                  (d.donationId && d.donationId.endsWith(cleanCode))
+            );
+          }
+        } catch (e) {}
+      }
 
-    let emailStatus: 'Pending' | 'Sent' | 'Not Required' | 'Failed' = target.email ? 'Pending' : 'Not Required';
-    let emailMessageId = '';
-    let driveReceiptUrl = target.receiptUrl || `https://drive.google.com/file/d/receipt-${target.donationId}/view`;
+      if (!target) {
+        return {
+          success: false,
+          error: `PIN or ID "${confirmationCode}" not found in records.`
+        };
+      }
 
-    if (googleAccessToken) {
-      try {
-        const driveRes = await uploadReceiptToGoogleDrive(target, trustConfig, googleAccessToken);
-        if (driveRes.success && driveRes.webViewLink) {
-          driveReceiptUrl = driveRes.webViewLink;
+      if (target.paymentStatus === 'Paid') {
+        return {
+          success: true,
+          donation: target,
+          error: `Notice: This offering was already verified.`
+        };
+      }
+
+      let emailStatus: 'Pending' | 'Sent' | 'Not Required' | 'Failed' = target.email ? 'Pending' : 'Not Required';
+      let emailMessageId = '';
+      let driveReceiptUrl = target.receiptUrl || `https://drive.google.com/file/d/receipt-${target.donationId}/view`;
+
+      if (googleAccessToken) {
+        try {
+          const driveRes = await uploadReceiptToGoogleDrive(target, trustConfig, googleAccessToken);
+          if (driveRes.success && driveRes.webViewLink) {
+            driveReceiptUrl = driveRes.webViewLink;
+          }
+        } catch (driveErr) {}
+      }
+
+      if (target.email && isGmailAuthenticated) {
+        const candidate: DonationRecord = {
+          ...target,
+          paymentStatus: 'Paid',
+          confirmedBy: volunteerName,
+          paymentReference: target.paymentMode === 'Cash' ? 'CASH-COUNTER-VERIFIED' : (target.paymentReference || 'UPI-VERIFIED'),
+          receiptUrl: driveReceiptUrl,
+          updatedAt: new Date().toISOString()
+        };
+
+        try {
+          const sendResult = await sendDonationReceipt(candidate, trustConfig);
+          if (sendResult.success) {
+            emailStatus = 'Sent';
+            emailMessageId = sendResult.messageId || `msg-${Date.now()}`;
+          }
+        } catch (e) {
+          emailStatus = 'Failed';
         }
-      } catch (driveErr) {}
-    }
+      }
 
-    if (target.email && isGmailAuthenticated) {
-      const candidate: DonationRecord = {
+      const updatedRecord: DonationRecord = {
         ...target,
         paymentStatus: 'Paid',
         confirmedBy: volunteerName,
         paymentReference: target.paymentMode === 'Cash' ? 'CASH-COUNTER-VERIFIED' : (target.paymentReference || 'UPI-VERIFIED'),
         receiptUrl: driveReceiptUrl,
+        emailStatus,
+        emailMessageId,
         updatedAt: new Date().toISOString()
       };
 
-      try {
-        const sendResult = await sendDonationReceipt(candidate, trustConfig);
-        if (sendResult.success) {
-          emailStatus = 'Sent';
-          emailMessageId = sendResult.messageId || `msg-${Date.now()}`;
-        }
-      } catch (e) {
-        emailStatus = 'Failed';
-      }
-    }
+      setDonations(prev => {
+        const updated = prev.map(d => (d.donationId === target.donationId ? updatedRecord : d));
+        try {
+          localStorage.setItem('sjst_donations', JSON.stringify(updated));
+        } catch (e) {}
+        return updated;
+      });
 
-    const updatedRecord: DonationRecord = {
-      ...target,
-      paymentStatus: 'Paid',
-      confirmedBy: volunteerName,
-      paymentReference: target.paymentMode === 'Cash' ? 'CASH-COUNTER-VERIFIED' : (target.paymentReference || 'UPI-VERIFIED'),
-      receiptUrl: driveReceiptUrl,
-      emailStatus,
-      emailMessageId,
-      updatedAt: new Date().toISOString()
+      syncDonationToGoogleSheet(updatedRecord, googleAccessToken).catch(err => {});
+
+      return {
+        success: true,
+        donation: updatedRecord
+      };
     };
-
-    setDonations(prev => {
-      const updated = prev.map(d => (d.donationId === target.donationId ? updatedRecord : d));
-      try {
-        localStorage.setItem('sjst_donations', JSON.stringify(updated));
-      } catch (e) {}
-      return updated;
-    });
-
-    syncDonationToGoogleSheet(updatedRecord, googleAccessToken).catch(err => {});
-
-    return {
-      success: true,
-      donation: updatedRecord
-    };
-  };
 
   const handleConfirmDonationFromSheet = async (donationId: string, volunteerName: string) => {
     const target = donations.find(d => d.donationId === donationId);
