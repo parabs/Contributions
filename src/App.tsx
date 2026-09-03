@@ -34,7 +34,7 @@ import { useGmailAuth } from './context/GmailAuthContext';
 import { syncDonationToGoogleSheet, fetchDonationsFromGoogleSheet, TARGET_SPREADSHEET_ID, TARGET_WEBHOOK_URL } from './services/googleSheetsService';
 import { uploadReceiptToGoogleDrive } from './services/googleDriveService';
 
-export default function App() {
+ App() {
 const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
       const saved = localStorage.getItem('sjst_trust_config');
       return saved ? JSON.parse(saved) : {
@@ -739,5 +739,7 @@ const result = await response.json();
   );
 }
 }
+
+;
 
 export default App;
