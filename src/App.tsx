@@ -33,8 +33,7 @@ import { MaaDurgaWatermark } from './components/MaaDurgaWatermark';
 import { useGmailAuth } from './context/GmailAuthContext';
 import { syncDonationToGoogleSheet, fetchDonationsFromGoogleSheet, TARGET_SPREADSHEET_ID, TARGET_WEBHOOK_URL } from './services/googleSheetsService';
 import { uploadReceiptToGoogleDrive } from './services/googleDriveService';
-
- App() {
+export default function App() {
 const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
       const saved = localStorage.getItem('sjst_trust_config');
       return saved ? JSON.parse(saved) : {
