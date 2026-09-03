@@ -51,7 +51,7 @@ export default function App() {
 
   const [donations, setDonations] = useState<DonationRecord[]>(() => {
     // Return empty array to prevent loading old test cache
-    return[];
+    return [];
   });
 
   const [volunteers, setVolunteers] = useState<VolunteerRecord[]>(() => {
