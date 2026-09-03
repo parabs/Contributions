@@ -740,4 +740,3 @@ const result = await response.json();
 }
 
 ;
-}
