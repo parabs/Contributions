@@ -31,7 +31,7 @@ import { PublicDisplayDashboard } from './components/PublicDisplayDashboard';
 import { TrustLogo } from './components/TrustLogo';
 import { MaaDurgaWatermark } from './components/MaaDurgaWatermark';
 import { useGmailAuth } from './context/GmailAuthContext';
-import { syncDonationToGoogleSheet, fetchDonationsFromGoogleSheet, TARGET_SPREADSHEET_ID } from './services/googleSheetsService';
+import { syncDonationToGoogleSheet, fetchDonationsFromGoogleSheet, TARGET_SPREADSHEET_ID, TARGET_WEBHOOK_URL } from './services/googleSheetsService';
 import { uploadReceiptToGoogleDrive } from './services/googleDriveService';
 
 export default function App() {
@@ -401,7 +401,7 @@ const handleVolunteerVerify = async (
     setDonations(prev => prev.map(d => (d.donationId === donationId ? updatedRecord : d)));
     syncDonationToGoogleSheet(updatedRecord, googleAccessToken).catch(err => {});
   };
-  
+
   return (
     <div className="min-h-screen bg-amber-50/30 text-slate-900 flex flex-col font-sans relative overflow-x-hidden">
       <div className="fixed inset-0 pointer-events-none flex items-center justify-center z-0 overflow-hidden select-none">

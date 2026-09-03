@@ -1,4 +1,5 @@
 import { DonationRecord, TrustConfig, VolunteerRecord } from '../types';
+export const TARGET_WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbwo2HwQRNS8R5Vm81jHn87QFU75_xt64hdaTJecvQfU84VAVchMwL7_JIP9EcNU2-w/exec';
 
 export interface GoogleSheetsSyncConfig {
   spreadsheetId?: string;
