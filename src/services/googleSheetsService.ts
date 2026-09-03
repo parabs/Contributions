@@ -956,8 +956,7 @@ export async function fetchDonationsFromGoogleSheet(
  * Designed for opaque 'no-cors' responses from Google Apps Script.
  */
 export async function verifyDonationByPin(confirmationCode: string, volunteerName: string) {
-  // Put your exact live deployment URL inside this string permanently
-  const webhookUrl = 'https://script.google.com/macros/s/AKfycbwo2HwQRNS8R5Vm81jHn87QFU75_xT64hdaTjEcvQfU84VAVchMwL7_JlP9EcNU2-w/exec';
+  const webhookUrl = 'YOUR_ACTUAL_DEPLOYMENT_ID'; // Keep your real deployment URL here
 
   try {
     const params = new URLSearchParams({
@@ -966,13 +965,14 @@ export async function verifyDonationByPin(confirmationCode: string, volunteerNam
       confirmedBy: volunteerName
     });
 
-    await fetch(`${webhookUrl}?${params.toString()}`, {
+    const response = await fetch(`${webhookUrl}?${params.toString()}`, {
       method: 'GET'
     });
-
-    return { success: true, message: 'Verified successfully' };
+    
+    const result = await response.json();
+    return result; // Expected to return { success: true, donation: {...} } or { success: false, error: '...' }
   } catch (err: any) {
-    return { success: true, message: 'Verification sent' };
+    return { success: false, error: err.message || 'Network error during verification' };
   }
 }
 
