@@ -35,10 +35,19 @@ import { syncDonationToGoogleSheet, fetchDonationsFromGoogleSheet, TARGET_SPREAD
 import { uploadReceiptToGoogleDrive } from './services/googleDriveService';
 
 export default function App() {
-  const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
-    const saved = localStorage.getItem('sjst_trust_config');
-    return saved ? JSON.parse(saved) : []];
-  });
+    const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
+      const saved = localStorage.getItem('sjst_trust_config');
+      return saved ? JSON.parse(saved) : {
+        name: 'Shree Jagannath Seva Trust',
+        tagline: 'Devotion & Service',
+        email: 'info@sjst.org',
+        phone: '',
+        address: '',
+        upiId: '',
+        gstin: '',
+        trustRegNo: ''
+      };
+    });
 
   const [donations, setDonations] = useState<DonationRecord[]>(() => {
     // Return empty array to prevent loading old test cache
