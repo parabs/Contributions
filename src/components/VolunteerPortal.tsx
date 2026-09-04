@@ -34,8 +34,6 @@ import { SEVA_CATEGORIES } from '../data/mockData';
 import { CollectionsDashboard } from './CollectionsDashboard';
 import { GoogleSheetView } from './GoogleSheetView';
 import { EmailConfigView } from './EmailConfigView';
-import { verifyDonationByPin } from '../services/googleSheetsService';
-
 
 interface VolunteerPortalProps {
   volunteers: VolunteerRecord[];
@@ -249,52 +247,56 @@ export function VolunteerPortal({
   };
 
  // Reusable verification execution via Direct Webhook (Token-free & CORS safe)
-  // Reusable verification execution via Direct Webhook (Token-free & CORS safe)
-  const executeVerification = async (codeToVerify: string) => {
-    if (!currentVolunteer) return;
-    const clean = codeToVerify.trim();
-    if (!clean || clean.length < 4) {
-      alert('Please enter a valid confirmation PIN (e.g. 6-digit code or Donation ID).');
-      return;
+ const executeVerification = async (codeToVerify: string) => {
+  if (!currentVolunteer) return;
+
+  const clean = codeToVerify.trim();
+
+  if (!clean || clean.length < 4) {
+    alert(
+      'Please enter a valid confirmation PIN (e.g. 6-digit code or Donation ID).'
+    );
+    return;
+  }
+
+  if (!onVerifyDonation) {
+    setVerifyResult({
+      success: false,
+      error: 'Verification service is not available.'
+    });
+    return;
+  }
+
+  setIsVerifying(true);
+  setVerifyResult(null);
+
+  try {
+    // SINGLE verification path:
+    // VolunteerPortal -> App.tsx -> Google Apps Script
+    const result = await onVerifyDonation(
+      clean,
+      `${currentVolunteer.volunteerName} (${currentVolunteer.volunteerCode})`
+    );
+
+    setVerifyResult(result);
+
+    if (result.success) {
+      setInputCode('');
     }
 
-    setIsVerifying(true);
-    setVerifyResult(null);
+  } catch (err: any) {
 
-    try {
-      // 1. Fire direct webhook call to Apps Script backend (fire-and-forget for no-cors)
-      await verifyDonationByPin(
-        clean,
-        `${currentVolunteer.volunteerName} (${currentVolunteer.volunteerCode})`
-      );
+    setVerifyResult({
+      success: false,
+      error:
+        err.message ||
+        'Network or processing error. Please try again.'
+    });
 
-      // 2. Immediately sync parent state and UI since the backend webhook executed
-      if (onVerifyDonation) {
-        const result = await onVerifyDonation(
-          clean,
-          `${currentVolunteer.volunteerName} (${currentVolunteer.volunteerCode})`
-        );
-        setVerifyResult(result);
-        if (result.success) {
-          setInputCode('');
-        }
-      } else {
-        // Fallback if parent handler isn't bound
-        setVerifyResult({
-          success: true,
-          donation: donations.find(d => d.confirmationCode === clean || d.donationId === clean)
-        });
-        setInputCode('');
-      }
-    } catch (err: any) {
-      setVerifyResult({
-        success: false,
-        error: err.message || 'Network or processing error. Please try again.'
-      });
-    } finally {
-      setIsVerifying(false);
-    }
-  };
+  } finally {
+    setIsVerifying(false);
+  }
+};
 
 
   // Handle Code Verification Form Submit
