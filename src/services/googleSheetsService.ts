@@ -951,6 +951,64 @@ export async function fetchDonationsFromGoogleSheet(
   }
 }
 
+export interface PendingQueueItem {
+  donationId: string;
+  confirmationCode: string;
+  donorName: string;
+  sevaHead: string;
+  amount: number;
+  paymentMode: string;
+  paymentStatus: string;
+}
+
+export async function fetchPendingVerificationQueue(): Promise<{
+  success: boolean;
+  pendingQueue: PendingQueueItem[];
+  count: number;
+  error?: string;
+}> {
+  try {
+    const webhookUrl = DEFAULT_WEBHOOK_URL;
+
+    const separator = webhookUrl.includes('?') ? '&' : '?';
+
+    const response = await fetch(
+      `${webhookUrl}${separator}action=get_pending_queue`,
+      {
+        method: 'GET',
+        redirect: 'follow'
+      }
+    );
+
+    const result = await response.json();
+
+    if (!response.ok || !result.success) {
+      return {
+        success: false,
+        pendingQueue: [],
+        count: 0,
+        error: result.error || 'Failed to fetch pending verification queue'
+      };
+    }
+
+    return {
+      success: true,
+      pendingQueue: Array.isArray(result.pendingQueue)
+        ? result.pendingQueue
+        : [],
+      count: Number(result.count) || 0
+    };
+
+  } catch (err: any) {
+    return {
+      success: false,
+      pendingQueue: [],
+      count: 0,
+      error: err.message || 'Network error while fetching pending queue'
+    };
+  }
+}
+
 /**
  * Direct Token-less Volunteer Verification via Webhook
  * Designed for opaque 'no-cors' responses from Google Apps Script. */
