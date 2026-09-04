@@ -1,5 +1,6 @@
 import { DonationRecord, TrustConfig, VolunteerRecord } from '../types';
 export const TARGET_WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbwo2HwQRNS8R5Vm81jHn87QFU75_xt64hdaTJecvQfU84VAVchMwL7_JIP9EcNU2-w/exec';
+export const DEFAULT_WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbwo2HwQRNS8R5Vm81jHn87QFU75_xt64hdaTJecvQfU84VAVchMwL7_JIP9EcNU2-w/exec';
 
 export interface GoogleSheetsSyncConfig {
   spreadsheetId?: string;
@@ -957,7 +958,7 @@ export async function fetchDonationsFromGoogleSheet(
  * Designed for opaque 'no-cors' responses from Google Apps Script.
  */
 export async function verifyDonationByPin(confirmationCode: string, volunteerName: string) {
-  const webhookUrl = 'AKfycbwo2HwQRNS8R5Vm81jHn87QFU75_xT64hdaTjEcvQfU84VAVchMwL7_JlP9EcNU2-w'; // Keep your real deployment URL here
+  const webhookUrl = TARGET_WEBHOOK_URL;
 
   try {
     const params = new URLSearchParams({
@@ -971,12 +972,11 @@ export async function verifyDonationByPin(confirmationCode: string, volunteerNam
     });
     
     const result = await response.json();
-    return result; // Expected to return { success: true, donation: {...} } or { success: false, error: '...' }
+    return result; 
   } catch (err: any) {
     return { success: false, error: err.message || 'Network error during verification' };
   }
 }
-
 
 // Helper to keep row parsing clean
 function parseRowsToDonations(allRows: any[][]): { success: boolean; donations: DonationRecord[] } {
@@ -1105,7 +1105,7 @@ export function downloadCsvFile(content: string, fileName = 'SHREE_JAGANNATH_SEV
 export function saveSheetsConfig(config: GoogleSheetsSyncConfig) {
   if (config.spreadsheetId) localStorage.setItem('sjst_sheets_spreadsheet_id', config.spreadsheetId.trim());
   if (config.sheetName) localStorage.setItem('sjst_sheets_tab_name', config.sheetName.trim());
-  if (config.webhookUrl) localStorage.setItem('sjst_sheets_webhook_url', 'https://script.google.com/macros/s/AKfycbwo2HwQRNS8R5Vm81jHn87QFU75_xT64hdaTjEcvQfU84VAVchMwL7_JlP9EcNU2-w/exec');
+  if (config.webhookUrl) localStorage.setItem('sjst_sheets_webhook_url', TARGET_WEBHOOK_URL);
   localStorage.setItem('sjst_sheets_auto_sync', config.autoSync ? 'true' : 'false');
 }
 
