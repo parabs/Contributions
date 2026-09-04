@@ -31,7 +31,7 @@ import { PublicDisplayDashboard } from './components/PublicDisplayDashboard';
 import { TrustLogo } from './components/TrustLogo';
 import { MaaDurgaWatermark } from './components/MaaDurgaWatermark';
 import { useGmailAuth } from './context/GmailAuthContext';
-import { syncDonationToGoogleSheet, fetchDonationsFromGoogleSheet, TARGET_SPREADSHEET_ID, TARGET_WEBHOOK_URL } from './services/googleSheetsService';
+import { syncDonationToGoogleSheet, fetchDonationsFromGoogleSheet,verifyDonationByPin, TARGET_SPREADSHEET_ID, TARGET_WEBHOOK_URL } from './services/googleSheetsService';
 import { uploadReceiptToGoogleDrive } from './services/googleDriveService';
 export default function App() {
 const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
@@ -277,60 +277,68 @@ const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
     return newRecord;
   };
   const handleVolunteerVerify = async (
-    confirmationCode: string,
-    volunteerName: string
-  ): Promise<{ success: boolean; donation?: DonationRecord; error?: string }> => {
-    const cleanCode = confirmationCode.trim();
+  confirmationCode: string,
+  volunteerName: string
+): Promise<{
+  success: boolean;
+  donation?: DonationRecord;
+  error?: string;
+}> => {
+  const cleanCode = confirmationCode.trim();
 
-    try {
-      const webhookUrl = 'https://script.google.com/macros/s/AKfycbwo2HwQRNS8R5Vm81jHn87QFU75_xT64hdaTjEcvQfU84VAVchMwL7_JlP9EcNU2-w/exec';
-      
-      const response = await fetch(webhookUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'text/plain;charset=utf-8',
-        },
-        body: JSON.stringify({
-          action: 'verifyDonation',
-          confirmationCode: cleanCode,
-          confirmedBy: volunteerName
-        })
-      });
-      
-      const result = await response.json();
+  try {
+    // Single verification API path
+    const result = await verifyDonationByPin(
+      cleanCode,
+      volunteerName
+    );
 
-      if (!result.success) {
-        return {
-          success: false,
-          error: result.error || `PIN or ID "${confirmationCode}" not found in records.`
-        };
-      }
-
-      const updatedRecord: DonationRecord = result.donation;
-
-      setDonations(prev => {
-        const updated = prev.some(d => d.donationId === updatedRecord.donationId)
-          ? prev.map(d => (d.donationId === updatedRecord.donationId ? updatedRecord : d))
-          : [updatedRecord, ...prev];
-        
-        try {
-          localStorage.setItem('sjst_donations', JSON.stringify(updated));
-        } catch (e) {}
-        return updated;
-      });
-
-      return {
-        success: true,
-        donation: updatedRecord
-      };
-
-    } catch (err: any) {
+    if (!result.success) {
       return {
         success: false,
-        error: `Verification failed: ${err.message || 'Server error'}`
+        error:
+          result.error ||
+          `PIN or ID "${confirmationCode}" not found in records.`
       };
     }
-  };
+
+    const updatedRecord: DonationRecord = result.donation;
+
+    setDonations(prev => {
+      const updated = prev.some(
+        d => d.donationId === updatedRecord.donationId
+      )
+        ? prev.map(d =>
+            d.donationId === updatedRecord.donationId
+              ? updatedRecord
+              : d
+          )
+        : [updatedRecord, ...prev];
+
+      try {
+        localStorage.setItem(
+          'sjst_donations',
+          JSON.stringify(updated)
+        );
+      } catch (e) {}
+
+      return updated;
+    });
+
+    return {
+      success: true,
+      donation: updatedRecord
+    };
+
+  } catch (err: any) {
+    return {
+      success: false,
+      error: `Verification failed: ${
+        err.message || 'Server error'
+      }`
+    };
+  }
+};
 
 
   const handleAddVolunteer = (newVolunteer: VolunteerRecord) => {
