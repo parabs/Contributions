@@ -952,42 +952,21 @@ export async function fetchDonationsFromGoogleSheet(
 
 /**
  * Direct Token-less Volunteer Verification via Webhook
- * Designed for opaque 'no-cors' responses from Google Apps Script.
- 
-export async function verifyDonationByPin(confirmationCode: string, volunteerName: string) {
-  const webhookUrl = TARGET_WEBHOOK_URL;
-
-  try {
-    const params = new URLSearchParams({
-      action: 'verifyDonation',
-      confirmationCode: confirmationCode.trim(),
-      confirmedBy: volunteerName
-    });
-
-    const response = await fetch(`${webhookUrl}?${params.toString()}`, {
-      method: 'GET'
-    });
-    
-    const result = await response.json();
-    return result; 
-  } catch (err: any) {
-    return { success: false, error: err.message || 'Network error during verification' };
-  }
-}
-*/
-// Copy this exact code block into src/services/googleSheetsService.ts
-export async function verifyDonationByPin(confirmationCode: string, volunteerName: string) {
+ * Designed for opaque 'no-cors' responses from Google Apps Script. */
+ export async function verifyDonationByPin(confirmationCode: string, volunteerName: string) {
   const webhookUrl = DEFAULT_WEBHOOK_URL;
 
   try {
-    const params = new URLSearchParams({
-      action: 'verifyDonation',
-      confirmationCode: confirmationCode.trim(),
-      confirmedBy: volunteerName
-    });
-
-    const response = await fetch(`${webhookUrl}?${params.toString()}`, {
-      method: 'GET',
+    const response = await fetch(webhookUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'text/plain;charset=utf-8',
+      },
+      body: JSON.stringify({
+        action: 'verifyDonation',
+        confirmationCode: confirmationCode.trim(),
+        confirmedBy: volunteerName
+      }),
       redirect: 'follow'
     });
     
