@@ -330,10 +330,19 @@ const result = await response.json();
 
     try {
       // Hardcoded absolute URL to prevent any undefined variable concatenation bugs
+>>>>>>> 604dca53b4a47628dbb17aea28529d69bf800254
       const webhookUrl = 'https://script.google.com/macros/s/AKfycbwo2HwQRNS8R5Vm81jHn87QFU75_xt64hdaTJecvQfU84VAVchMwL7_JIP9EcNU2-w/exec';
       
-      const response = await fetch(`https://script.google.com/macros/s/AKfycbwo2HwQRNS8R5Vm81jHn87QFU75_xt64hdaTJecvQfU84VAVchMwL7_JIP9EcNU2-w/exec?action=verifyDonation&confirmationCode=${encodeURIComponent(cleanCode)}&confirmedBy=${encodeURIComponent(volunteerName)}`, {
-        method: 'GET'
+      const response = await fetch(webhookUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'text/plain;charset=utf-8', // Prevents preflight CORS blocks in Google Apps Script
+        },
+        body: JSON.stringify({
+          action: 'verifyDonation',
+          confirmationCode: cleanCode,
+          confirmedBy: volunteerName
+        })
       });
       
       const result = await response.json();
@@ -357,12 +366,6 @@ const result = await response.json();
         } catch (e) {}
         return updated;
       });
-
-      if (updatedRecord.email && isGmailAuthenticated) {
-        try {
-          await sendDonationReceipt(updatedRecord, trustConfig);
-        } catch (e) {}
-      }
 
       return {
         success: true,
