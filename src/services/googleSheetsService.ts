@@ -9,6 +9,7 @@ export interface GoogleSheetsSyncConfig {
   autoSync: boolean;
 }
 export const TARGET_SPREADSHEET_ID = '1VfbM7FPXIniD_WftrFbNK6bmdd05GZAr6eluazShJBc';
+export const TARGET_SPREADSHEET_URL = 'https://docs.google.com/spreadsheets/d/1VfbM7FPXIniD_WftrFbNK6bmdd05GZAr6eluazShJBc/edit';
 
 export const DEFAULT_SHEETS_CONFIG: GoogleSheetsSyncConfig = {
   spreadsheetId: localStorage.getItem('sjst_sheets_spreadsheet_id') || TARGET_SPREADSHEET_ID,
