@@ -56,8 +56,24 @@ interface VolunteerPortalProps {
   onViewReceipt: (donation: DonationRecord) => void;
   onConfirmDonationFromSheet?: (donationId: string, volunteerName: string) => void;
   onRefreshFromGoogleSheet?: () => Promise<{ count: number; error?: string }>;
+  onRefreshPendingQueue?: () => Promise<{
+    success: boolean;
+    pendingQueue: PendingQueueItem[];
+    count: number;
+    error?: string;
+  }>;
   onUpdateTrustConfig?: (updated: Partial<TrustConfig>) => void;
   onOpenVolunteerManagement?: () => void;
+}
+
+interface PendingQueueItem {
+  donationId?: string;
+  confirmationCode: string;
+  donorName: string;
+  sevaHead: string;
+  amount: number;
+  paymentMode?: string;
+  paymentStatus?: string;
 }
 
 export function VolunteerPortal({
@@ -69,6 +85,7 @@ export function VolunteerPortal({
   onViewReceipt,
   onConfirmDonationFromSheet,
   onRefreshFromGoogleSheet,
+  onRefreshPendingQueue,
   onUpdateTrustConfig,
   onOpenVolunteerManagement
 }: VolunteerPortalProps) {
@@ -120,20 +137,31 @@ export function VolunteerPortal({
   const [soundAlertEnabled, setSoundAlertEnabled] = useState(false);
   const [isRefreshingQueue, setIsRefreshingQueue] = useState(false);
   const [refreshQueueMsg, setRefreshQueueMsg] = useState<string | null>(null);
+  const [livePendingQueue, setLivePendingQueue] = useState<PendingQueueItem[]>([]);
 
   const handleQueueRefresh = async () => {
-    if (!onRefreshFromGoogleSheet) return;
+    if (!onRefreshPendingQueue) return;
+
     setIsRefreshingQueue(true);
     setRefreshQueueMsg(null);
+
     try {
-      const res = await onRefreshFromGoogleSheet();
-      if (res.error) {
-        setRefreshQueueMsg(`Note: ${res.error}`);
-      } else {
-        setRefreshQueueMsg(`✓ Synced live with Google Sheet`);
+      const res = await onRefreshPendingQueue();
+
+      if (!res.success) {
+        setRefreshQueueMsg(
+          `Note: ${res.error || 'Unable to fetch pending verification queue'}`
+        );
+        return;
       }
+
+      setLivePendingQueue(res.pendingQueue);
+
+      setRefreshQueueMsg(
+        `✓ Synced ${res.count} pending contribution${res.count === 1 ? '' : 's'}`
+      );
     } catch (e: any) {
-      setRefreshQueueMsg(`Error: ${e.message}`);
+      setRefreshQueueMsg(`Error: ${e.message || 'Unable to sync queue'}`);
     } finally {
       setIsRefreshingQueue(false);
       setTimeout(() => setRefreshQueueMsg(null), 3500);
@@ -329,18 +357,18 @@ export function VolunteerPortal({
   };
 
   // List of pending donations with filters (both UPI and Cash requiring volunteer verification)
-  const pendingDonations = donations.filter(d => {
-    const isPending = d.paymentStatus === 'Confirmation Pending' || d.paymentStatus === 'Pending';
-    if (!isPending) return false;
-    
-    const matchesSearch = 
-      d.donorName.toLowerCase().includes(queueSearch.toLowerCase()) ||
-      d.email.toLowerCase().includes(queueSearch.toLowerCase()) ||
-      (d.sevaHead && d.sevaHead.toLowerCase().includes(queueSearch.toLowerCase())) ||
-      d.confirmationCode.includes(queueSearch) ||
-      d.donationId.toLowerCase().includes(queueSearch.toLowerCase());
+  const pendingDonations = livePendingQueue.filter(d => {
+    const search = queueSearch.toLowerCase().trim();
 
-    const matchesCategory = categoryFilter === 'All' || d.sevaCategory === categoryFilter || (d.sevaHead ? d.sevaHead.includes(categoryFilter) : false);
+    const matchesSearch =
+      d.donorName.toLowerCase().includes(search) ||
+      d.sevaHead.toLowerCase().includes(search) ||
+      d.confirmationCode.toLowerCase().includes(search) ||
+      String(d.amount).includes(search);
+
+    const matchesCategory =
+      categoryFilter === 'All' ||
+      d.sevaHead.includes(categoryFilter);
 
     return matchesSearch && matchesCategory;
   });

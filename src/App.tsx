@@ -31,7 +31,14 @@ import { PublicDisplayDashboard } from './components/PublicDisplayDashboard';
 import { TrustLogo } from './components/TrustLogo';
 import { MaaDurgaWatermark } from './components/MaaDurgaWatermark';
 import { useGmailAuth } from './context/GmailAuthContext';
-import { syncDonationToGoogleSheet, fetchDonationsFromGoogleSheet,verifyDonationByPin, TARGET_SPREADSHEET_ID, TARGET_WEBHOOK_URL } from './services/googleSheetsService';
+import {
+  syncDonationToGoogleSheet,
+  fetchDonationsFromGoogleSheet,
+  fetchPendingVerificationQueue,
+  TARGET_SPREADSHEET_ID,
+  TARGET_WEBHOOK_URL
+} from './services/googleSheetsService';
+
 import { uploadReceiptToGoogleDrive } from './services/googleDriveService';
 export default function App() {
 const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
@@ -97,6 +104,13 @@ const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
     } catch (e: any) {
       return { count: 0, error: e.message || 'Failed to refresh from Google Sheet' };
     }
+  }
+
+  // ----------------------------------------------------
+  // FETCH PENDING VERIFICATION QUEUE
+  // ----------------------------------------------------
+  async function handleRefreshPendingQueue() {
+    return await fetchPendingVerificationQueue();
   }
 
   // Cross-tab real-time sync with BroadcastChannel and storage events
@@ -631,6 +645,7 @@ const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
               onViewReceipt={d => setModalReceiptDonation(d)}
               onConfirmDonationFromSheet={handleConfirmDonationFromSheet}
               onRefreshFromGoogleSheet={handleRefreshFromGoogleSheet}
+              onRefreshPendingQueue={handleRefreshPendingQueue}
               onUpdateTrustConfig={upd => setTrustConfig(prev => ({ ...prev, ...upd }))}
               onOpenVolunteerManagement={() => setIsVolunteerManagementOpen(true)}
             />
