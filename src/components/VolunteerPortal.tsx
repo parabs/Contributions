@@ -310,6 +310,10 @@ export function VolunteerPortal({
 
     if (result.success) {
       setInputCode('');
+
+      setLivePendingQueue(prev =>
+        prev.filter(item => item.confirmationCode !== clean)
+      );
     }
 
   } catch (err: any) {
