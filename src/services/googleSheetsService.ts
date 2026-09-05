@@ -969,9 +969,10 @@ export async function fetchPendingVerificationQueue(): Promise<{
 }> {
   try {
     const webhookUrl = DEFAULT_WEBHOOK_URL;
-
+  
     const separator = webhookUrl.includes('?') ? '&' : '?';
 
+    
     const response = await fetch(
       `${webhookUrl}${separator}action=get_pending_queue`,
       {
