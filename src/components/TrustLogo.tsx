@@ -12,6 +12,7 @@ export function TrustLogo({ className = 'w-14 h-14', size }: TrustLogoProps) {
     return localStorage.getItem('sjst_custom_logo') || null;
   });
   const [logoFailed, setLogoFailed] = React.useState(false);
+  const [defaultLogoFailed, setDefaultLogoFailed] = React.useState(false);
 
   React.useEffect(() => {
     const handleStorage = () => {
@@ -28,6 +29,19 @@ export function TrustLogo({ className = 'w-14 h-14', size }: TrustLogoProps) {
           src={customLogo}
           alt="Shree Jagannath Seva Trust Logo"
           onError={() => setLogoFailed(true)}
+          className="w-full h-full object-contain drop-shadow-xs"
+        />
+      </div>
+    );
+  }
+
+  if (!defaultLogoFailed) {
+    return (
+      <div className={`inline-flex items-center justify-center shrink-0 ${className}`} style={style}>
+        <img
+          src="/images/Logo.jpeg"
+          alt="Shree Jagannath Seva Trust Logo"
+          onError={() => setDefaultLogoFailed(true)}
           className="w-full h-full object-contain drop-shadow-xs"
         />
       </div>
