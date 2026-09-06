@@ -257,7 +257,8 @@ export function DonorForm({
       });
       setSubmittedDonation(record);
     } catch (err) {
-      alert('Error submitting donation record. Please try again.');
+        console.error('DONATION SUBMISSION ERROR:', err);
+        alert('Error submitting donation record. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
