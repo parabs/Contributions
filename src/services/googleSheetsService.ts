@@ -413,7 +413,8 @@ export async function syncDonationToGoogleSheet(
           ...donation,
           submittedAt: formattedTimestamp,
           createdAt: formatSheetTimestamp(donation.createdAt || donation.submittedAt),
-          updatedAt: formatSheetTimestamp(donation.updatedAt || donation.createdAt || donation.submittedAt
+          updatedAt: formatSheetTimestamp(donation.updatedAt || donation.createdAt || donation.submittedAt)
+        }
       };
 
       await fetch(webhookUrl, {
