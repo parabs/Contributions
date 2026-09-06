@@ -212,9 +212,6 @@ const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
     };
 
     setDonations(prev => [newRecord, ...prev]);
-    syncDonationToGoogleSheet(newRecord, googleAccessToken).catch(err => {
-      console.warn('Initial Google Sheet sync warning:', err);
-    });
     return newRecord;
   };
 
