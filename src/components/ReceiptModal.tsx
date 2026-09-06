@@ -343,7 +343,7 @@ export function ReceiptModal({
               {/* Divine Maa Durga Watermark behind the receipt content */}
               <div className="absolute inset-0 pointer-events-none flex items-center justify-center z-0 overflow-hidden">
                 <MaaDurgaWatermark 
-                  opacity={0.28} 
+                  opacity={0.10} 
                   size="receipt" 
                 />
               </div>
