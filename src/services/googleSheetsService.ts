@@ -406,8 +406,14 @@ export async function syncDonationToGoogleSheet(
         paymentStatus: isPaid ? 'Paid' : 'Pending',
         confirmedBy: donation.confirmedBy || '',
         receiptUrl: donation.receiptUrl || '',
-        submittedAt: donation.submittedAt || new Date().toISOString(),
-        record: donation
+        submittedAt: formattedTimestamp,
+        createdAt: formatSheetTimestamp(donation.createdAt || donation.submittedAt),
+        updatedAt: formatSheetTimestamp(donation.updatedAt || donation.createdAt || donation.submittedAt),
+        record: {
+          ...donation,
+          submittedAt: formattedTimestamp,
+          createdAt: formatSheetTimestamp(donation.createdAt || donation.submittedAt),
+          updatedAt: formatSheetTimestamp(donation.updatedAt || donation.createdAt || donation.submittedAt
       };
 
       await fetch(webhookUrl, {
