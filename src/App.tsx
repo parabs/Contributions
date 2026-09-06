@@ -236,7 +236,7 @@ const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
     const dateStr = new Date().toISOString().slice(0, 10).replace(/-/g, '');
     const seq = String(donations.length + 1).padStart(4, '0');
     const donationId = `SJST-${dateStr}-${seq}`;
-    const confirmationCode = String(Math.floor(100000 + Math.random() * 900000));
+    const confirmationCode = '';
     const confirmedBy = `${formData.volunteerName} (${formData.volunteerCode})`;
     const paymentStatus = 'Paid';
     const paymentReference = formData.paymentMode === 'Cash' ? 'CASH-COUNTER-DIRECT' : 'UPI-COUNTER-DIRECT';
@@ -289,11 +289,12 @@ const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
 
     googleSheetsService.syncDonationToGoogleSheet(
       newRecord,
-      googleAccessToken
+      googleAccessToken,
+      undefined,
+      { directVolunteerEntry: true }
     ).catch(err => {
       console.error('VOLUNTEER SHEET SYNC ERROR:', err);
     });
-
 
     return newRecord;
   };

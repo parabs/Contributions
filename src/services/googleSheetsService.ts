@@ -365,7 +365,11 @@ export async function syncDonationToGoogleSheet(
   if (webhookUrl && webhookUrl.startsWith('https://script.google.com/')) {
     try {
       const webhookPayload = {
-        action: isPaid ? 'verifyDonation' : 'sync_donation',
+        action: isDirectVolunteerEntry
+          ? 'sync_donation'
+          : isPaid
+            ? 'verifyDonation'
+            : 'sync_donation',
         donationId: donation.donationId,
         timestamp: formattedTimestamp,
         donorName: donation.donorName || 'Devotee',
