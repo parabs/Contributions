@@ -101,6 +101,31 @@ export function buildHeaderMappedFormRow(headers: string[] | undefined, d: Donat
   });
 }
 
+function formatSheetTimestamp(value?: string): string {
+  if (!value) return '';
+
+  // Convert ISO/UTC timestamps to Indian date/time for the Sheet.
+  if (/^\d{4}-\d{2}-\d{2}T/.test(value)) {
+    const date = new Date(value);
+
+    if (!Number.isNaN(date.getTime())) {
+      return date.toLocaleString('en-IN', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: true,
+        timeZone: 'Asia/Kolkata'
+      });
+    }
+  }
+
+  // Leave an already-formatted Sheet timestamp unchanged.
+  return value;
+}
+
 /**
  * Schema-Aware Dynamic Row Mapper for Master 'Donations' Sheet (15 Columns A:O)
  */
@@ -122,8 +147,8 @@ export function buildHeaderMappedDonationsRow(headers: string[] | undefined, d: 
     d.receiptUrl || '', // Col J (10) - Final Receipt URL
     d.emailStatus === 'Sent' ? 'Sent' : 'Pending', // Col K (11) - Email Status
     d.emailMessageId || (isPaid ? `MSG-${d.donationId.split('-').pop()}` : ''), // Col L (12) - Email Message ID
-    d.createdAt || d.submittedAt || new Date().toISOString(), // Col M (13) - Created At
-    d.updatedAt || new Date().toISOString(), // Col N (14) - Updated At
+    formatSheetTimestamp(d.createdAt || d.submittedAt), // Col M (13) - Created At
+    formatSheetTimestamp(d.updatedAt), // Col N (14) - Updated At
     d.confirmedBy || '' // Col O (15) - Confirmed by (Blank on Pending, filled on Paid)
   ];
 
