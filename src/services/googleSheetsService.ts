@@ -327,9 +327,13 @@ export async function ensureSheetStructure(
 export async function syncDonationToGoogleSheet(
   donation: DonationRecord,
   accessToken?: string | null,
-  customConfig?: Partial<GoogleSheetsSyncConfig>
+  customConfig?: Partial<GoogleSheetsSyncConfig>,
+  options?: {
+    directVolunteerEntry?: boolean;
+  }
 ): Promise<{ success: boolean; method?: 'api' | 'webhook' | 'local'; message?: string; error?: string }> {
   const config = { ...DEFAULT_SHEETS_CONFIG, ...customConfig };
+  const isDirectVolunteerEntry = options?.directVolunteerEntry === true;
   const webhookUrl = (config.webhookUrl || localStorage.getItem('sjst_sheets_webhook_url') || DEFAULT_WEBHOOK_URL)?.trim();
   const spreadsheetId = (config.spreadsheetId || localStorage.getItem('sjst_sheets_spreadsheet_id') || TARGET_SPREADSHEET_ID).trim();
   const sheetName = 'Donations'
