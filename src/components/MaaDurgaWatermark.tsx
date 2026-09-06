@@ -67,14 +67,7 @@ export function MaaDurgaWatermark({
           src={activeImage}
           alt="Maa Durga Watermark"
           onError={() => {
-            // Try fallback paths or fallback to SVG
-            if (activeImage === '/Watermark.jpeg') {
-              setActiveImage('/images/Watermark.jpeg');
-            } else if (activeImage === '/images/Watermark.jpeg') {
-              setActiveImage('/watermark.jpeg');
-            } else {
-              setImageLoadFailed(true);
-            }
+            setImageLoadFailed(true);
           }}
           className={`${sizeClasses} object-contain mix-blend-multiply transition-opacity duration-300 filter contrast-125`}
         />
