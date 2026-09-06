@@ -172,8 +172,8 @@ export function buildHeaderMappedDonationsRow(headers: string[] | undefined, d: 
     if (h.includes('receipt') || h.includes('drive') || h.includes('pdf') || h.includes('url') || h.includes('link')) return d.receiptUrl || '';
     if (h.includes('whatsapp') || (h.includes('email') && h.includes('status'))) return d.emailStatus === 'Sent' ? 'Sent' : 'Pending';
     if (h.includes('message id') || h.includes('msg')) return d.emailMessageId || '';
-    if (h.includes('created')) return d.createdAt || d.submittedAt || new Date().toISOString();
-    if (h.includes('updated') || h.includes('modified')) return d.updatedAt || new Date().toISOString();
+    if (h.includes('created')) return formatSheetTimestamp(d.createdAt || d.submittedAt);
+    if (h.includes('updated') || h.includes('modified')) return formatSheetTimestamp(d.updatedAt);
     if (h.includes('confirmed by') || h.includes('verified by') || h.includes('volunteer') || (h.includes('confirm') && !h.includes('code') && !h.includes('pin'))) {
       return d.confirmedBy || '';
     }
