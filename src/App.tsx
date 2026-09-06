@@ -331,6 +331,8 @@ const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
 
       const updatedRecord: DonationRecord = result.donation;
 
+      console.log('VERIFIED DONATION FROM SHEET:', updatedRecord);
+      
       setDonations(prev => {
         const updated = prev.some(
           d => d.donationId === updatedRecord.donationId
