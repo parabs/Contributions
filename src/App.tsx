@@ -290,7 +290,9 @@ const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
     googleSheetsService.syncDonationToGoogleSheet(
       newRecord,
       googleAccessToken
-    ).catch(err => {});
+    ).catch(err => {
+      console.error('VOLUNTEER SHEET SYNC ERROR:', err);
+    });
 
 
     return newRecord;
