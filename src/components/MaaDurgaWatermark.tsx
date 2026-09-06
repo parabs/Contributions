@@ -17,7 +17,7 @@ export function MaaDurgaWatermark({
 }: MaaDurgaWatermarkProps) {
   const [activeImage, setActiveImage] = useState<string | null>(() => {
     if (customImageUrl) return customImageUrl;
-    return localStorage.getItem('sjst_custom_watermark') || '/images/Watermark.jpeg';
+    return localStorage.getItem('sjst_custom_watermark') || `${import.meta.env.BASE_URL}images/Watermark.jpeg`;
   });
   const [imageLoadFailed, setImageLoadFailed] = useState(false);
 
@@ -32,7 +32,7 @@ export function MaaDurgaWatermark({
       setActiveImage(saved);
       setImageLoadFailed(false);
     } else {
-      setActiveImage('/images/Watermark.jpeg');
+      setActiveImage(`${import.meta.env.BASE_URL}images/Watermark.jpeg`);
     }
 
     const handleStorage = () => {
