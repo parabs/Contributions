@@ -514,7 +514,7 @@ export function EmailConfigView({
                   <strong>Option 1 (Direct Upload):</strong> Click the <strong>&quot;Upload Custom Image (Watermark.jpeg)&quot;</strong> button above and select your image. It is immediately saved as the hardcoded master watermark for all receipts.
                 </li>
                 <li>
-                  <strong>Option 2 (Project File):</strong> Place your image named <code className="bg-white/80 px-1.5 py-0.5 rounded font-mono text-[10px] border border-amber-300">Watermark.jpeg</code> in the project&apos;s <code className="bg-white/80 px-1.5 py-0.5 rounded font-mono text-[10px] border border-amber-300">/public/</code> directory.
+                  <strong>Option 2 (Project File):</strong> Place your image named <code className="bg-white/80 px-1.5 py-0.5 rounded font-mono text-[10px] border border-amber-300">Watermark.jpeg</code> in the project&apos;s <code className="bg-white/80 px-1.5 py-0.5 rounded font-mono text-[10px] border border-amber-300">/public/images/</code> directory.
                 </li>
                 <li>
                   <strong>Volunteer Lock:</strong> Volunteers have zero access to watermark/logo controls; the receipt generation engine automatically binds this watermark.
@@ -524,7 +524,7 @@ export function EmailConfigView({
 
             <div className="text-[11px] text-slate-500 flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-emerald-500" />
-              <span>Current Status: <strong>{masterWatermark ? 'Custom Image Active' : 'Default Maa Durga Sacred Art Active (/Watermark.jpeg)'}</strong></span>
+              <span>Current Status: <strong>{masterWatermark ? 'Custom Image Active' : 'Default Maa Durga Sacred Art Active (/images/Watermark.jpeg)'}</strong></span>
             </div>
           </div>
 
