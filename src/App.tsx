@@ -104,7 +104,7 @@ const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
   // FETCH PENDING VERIFICATION QUEUE
   // ----------------------------------------------------
   async function handleRefreshPendingQueue() {
-    return await fetchPendingVerificationQueue();
+    return await googleSheetsService.fetchPendingVerificationQueue();
   }
 
   // Cross-tab real-time sync with BroadcastChannel and storage events
