@@ -328,9 +328,16 @@ const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
         };
       }
 
-      let updatedRecord: DonationRecord = result.donation;
+      let updatedRecord: DonationRecord = {
+        ...result.donation,
+        paymentStatus: 'Paid',
+        confirmedBy: volunteerName,
+        confirmationCode: '',
+        updatedAt: new Date().toISOString()
+      };
 
-      // Generate the official receipt after successful verification
+      // Generate the official receipt using the same logic
+      // as the working volunteer-direct donation flow.
       let driveReceiptUrl =
         updatedRecord.receiptUrl ||
         `https://drive.google.com/file/d/receipt-${updatedRecord.donationId}/view`;
@@ -356,11 +363,7 @@ const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
 
       updatedRecord = {
         ...updatedRecord,
-        paymentStatus: 'Paid',
-        confirmedBy: volunteerName,
-        receiptUrl: driveReceiptUrl,
-        confirmationCode: '',
-        updatedAt: new Date().toISOString()
+        receiptUrl: driveReceiptUrl
       };
 
       // Update local application state
