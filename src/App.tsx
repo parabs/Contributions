@@ -329,11 +329,39 @@ const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
         };
       }
 
-      const updatedRecord: DonationRecord = result.donation;
+      let updatedRecord: DonationRecord = result.donation;
 
-      console.log('VERIFIED DONATION FROM SHEET:', updatedRecord);
-      alert(JSON.stringify(updatedRecord, null, 2));
+      // Generate the official receipt after successful volunteer verification
+      let driveReceiptUrl =
+        updatedRecord.receiptUrl ||
+        `https://drive.google.com/file/d/receipt-${updatedRecord.donationId}/view`;
 
+      if (googleAccessToken) {
+        try {
+          const driveRes = await uploadReceiptToGoogleDrive(
+            updatedRecord,
+            trustConfig,
+            googleAccessToken
+          );
+
+          if (driveRes.success && driveRes.webViewLink) {
+            driveReceiptUrl = driveRes.webViewLink;
+          }
+        } catch (driveErr) {
+          console.error('VERIFICATION RECEIPT ERROR:', driveErr);
+        }
+      }
+
+      updatedRecord = {
+        ...updatedRecord,
+        paymentStatus: 'Paid',
+        confirmedBy: volunteerName,
+        receiptUrl: driveReceiptUrl,
+        confirmationCode: '',
+        updatedAt: new Date().toISOString()
+      };
+
+      // Update local application state
       setDonations(prev => {
         const updated = prev.some(
           d => d.donationId === updatedRecord.donationId
@@ -355,19 +383,13 @@ const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
         return updated;
       });
 
-      return {
-        success: true,
-        donation: updatedRecord
-      };
-
-    } catch (err: any) {
-      return {
-        success: false,
-        error: `Verification failed: ${
-          err.message || 'Server error'
-        }`
-      };
-    }
+      // Persist the verified record, including the final receipt URL
+      googleSheetsService.syncDonationToGoogleSheet(
+        updatedRecord,
+        googleAccessToken
+      ).catch(err => {
+        console.error('VERIFICATION SHEET SYNC ERROR:', err);
+      });
   };
 
 
