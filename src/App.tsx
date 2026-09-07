@@ -314,7 +314,6 @@ const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
     const cleanCode = confirmationCode.trim();
 
     try {
-      // Single verification API path
       const result = await googleSheetsService.verifyDonationByPin(
         cleanCode,
         volunteerName
@@ -331,7 +330,7 @@ const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
 
       let updatedRecord: DonationRecord = result.donation;
 
-      // Generate the official receipt after successful  volunteer verification
+      // Generate the official receipt after successful verification
       let driveReceiptUrl =
         updatedRecord.receiptUrl ||
         `https://drive.google.com/file/d/receipt-${updatedRecord.donationId}/view`;
@@ -348,7 +347,10 @@ const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
             driveReceiptUrl = driveRes.webViewLink;
           }
         } catch (driveErr) {
-          console.error('VERIFICATION RECEIPT ERROR:', driveErr);
+          console.error(
+            'VERIFICATION RECEIPT ERROR:',
+            driveErr
+          );
         }
       }
 
@@ -388,8 +390,25 @@ const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
         updatedRecord,
         googleAccessToken
       ).catch(err => {
-        console.error('VERIFICATION SHEET SYNC ERROR:', err);
+        console.error(
+          'VERIFICATION SHEET SYNC ERROR:',
+          err
+        );
       });
+
+      return {
+        success: true,
+        donation: updatedRecord
+      };
+
+    } catch (err: any) {
+      return {
+        success: false,
+        error: `Verification failed: ${
+          err.message || 'Server error'
+        }`
+      };
+    }
   };
 
 
