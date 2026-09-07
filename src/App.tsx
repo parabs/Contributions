@@ -331,7 +331,7 @@ const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
 
       let updatedRecord: DonationRecord = result.donation;
 
-      // Generate the official receipt after successful volunteer verification
+      // Generate the official receipt after successful  volunteer verification
       let driveReceiptUrl =
         updatedRecord.receiptUrl ||
         `https://drive.google.com/file/d/receipt-${updatedRecord.donationId}/view`;
