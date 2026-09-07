@@ -391,16 +391,13 @@ const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
       // Persist the verified record, including the final receipt URL
       googleSheetsService.syncDonationToGoogleSheet(
         updatedRecord,
-        googleAccessToken,
-        undefined,
-        { directVolunteerEntry: true }
+        googleAccessToken
       ).catch(err => {
         console.error(
           'VERIFICATION SHEET SYNC ERROR:',
           err
         );
       });
-
       return {
         success: true,
         donation: updatedRecord
