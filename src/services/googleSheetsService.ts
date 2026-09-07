@@ -1053,7 +1053,7 @@ export async function fetchPendingVerificationQueue(): Promise<{
 /**
  * Direct Token-less Volunteer Verification via Webhook
  * Designed for opaque 'no-cors' responses from Google Apps Script. */
- export async function verifyDonationByPin(confirmationCode: string, volunteerName: string) {
+ export async function verifyDonationByPin(confirmationCode: string, volunteerName: string,  receiptUrl?: string) {
   const webhookUrl = DEFAULT_WEBHOOK_URL;
 
   try {
@@ -1065,7 +1065,8 @@ export async function fetchPendingVerificationQueue(): Promise<{
       body: JSON.stringify({
         action: 'verifyDonation',
         confirmationCode: confirmationCode.trim(),
-        confirmedBy: volunteerName
+        confirmedBy: volunteerName,
+        receiptUrl: receiptUrl || ''
       }),
       redirect: 'follow'
     });

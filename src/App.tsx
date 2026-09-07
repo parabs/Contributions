@@ -316,7 +316,8 @@ const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
     try {
       const result = await googleSheetsService.verifyDonationByPin(
         cleanCode,
-        volunteerName
+        volunteerName,
+        driveReceiptUrl
       );
 
       if (!result.success) {
