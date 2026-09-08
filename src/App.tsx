@@ -344,13 +344,16 @@ const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
 alert(
   `STEP 1 - INITIAL driveReceiptUrl:\n\n${driveReceiptUrl}`
 );
-
-      if (googleAccessToken) {
+      const effectiveGoogleAccessToken =
+        googleAccessToken ||
+        sessionStorage.getItem('sjst_gmail_access_token') ||
+        localStorage.getItem('sjst_gmail_access_token');
+      if (effectiveGoogleAccessToken) {
         try {
           const driveRes = await uploadReceiptToGoogleDrive(
             updatedRecord,
             trustConfig,
-            googleAccessToken
+            effectiveGoogleAccessToken
           );
 
           alert(
