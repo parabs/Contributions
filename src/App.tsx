@@ -260,7 +260,7 @@ const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
       paymentMode: formData.paymentMode,
       paymentStatus,
       paymentReference,
-      receiptUrl: driveReceiptUrl,
+      receiptUrl: '',
       emailStatus,
       emailMessageId,
       createdAt: new Date().toISOString(),
@@ -271,24 +271,8 @@ const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
       sevaHead: formData.sevaHead
     };
 
-    if (googleAccessToken) {
-      try {
-        const driveRes = await uploadReceiptToGoogleDrive(newRecord, trustConfig, googleAccessToken);
-        if (driveRes.success && driveRes.webViewLink) {
-          newRecord.receiptUrl = driveRes.webViewLink;
-        }
-      } catch (driveErr) {}
-    }
-
-    if (formData.email && isGmailAuthenticated) {
-      try {
-        const sendResult = await sendDonationReceipt(newRecord, trustConfig);
-        if (sendResult.success) {
-          newRecord.emailStatus = 'Sent';
-          newRecord.emailMessageId = sendResult.messageId || '';
-        }
-      } catch (emailErr) {}
-    }
+ // Official receipt and email are now handled by Google Apps Script.
+// Do not generate/upload/send anything from the frontend.
 
     setDonations(prev => [newRecord, ...prev]);
 
@@ -303,10 +287,6 @@ const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
 
     return newRecord;
   };
-  console.log(
-    'VERIFY FUNCTION CHECK:',
-    typeof googleSheetsService.verifyDonationByPin
-  );
   
     const handleVolunteerVerify = async (
     confirmationCode: string,
@@ -342,11 +322,6 @@ const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
           updatedAt: new Date().toISOString()
         };
 
-alert(
-  `FRONTEND STEP 5 CHECK\n\n` +
-  `Donation ID: ${updatedRecord.donationId}\n` +
-  `Receipt URL: ${updatedRecord.receiptUrl || 'EMPTY'}`
-);
 
         setDonations(prev =>
           prev.map(d =>
@@ -426,7 +401,7 @@ alert(
         ...target,
         paymentStatus: 'Paid',
         confirmedBy: volunteerName,
-        receiptUrl: driveReceiptUrl,
+        receiptUrl: '',
         updatedAt: new Date().toISOString()
       };
 
