@@ -333,87 +333,20 @@ const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
           };
         }
 
-        let updatedRecord: DonationRecord = {
+        const updatedRecord: DonationRecord = {
           ...result.donation,
           paymentStatus: 'Paid',
           confirmedBy: volunteerName,
           confirmationCode: '',
+          receiptUrl: result.receiptUrl || result.donation?.receiptUrl || '',
           updatedAt: new Date().toISOString()
         };
 
-        // Generate the official receipt using the same logic
-        // as the working volunteer-direct donation flow.
-        let driveReceiptUrl =
-          updatedRecord.receiptUrl ||
-          `https://drive.google.com/file/d/receipt-${updatedRecord.donationId}/view`;
-
-        alert(
-          `STEP 1 - INITIAL driveReceiptUrl:\n\n${driveReceiptUrl}`
-        );
-
-        const effectiveGoogleAccessToken =
-          googleAccessToken ||
-          sessionStorage.getItem('sjst_gmail_access_token') ||
-          localStorage.getItem('sjst_gmail_access_token');
-
-        alert(
-          `AUTH CHECK\n\n` +
-          `isGmailAuthenticated: ${isGmailAuthenticated}\n` +
-          `googleAccessToken: ${googleAccessToken ? 'AVAILABLE' : 'NULL'}\n` +
-          `sessionStorage: ${
-            sessionStorage.getItem('sjst_gmail_access_token')
-              ? 'AVAILABLE'
-              : 'NULL'
-          }\n` +
-          `localStorage: ${
-            localStorage.getItem('sjst_gmail_access_token')
-              ? 'AVAILABLE'
-              : 'NULL'
-          }`
-        );
-
-        if (effectiveGoogleAccessToken) {
-          try {
-            const driveRes = await uploadReceiptToGoogleDrive(
-              updatedRecord,
-              trustConfig,
-              effectiveGoogleAccessToken
-            );
-
-            if (driveRes.success && driveRes.webViewLink) {
-              driveReceiptUrl = driveRes.webViewLink;
-
-              alert(
-                `STEP 2 - RECEIPT GENERATED\n\n${driveRes.webViewLink}`
-              );
-            } else {
-              alert(
-                `STEP 2 - RECEIPT GENERATION FAILED\n\n${JSON.stringify(driveRes)}`
-              );
-            }
-          } catch (driveErr: any) {
-            alert(
-              `STEP 2 - RECEIPT ERROR\n\n${driveErr?.message || driveErr}`
-            );
-
-            console.error(
-              'VERIFICATION RECEIPT ERROR:',
-              driveErr
-            );
-          }
-        } else {
-          alert(
-            'STEP 2 - NO GOOGLE ACCESS TOKEN\n\nReceipt cannot be uploaded to Google Drive.'
-          );
-        }
-
-        updatedRecord = {
-          ...updatedRecord,
-          receiptUrl: driveReceiptUrl
-        };
-
-        alert(
-          `STEP 3 - UPDATED RECORD RECEIPT URL:\n\n${updatedRecord.receiptUrl}`
+        console.log(
+          'VERIFICATION SUCCESS:',
+          updatedRecord.donationId,
+          'Receipt URL:',
+          updatedRecord.receiptUrl
         );
 
         setDonations(prev =>
@@ -423,20 +356,6 @@ const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
               : d
           )
         );
-
-        alert(
-          `STEP 4 - BEFORE SHEET SYNC\n\nDonation ID: ${updatedRecord.donationId}\nReceipt URL: ${updatedRecord.receiptUrl}`
-        );
-
-        googleSheetsService.syncDonationToGoogleSheet(
-          updatedRecord,
-          googleAccessToken
-        ).catch(err => {
-          console.error(
-            'VERIFICATION SHEET SYNC ERROR:',
-            err
-          );
-        });
 
         return {
           success: true,
