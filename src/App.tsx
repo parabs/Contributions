@@ -348,6 +348,10 @@ alert(
         googleAccessToken ||
         sessionStorage.getItem('sjst_gmail_access_token') ||
         localStorage.getItem('sjst_gmail_access_token');
+alert(
+  `STEP 2 - google token :\n\n${effectiveGoogleAccessToken}`
+);
+
       if (effectiveGoogleAccessToken) {
         try {
           const driveRes = await uploadReceiptToGoogleDrive(
