@@ -352,7 +352,12 @@ alert(
             trustConfig,
             googleAccessToken
           );
-
+          alert(
+            `STEP 2 - uploadReceiptToGoogleDrive RESULT:\n\n${JSON.stringify(
+              driveRes,
+              null,
+              2
+            )}`
           if (driveRes.success && driveRes.webViewLink) {
             driveReceiptUrl = driveRes.webViewLink;
             alert(
@@ -361,11 +366,22 @@ alert(
 
           }
         } catch (driveErr) {
+              alert(
+                `STEP 2 - uploadReceiptToGoogleDrive ERROR:\n\n${JSON.stringify(
+                  driveErr,
+                  null,
+                  2
+                )}`
+              );
           console.error(
             'VERIFICATION RECEIPT ERROR:',
             driveErr
           );
         }
+      }else {
+        alert(
+          'STEP 2 - SKIPPED: googleAccessToken is missing'
+        );
       }
 
       updatedRecord = {
@@ -464,7 +480,7 @@ alert(
     let emailStatus: 'Pending' | 'Sent' | 'Not Required' | 'Failed' = target.email ? 'Pending' : 'Not Required';
     let emailMessageId = '';
     let driveReceiptUrl = target.receiptUrl || `https://drive.google.com/file/d/receipt-${target.donationId}/view`;
-
+        
     if (googleAccessToken) {
       try {
         const driveRes = await uploadReceiptToGoogleDrive(
@@ -473,36 +489,17 @@ alert(
           googleAccessToken
         );
 
-        alert(
-          `STEP 2 - uploadReceiptToGoogleDrive RESULT:\n\n${JSON.stringify(
-            driveRes,
-            null,
-            2
-          )}`
-        );
-
+       
         if (driveRes.success && driveRes.webViewLink) {
           driveReceiptUrl = driveRes.webViewLink;
         }
       } catch (driveErr) {
-        alert(
-          `STEP 2 - uploadReceiptToGoogleDrive ERROR:\n\n${JSON.stringify(
-            driveErr,
-            null,
-            2
-          )}`
-        );
-
         console.error(
           'VERIFICATION RECEIPT ERROR:',
           driveErr
         );
       }
-    } else {
-      alert(
-        'STEP 2 - SKIPPED: googleAccessToken is missing'
-      );
-    }
+    } 
 
     if (target.email && isGmailAuthenticated) {
       const candidate: DonationRecord = {
