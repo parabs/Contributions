@@ -348,119 +348,23 @@ alert(
         googleAccessToken ||
         sessionStorage.getItem('sjst_gmail_access_token') ||
         localStorage.getItem('sjst_gmail_access_token');
-alert(
-  `STEP 2 - google token :\n\n${effectiveGoogleAccessToken}`
-);
-
-      if (effectiveGoogleAccessToken) {
-        try {
-          const driveRes = await uploadReceiptToGoogleDrive(
-            updatedRecord,
-            trustConfig,
-            effectiveGoogleAccessToken
-          );
-
-          alert(
-            `STEP 2 - uploadReceiptToGoogleDrive RESULT:\n\n${JSON.stringify(
-              driveRes,
-              null,
-              2
-            )}`
-          );
-
-          if (driveRes.success && driveRes.webViewLink) {
-            driveReceiptUrl = driveRes.webViewLink;
-          }
-        } catch (driveErr) {
-          alert(
-            `STEP 2 - uploadReceiptToGoogleDrive ERROR:\n\n${JSON.stringify(
-              driveErr,
-              null,
-              2
-            )}`
-          );
-
-          console.error(
-            'VERIFICATION RECEIPT ERROR:',
-            driveErr
-          );
-        }
-      } else {
-        alert(
-          'STEP 2 - SKIPPED: googleAccessToken is missing'
-        );
-      }
-
-      updatedRecord = {
-        ...updatedRecord,
-        receiptUrl: driveReceiptUrl
-      };
-
       alert(
-        `STEP 3 - updatedRecord.receiptUrl:\n\n${updatedRecord.receiptUrl}`
-      );
-
-      // Update local application state
-      setDonations(prev => {
-        const updated = prev.some(
-          d => d.donationId === updatedRecord.donationId
-        )
-          ? prev.map(d =>
-              d.donationId === updatedRecord.donationId
-                ? updatedRecord
-                : d
-            )
-          : [updatedRecord, ...prev];
-
-        try {
-          localStorage.setItem(
-            'sjst_donations',
-            JSON.stringify(updated)
-          );
-        } catch (e) {}
-
-        return updated;
-      });
-
-
-      alert(
-        `STEP 4 - BEFORE GOOGLE SHEET SYNC:\n\n${JSON.stringify(
-          {
-            donationId: updatedRecord.donationId,
-            paymentStatus: updatedRecord.paymentStatus,
-            receiptUrl: updatedRecord.receiptUrl,
-            confirmedBy: updatedRecord.confirmedBy
-          },
-          null,
-          2
-        )}`
-      );
-      // Persist the verified record, including the final receipt URL
-      googleSheetsService.syncDonationToGoogleSheet(
-        updatedRecord,
-        googleAccessToken
-      ).catch(err => {
-        console.error(
-          'VERIFICATION SHEET SYNC ERROR:',
-          err
-        );
-      });
-      return {
-        success: true,
-        donation: updatedRecord
-      };
-
-    } catch (err: any) {
-      return {
-        success: false,
-        error: `Verification failed: ${
-          err.message || 'Server error'
+        `AUTH CHECK\n\n` +
+        `isGmailAuthenticated: ${isGmailAuthenticated}\n` +
+        `googleAccessToken: ${googleAccessToken ? 'AVAILABLE' : 'NULL'}\n` +
+        `sessionStorage: ${
+          sessionStorage.getItem('sjst_gmail_access_token')
+            ? 'AVAILABLE'
+            : 'NULL'
+        }\n` +
+        `localStorage: ${
+          localStorage.getItem('sjst_gmail_access_token')
+            ? 'AVAILABLE'
+            : 'NULL'
         }`
-      };
-    }
-  };
+      );
 
-
+     
   const handleAddVolunteer = (newVolunteer: VolunteerRecord) => {
     setVolunteers(prev => [...prev, newVolunteer]);
   };
