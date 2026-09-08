@@ -468,10 +468,32 @@ alert(
     if (googleAccessToken) {
       try {
         const driveRes = await uploadReceiptToGoogleDrive(target, trustConfig, googleAccessToken);
+            alert(
+              `STEP 2 - uploadReceiptToGoogleDrive RESULT:\n\n${JSON.stringify(
+                driveRes,
+                null,
+                2
+              )}`
+            );
         if (driveRes.success && driveRes.webViewLink) {
           driveReceiptUrl = driveRes.webViewLink;
         }
-      } catch (driveErr) {}
+      } catch (driveErr) {
+        alert(
+        `STEP 2 - uploadReceiptToGoogleDrive ERROR:\n\n${JSON.stringify(
+          driveErr,
+          null,
+          2
+        )}`
+        console.error(
+          'VERIFICATION RECEIPT ERROR:',
+          driveErr
+        );
+      }
+    } else {
+      alert(
+        'STEP 2 - SKIPPED: googleAccessToken is missing'
+      );
     }
 
     if (target.email && isGmailAuthenticated) {
