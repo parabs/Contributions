@@ -228,29 +228,41 @@ export function ReceiptModal({
               <span className="hidden sm:inline">Print</span>
             </button>
 
-            <button
-              onClick={handleDownloadPdf}
-              disabled={isGeneratingPdf}
-              title="Download Compact 210x105mm PDF"
-              className="px-3.5 py-1.5 rounded-xl bg-amber-700 hover:bg-amber-600 text-white text-xs font-bold flex items-center gap-1.5 transition cursor-pointer disabled:opacity-50 shadow-xs"
-            >
-              {isGeneratingPdf ? (
-                <>
-                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                  <span>Generating...</span>
-                </>
-              ) : downloadSuccess ? (
-                <>
-                  <Check className="w-3.5 h-3.5 text-emerald-300" />
-                  <span>Downloaded!</span>
-                </>
-              ) : (
-                <>
-                  <Download className="w-3.5 h-3.5" />
-                  <span>Download PDF</span>
-                </>
-              )}
-            </button>
+           
+            {currentDonation.receiptUrl ? (
+              <button
+                onClick={() => window.open(currentDonation.receiptUrl, '_blank', 'noopener,noreferrer')}
+                title="Open Official Receipt"
+                className="px-3.5 py-1.5 rounded-xl bg-amber-700 hover:bg-amber-600 text-white text-xs font-bold flex items-center gap-1.5 transition cursor-pointer shadow-xs"
+              >
+                <ArrowRight className="w-3.5 h-3.5" />
+                <span>Open Official Receipt</span>
+              </button>
+            ) : (
+              <button
+                onClick={handleDownloadPdf}
+                disabled={isGeneratingPdf}
+                title="Download Compact 210x105mm PDF"
+                className="px-3.5 py-1.5 rounded-xl bg-amber-700 hover:bg-amber-600 text-white text-xs font-bold flex items-center gap-1.5 transition cursor-pointer disabled:opacity-50 shadow-xs"
+              >
+                {isGeneratingPdf ? (
+                  <>
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                    <span>Generating...</span>
+                  </>
+                ) : downloadSuccess ? (
+                  <>
+                    <Check className="w-3.5 h-3.5 text-emerald-300" />
+                    <span>Downloaded!</span>
+                  </>
+                ) : (
+                  <>
+                    <Download className="w-3.5 h-3.5" />
+                    <span>Download PDF</span>
+                  </>
+                )}
+              </button>
+            )}
 
             <button
               onClick={onClose}
