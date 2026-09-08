@@ -342,12 +342,11 @@ const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
           updatedAt: new Date().toISOString()
         };
 
-        console.log(
-          'VERIFICATION SUCCESS:',
-          updatedRecord.donationId,
-          'Receipt URL:',
-          updatedRecord.receiptUrl
-        );
+alert(
+  `FRONTEND STEP 5 CHECK\n\n` +
+  `Donation ID: ${updatedRecord.donationId}\n` +
+  `Receipt URL: ${updatedRecord.receiptUrl || 'EMPTY'}`
+);
 
         setDonations(prev =>
           prev.map(d =>
