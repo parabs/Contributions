@@ -61,7 +61,12 @@ const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
   });
 
   // Real Google & Gmail Auth Context
-  const { isAuthenticated: isGmailAuthenticated, accessToken: googleAccessToken, sendDonationReceipt } = useGmailAuth();
+  const {
+    isAuthenticated: isGmailAuthenticated,
+    accessToken: googleAccessToken,
+    sendDonationReceipt,
+    loginWithGoogle
+  } = useGmailAuth();
 
   // Navigation: Public Devotee Form, Public Display Dashboard, Authenticated Volunteer/Admin Portal, Email & Receipts Setup, Code & Setup
   const [activeView, setActiveView] = useState<'donor' | 'publicDashboard' | 'volunteer' | 'emailConfig' | 'code'>('donor');
