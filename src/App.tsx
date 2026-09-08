@@ -341,6 +341,9 @@ const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
       let driveReceiptUrl =
         updatedRecord.receiptUrl ||
         `https://drive.google.com/file/d/receipt-${updatedRecord.donationId}/view`;
+alert(
+  `STEP 1 - INITIAL driveReceiptUrl:\n\n${driveReceiptUrl}`
+);
 
       if (googleAccessToken) {
         try {
@@ -352,6 +355,10 @@ const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
 
           if (driveRes.success && driveRes.webViewLink) {
             driveReceiptUrl = driveRes.webViewLink;
+            alert(
+              `STEP 2 - AFTER uploadReceiptToGoogleDrive SUCCESS:\n\n${driveReceiptUrl}`
+            );
+
           }
         } catch (driveErr) {
           console.error(
@@ -365,6 +372,10 @@ const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
         ...updatedRecord,
         receiptUrl: driveReceiptUrl
       };
+
+      alert(
+        `STEP 3 - updatedRecord.receiptUrl:\n\n${updatedRecord.receiptUrl}`
+      );
 
       // Update local application state
       setDonations(prev => {
@@ -388,6 +399,19 @@ const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
         return updated;
       });
 
+
+      alert(
+        `STEP 4 - BEFORE GOOGLE SHEET SYNC:\n\n${JSON.stringify(
+          {
+            donationId: updatedRecord.donationId,
+            paymentStatus: updatedRecord.paymentStatus,
+            receiptUrl: updatedRecord.receiptUrl,
+            confirmedBy: updatedRecord.confirmedBy
+          },
+          null,
+          2
+        )}`
+      );
       // Persist the verified record, including the final receipt URL
       googleSheetsService.syncDonationToGoogleSheet(
         updatedRecord,
