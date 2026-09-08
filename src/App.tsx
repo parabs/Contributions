@@ -352,33 +352,33 @@ alert(
             trustConfig,
             googleAccessToken
           );
+
           alert(
             `STEP 2 - uploadReceiptToGoogleDrive RESULT:\n\n${JSON.stringify(
               driveRes,
               null,
               2
             )}`
+          );
+
           if (driveRes.success && driveRes.webViewLink) {
             driveReceiptUrl = driveRes.webViewLink;
-            alert(
-              `STEP 2 - AFTER uploadReceiptToGoogleDrive SUCCESS:\n\n${driveReceiptUrl}`
-            );
-
           }
         } catch (driveErr) {
-              alert(
-                `STEP 2 - uploadReceiptToGoogleDrive ERROR:\n\n${JSON.stringify(
-                  driveErr,
-                  null,
-                  2
-                )}`
-              );
+          alert(
+            `STEP 2 - uploadReceiptToGoogleDrive ERROR:\n\n${JSON.stringify(
+              driveErr,
+              null,
+              2
+            )}`
+          );
+
           console.error(
             'VERIFICATION RECEIPT ERROR:',
             driveErr
           );
         }
-      }else {
+      } else {
         alert(
           'STEP 2 - SKIPPED: googleAccessToken is missing'
         );
