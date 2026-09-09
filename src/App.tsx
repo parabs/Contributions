@@ -368,64 +368,76 @@ const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
     }));
   };
 
-  const handleConfirmDonationFromSheet = async (donationId: string, volunteerName: string) => {
+  const handleConfirmDonationFromSheet = async (
+    donationId: string,
+    volunteerName: string
+  ) => {
     const target = donations.find(d => d.donationId === donationId);
-    if (!target) return;
 
-    let emailStatus: 'Pending' | 'Sent' | 'Not Required' | 'Failed' = target.email ? 'Pending' : 'Not Required';
-    let emailMessageId = '';
-    let driveReceiptUrl = target.receiptUrl || `https://drive.google.com/file/d/receipt-${target.donationId}/view`;
-        
-    if (googleAccessToken) {
-      try {
-        const driveRes = await uploadReceiptToGoogleDrive(
-          updatedRecord,
-          trustConfig,
-          googleAccessToken
-        );
+    if (!target) {
+      return {
+        success: false,
+        error: 'Donation not found.'
+      };
+    }
 
-       
-        if (driveRes.success && driveRes.webViewLink) {
-          driveReceiptUrl = driveRes.webViewLink;
+    try {
+      const response = await fetch(
+        googleSheetsService.DEFAULT_WEBHOOK_URL,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'text/plain;charset=utf-8'
+          },
+          body: JSON.stringify({
+            action: 'confirm_sheet_donation',
+            donationId: donationId.trim(),
+            confirmedBy: volunteerName
+          }),
+          redirect: 'follow'
         }
-      } catch (driveErr) {
-        console.error(
-          'VERIFICATION RECEIPT ERROR:',
-          driveErr
-        );
-      }
-    } 
+      );
 
-    if (target.email && isGmailAuthenticated) {
-      const candidate: DonationRecord = {
+      const result = await response.json();
+
+      if (!result.success) {
+        return result;
+      }
+
+      const updatedRecord: DonationRecord = {
         ...target,
         paymentStatus: 'Paid',
-        confirmedBy: volunteerName,
-        receiptUrl: '',
+        confirmedBy: result.confirmedBy || volunteerName,
+        confirmationCode: '',
+        receiptUrl: result.receiptUrl || '',
+        emailStatus: result.emailStatus || 'Not Required',
         updatedAt: new Date().toISOString()
       };
 
-      try {
-        const sendResult = await sendDonationReceipt(candidate, trustConfig);
-        if (sendResult.success) {
-          emailStatus = 'Sent';
-          emailMessageId = sendResult.messageId || `msg-${Date.now()}`;
-        }
-      } catch (e) {}
+      setDonations(prev =>
+        prev.map(d =>
+          d.donationId === donationId
+            ? updatedRecord
+            : d
+        )
+      );
+
+      return {
+        ...result,
+        donation: updatedRecord
+      };
+
+    } catch (err: any) {
+      console.error(
+        'SHEET CONFIRMATION ERROR:',
+        err
+      );
+
+      return {
+        success: false,
+        error: err.message || 'Network error during donation confirmation.'
+      };
     }
-
-    const updatedRecord: DonationRecord = {
-      ...target,
-      paymentStatus: 'Paid',
-      confirmedBy: volunteerName,
-      receiptUrl: driveReceiptUrl,
-      emailStatus,
-      emailMessageId,
-      updatedAt: new Date().toISOString()
-    };
-
-    setDonations(prev => prev.map(d => (d.donationId === donationId ? updatedRecord : d)));
-    syncDonationToGoogleSheet(updatedRecord, googleAccessToken).catch(err => {});
   };
 
   return (
