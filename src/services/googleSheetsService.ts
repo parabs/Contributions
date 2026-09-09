@@ -432,7 +432,7 @@ export async function syncDonationToGoogleSheet(
   }
 
   // 2. Direct Google Sheets API (OAuth Access Token + Spreadsheet ID) - Schema-Aware Updates
-  if (effectiveToken && spreadsheetId) {
+ if (!isDirectVolunteerEntry && effectiveToken && spreadsheetId) {
     try {
       // Ensure tab structure exists
       const { formResponsesTab, donationsTab, rawTitles } = await ensureSheetStructure(effectiveToken, spreadsheetId);
