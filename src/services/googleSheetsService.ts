@@ -1070,7 +1070,7 @@ export async function fetchPendingVerificationQueue(): Promise<{
       redirect: 'follow'
     });
     
-    const responseText = await response.text();
+    const result = await response.text();
 
 
     return result;
