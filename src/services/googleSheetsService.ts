@@ -1070,23 +1070,23 @@ export async function fetchPendingVerificationQueue(): Promise<{
       redirect: 'follow'
     });
     
-const responseText = await response.text();
+    const responseText = await response.text();
 
-try {
-  const result = JSON.parse(responseText);
-  return result;
-} catch (parseError) {
-  console.error('VERIFY RESPONSE IS NOT JSON:', responseText);
+    try {
+      const result = JSON.parse(responseText);
+      return result;
+    } catch (parseError) {
+      console.error('VERIFY RESPONSE IS NOT JSON:', responseText);
 
-  return {
-    success: false,
-    error: 'Backend returned an invalid response.'
-  };
-}
-  } catch (err: any) {
-    return { success: false, error: err.message || 'Network error during verification' };
-  }
-}
+      return {
+        success: false,
+        error: 'Backend returned an invalid response.'
+      };
+    }
+      } catch (err: any) {
+        return { success: false, error: err.message || 'Network error during verification' };
+      }
+    }
 
 
 // Helper to keep row parsing clean
