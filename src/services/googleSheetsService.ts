@@ -1070,10 +1070,10 @@ export async function fetchPendingVerificationQueue(): Promise<{
       redirect: 'follow'
     });
     
-    const result = await response.text();
+    const responseText = await response.text();
 
 
-    return result;
+    return responseText;
   } catch (err: any) {
     return { success: false, error: err.message || 'Network error during verification' };
   }
