@@ -1070,8 +1070,28 @@ export async function fetchPendingVerificationQueue(): Promise<{
       redirect: 'follow'
     });
     
-    const result = await response.json();
-    return result; 
+    const responseText = await response.text();
+
+    console.log('VERIFY RAW RESPONSE:', responseText);
+
+     alert(
+                `VERIFY RAW RESPONSE:\n\n${responseText}`
+              );
+
+
+    try {
+      return JSON.parse(responseText);
+    } catch (parseError) {
+      console.error('VERIFY RESPONSE IS NOT JSON:', responseText);
+     alert(
+                `VERIFY RESPONSE IS NOT JSON::\n\n${responseText}`
+              );
+
+      return {
+        success: false,
+        error: 'Backend completed the verification, but returned a non-JSON response.'
+      };
+    }
   } catch (err: any) {
     return { success: false, error: err.message || 'Network error during verification' };
   }
