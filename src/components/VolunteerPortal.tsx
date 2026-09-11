@@ -395,7 +395,7 @@ export function VolunteerPortal({
   // ----------------------------------------------------
   if (!currentVolunteer) {
     return (
-      <div className="max-w-md mx-auto py-5 px-3 sm:py-6 sm:px-4">
+      <div className="max-w-3xl mx-auto py-5 px-3 sm:py-6 sm:px-4">
         <div className="relative overflow-hidden rounded-3xl border border-amber-200/80 shadow-lg bg-white/65 backdrop-blur-sm">
 
           {/* Frame Watermark - visible only inside the login frame */}
@@ -408,7 +408,7 @@ export function VolunteerPortal({
           </div>
 
           {/* Header Section */}
-          <div className="relative z-10 bg-amber-50/90 border-b border-amber-200/70 px-6 py-5 text-center">
+          <div className="relative z-10 bg-amber-50/90 border-b border-amber-200/70 px-6 sm:px-10 py-5 text-center">
 
             <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-amber-800">
               Shree Jagannath Seva Trust
@@ -426,7 +426,7 @@ export function VolunteerPortal({
           </div>
 
           {/* Login Content */}
-          <div className="relative z-10 px-6 py-6 sm:px-7">
+          <div className="relative z-10 px-6 py-6 sm:px-12">
 
             {loginError && (
               <div className="mb-4 p-3 bg-rose-50/95 border border-rose-200 rounded-xl text-xs text-rose-700 flex items-start gap-2">
@@ -500,15 +500,44 @@ export function VolunteerPortal({
               </button>
             </div>
 
-            {/* Access Notice */}
-            <div className="mt-5 pt-4 border-t border-slate-200/70 text-center">
-              <p className="text-[10px] text-slate-500 leading-relaxed">
-                Authorized volunteers only
-                <br />
-                Access is controlled by assigned role and account status.
-              </p>
-            </div>
+            {/* Product & Trust Footer */}
+            <div className="mt-5 pt-5 border-t border-amber-200/70">
 
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 items-center">
+
+                {/* Solution Branding */}
+                <div className="text-center sm:text-left">
+                  <div className="text-sm font-black text-amber-900 font-serif">
+                    Digital Donation Solution
+                  </div>
+
+                  <div className="text-[11px] font-semibold text-slate-700 mt-0.5">
+                    Designed &amp; developed by Sachin Parab
+                  </div>
+
+                  <div className="text-[10px] font-bold text-amber-800 italic mt-1">
+                    Your Challenge. My Solution.
+                  </div>
+                </div>
+
+                {/* Trust / System Information */}
+                <div className="text-center sm:text-right">
+                  <div className="text-[10px] font-semibold text-slate-500 leading-relaxed">
+                    © 2026 Shree Jagannath Seva Trust, Thane
+                  </div>
+
+                  <div className="text-[10px] font-bold text-emerald-700 mt-0.5">
+                    • Autonomous Live Integration
+                  </div>
+
+                  <div className="text-[9px] text-slate-400 mt-1">
+                    Authorized volunteers only • Role-based access
+                  </div>
+                </div>
+
+              </div>
+
+            </div>
           </div>
         </div>
       </div>
