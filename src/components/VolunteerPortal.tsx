@@ -393,8 +393,7 @@ export function VolunteerPortal({
   // ----------------------------------------------------
   // RENDER: LOGIN FORM (IF NOT AUTHENTICATED)
   // ----------------------------------------------------
-  if (!currentVolunteer) {
-    const activeVolunteers = volunteers.filter(v => v.status === 'Active');
+  if (!currentVolunteer) {  
     return (
       <div className="max-w-md mx-auto py-8 space-y-4">
         <div className="bg-white rounded-3xl p-8 shadow-sm border border-slate-200 space-y-6">
@@ -457,44 +456,18 @@ export function VolunteerPortal({
             </button>
           </form>
 
-          {/* Dynamic Active Volunteers Quick Selector */}
-          <div className="p-3.5 bg-amber-50/70 border border-amber-200/80 rounded-xl text-[11px] text-amber-950 space-y-1.5">
-            <div className="font-bold flex items-center justify-between">
-              <span className="flex items-center gap-1">
-                <Sparkles className="w-3 h-3 text-amber-700" />
-                <span>Active Volunteer Credentials ({activeVolunteers.length}):</span>
-              </span>
-              {onOpenVolunteerManagement && (
-                <button
-                  type="button"
-                  onClick={onOpenVolunteerManagement}
-                  className="text-[10px] text-amber-900 font-bold underline hover:text-amber-950 cursor-pointer"
-                >
-                  Manage
-                </button>
-              )}
-            </div>
-            <div className="space-y-1 pt-1">
-              {activeVolunteers.map(v => (
-                <button
-                  key={v.volunteerCode}
-                  type="button"
-                  onClick={() => {
-                    setLoginVolunteerCode(v.volunteerCode);
-                    setLoginAuthCode(v.authCode);
-                    setLoginError('');
-                  }}
-                  className="w-full text-left p-1.5 rounded-lg bg-white/70 hover:bg-white border border-amber-200/60 flex items-center justify-between text-[11px] transition cursor-pointer"
-                >
-                  <span className="font-bold text-slate-800">• <code>{v.volunteerCode}</code> ({v.volunteerName})</span>
-                  <span className="text-[10px] font-mono text-amber-900 bg-amber-100 px-1.5 py-0.2 rounded">
-                    PIN: {v.authCode}
-                  </span>
-                </button>
-              ))}
-            </div>
+          <div className="text-center">
+            <button
+              type="button"
+              onClick={() => {
+                // Forgot PIN flow will be implemented in the next B2 step.
+              }}
+              className="text-xs font-semibold text-amber-800 hover:text-amber-900 underline underline-offset-2 transition cursor-pointer"
+            >
+              Forgot PIN?
+            </button>
           </div>
-        </div>
+
       </div>
     );
   }
