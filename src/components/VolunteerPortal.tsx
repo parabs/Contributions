@@ -202,9 +202,9 @@ export function VolunteerPortal({
         pin
     );
 
-     alert(
-                `VOLUNTEER AUTH RESULT:\n\n${result}`
-              );
+alert(
+  `VOLUNTEER AUTH RESULT:\n\n${JSON.stringify(result, null, 2)}`
+);
 
 
     if (!result.success || !result.volunteer) {
