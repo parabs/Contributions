@@ -202,6 +202,11 @@ export function VolunteerPortal({
         pin
     );
 
+     alert(
+                `VOLUNTEER AUTH RESULT:\n\n${result}`
+              );
+
+
     if (!result.success || !result.volunteer) {
       setLoginError(
         result.error ||
