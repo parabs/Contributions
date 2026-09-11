@@ -390,82 +390,121 @@ export function VolunteerPortal({
     d => currentVolunteer && d.confirmedBy.includes(currentVolunteer.volunteerCode)
   );
 
-  // ----------------------------------------------------
+    // ----------------------------------------------------
   // RENDER: LOGIN FORM (IF NOT AUTHENTICATED)
   // ----------------------------------------------------
-  if (!currentVolunteer) {  
+  if (!currentVolunteer) {
     return (
-      <div className="max-w-md mx-auto py-8 space-y-4">
-        <div className="bg-white rounded-3xl p-8 shadow-sm border border-slate-200 space-y-6">
-          <div className="text-center space-y-2">
-            <div className="w-14 h-14 rounded-2xl bg-amber-800 text-white flex items-center justify-center mx-auto shadow-md shadow-amber-900/20">
-              <ShieldCheck className="w-7 h-7" />
+      <div className="max-w-md mx-auto py-10 px-4">
+        <div className="bg-white/90 backdrop-blur-xl rounded-3xl shadow-xl border border-amber-200/70 overflow-hidden">
+
+          {/* Portal Header */}
+          <div className="bg-linear-to-br from-amber-900 via-amber-800 to-orange-700 px-8 pt-8 pb-7 text-white text-center">
+            <div className="w-16 h-16 rounded-2xl bg-white/15 border border-white/20 flex items-center justify-center mx-auto shadow-lg">
+              <ShieldCheck className="w-8 h-8 text-amber-100" />
             </div>
-            <h2 className="text-xl font-black text-slate-900 font-serif">Volunteer &amp; Management Portal</h2>
-            <p className="text-xs text-slate-500">
-              Authenticate using your Volunteer Code &amp; Security PIN to access UPI Verification, Detailed Dashboard, Live Sheet, and Email Config.
+
+            <div className="mt-4 text-[10px] font-bold uppercase tracking-[0.2em] text-amber-200">
+              Shree Jagannath Seva Trust
+            </div>
+
+            <h2 className="text-2xl font-black font-serif mt-1">
+              Volunteer &amp; Management Portal
+            </h2>
+
+            <p className="text-xs text-amber-100/90 mt-2 leading-relaxed">
+              Secure access to volunteer operations,
+              donation verification and receipts.
             </p>
+
+            {/* Security Badge */}
+            <div className="inline-flex items-center gap-1.5 mt-4 px-3 py-1.5 rounded-full bg-white/10 border border-white/20 text-[10px] font-bold tracking-wide">
+              <Lock className="w-3 h-3" />
+              Secure Volunteer Access
+            </div>
           </div>
 
-          {loginError && (
-            <div className="p-3.5 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-700 flex items-start gap-2">
-              <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
-              <span>{loginError}</span>
-            </div>
-          )}
+          {/* Login Area */}
+          <div className="p-7 sm:p-8">
 
-          <form onSubmit={handleLogin} className="space-y-4">
-            <div>
-              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                Volunteer Code
-              </label>
-              <input
-                type="text"
-                required
-                placeholder="e.g. VOL001"
-                value={loginVolunteerCode}
-                onChange={e => setLoginVolunteerCode(e.target.value.toUpperCase())}
-                className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-hidden focus:ring-2 focus:ring-amber-700 text-sm font-semibold text-slate-900 bg-slate-50 uppercase"
-              />
-            </div>
+            {loginError && (
+              <div className="mb-5 p-3.5 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-700 flex items-start gap-2">
+                <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+                <span>{loginError}</span>
+              </div>
+            )}
 
-            <div>
-              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                Personal Security PIN / Password
-              </label>
-              <div className="relative">
+            <form onSubmit={handleLogin} className="space-y-5">
+
+              {/* Volunteer Code */}
+              <div>
+                <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-2">
+                  Volunteer Code
+                </label>
+
                 <input
-                  type="password"
+                  type="text"
                   required
-                  placeholder="Enter PIN"
-                  value={loginAuthCode}
-                  onChange={e => setLoginAuthCode(e.target.value)}
-                  className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-hidden focus:ring-2 focus:ring-amber-700 text-sm font-semibold text-slate-900 bg-slate-50 font-mono"
+                  placeholder="e.g. VOL001"
+                  value={loginVolunteerCode}
+                  onChange={e => setLoginVolunteerCode(e.target.value.toUpperCase())}
+                  className="w-full px-4 py-3.5 rounded-xl border border-slate-200 focus:outline-hidden focus:ring-2 focus:ring-amber-700 focus:border-amber-700 text-sm font-bold text-slate-900 bg-slate-50/80 uppercase transition"
                 />
-                <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-slate-400">
-                  <Lock className="w-4 h-4" />
+              </div>
+
+              {/* Security PIN */}
+              <div>
+                <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-2">
+                  Personal Security PIN
+                </label>
+
+                <div className="relative">
+                  <input
+                    type="password"
+                    required
+                    placeholder="Enter your PIN"
+                    value={loginAuthCode}
+                    onChange={e => setLoginAuthCode(e.target.value)}
+                    className="w-full px-4 py-3.5 pr-11 rounded-xl border border-slate-200 focus:outline-hidden focus:ring-2 focus:ring-amber-700 focus:border-amber-700 text-sm font-bold text-slate-900 bg-slate-50/80 font-mono tracking-widest transition"
+                  />
+
+                  <div className="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none text-slate-400">
+                    <Lock className="w-4 h-4" />
+                  </div>
                 </div>
               </div>
+
+              {/* Sign In */}
+              <button
+                type="submit"
+                className="w-full py-3.5 rounded-xl bg-amber-800 hover:bg-amber-900 text-white font-bold text-xs uppercase tracking-wider shadow-lg shadow-amber-900/20 transition cursor-pointer"
+              >
+                Sign In to Volunteer Portal
+              </button>
+            </form>
+
+            {/* Forgot PIN */}
+            <div className="text-center mt-5">
+              <button
+                type="button"
+                onClick={() => {
+                  // Forgot PIN flow will be implemented in the next B2 step.
+                }}
+                className="text-xs font-bold text-amber-800 hover:text-amber-900 underline underline-offset-4 transition cursor-pointer"
+              >
+                Forgot PIN?
+              </button>
             </div>
 
-            <button
-              type="submit"
-              className="w-full py-3.5 rounded-xl bg-amber-800 hover:bg-amber-900 text-white font-bold text-xs uppercase tracking-wider shadow-md shadow-amber-900/20 transition cursor-pointer"
-            >
-              Sign In to Volunteer Portal
-            </button>
-          </form>
+            {/* Access Notice */}
+            <div className="mt-6 pt-5 border-t border-slate-100 text-center">
+              <p className="text-[10px] text-slate-400 leading-relaxed">
+                Authorized volunteers only
+                <br />
+                Access is controlled by assigned role and account status.
+              </p>
+            </div>
 
-          <div className="text-center">
-            <button
-              type="button"
-              onClick={() => {
-                // Forgot PIN flow will be implemented in the next B2 step.
-              }}
-              className="text-xs font-semibold text-amber-800 hover:text-amber-900 underline underline-offset-2 transition cursor-pointer"
-            >
-              Forgot PIN?
-            </button>
           </div>
         </div>
       </div>
