@@ -467,7 +467,7 @@ export function VolunteerPortal({
               Forgot PIN?
             </button>
           </div>
-
+        </div>
       </div>
     );
   }
