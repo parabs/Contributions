@@ -1053,7 +1053,7 @@ export async function fetchPendingVerificationQueue(): Promise<{
 /**
  * Direct Token-less Volunteer Verification via Webhook
  * Designed for opaque 'no-cors' responses from Google Apps Script. */
- export async function verifyDonationByPin(confirmationCode: string, volunteerName: string) {
+export async function verifyDonationByPin(confirmationCode: string, volunteerName: string) {
   const webhookUrl = DEFAULT_WEBHOOK_URL;
 
   try {
@@ -1088,6 +1088,62 @@ export async function fetchPendingVerificationQueue(): Promise<{
       }
     }
 
+export async function authenticateVolunteer(
+  volunteerCode: string,
+  pin: string
+): Promise<{
+  success: boolean;
+  volunteer?: {
+    volunteerCode: string;
+    volunteerName: string;
+    phone?: string;
+    email?: string;
+    role?: string;
+    status: string;
+  };
+  error?: string;
+}> {
+  const webhookUrl = DEFAULT_WEBHOOK_URL;
+
+  try {
+    const response = await fetch(webhookUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'text/plain;charset=utf-8'
+      },
+      body: JSON.stringify({
+        action: 'authenticateVolunteer',
+        volunteerCode: volunteerCode.trim().toUpperCase(),
+        pin: pin.trim()
+      }),
+      redirect: 'follow'
+    });
+
+    const responseText = await response.text();
+
+    try {
+      const result = JSON.parse(responseText);
+      return result;
+    } catch (parseError) {
+      console.error(
+        'AUTH RESPONSE IS NOT JSON:',
+        responseText
+      );
+
+      return {
+        success: false,
+        error: 'Backend returned an invalid authentication response.'
+      };
+    }
+  } catch (err: any) {
+    return {
+      success: false,
+      error:
+        err.message ||
+        'Network error during volunteer authentication'
+    };
+  }
+}
 
 // Helper to keep row parsing clean
 function parseRowsToDonations(allRows: any[][]): { success: boolean; donations: DonationRecord[] } {

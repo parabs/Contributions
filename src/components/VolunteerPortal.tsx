@@ -34,6 +34,7 @@ import { SEVA_CATEGORIES } from '../data/mockData';
 import { CollectionsDashboard } from './CollectionsDashboard';
 import { GoogleSheetView } from './GoogleSheetView';
 import { EmailConfigView } from './EmailConfigView';
+import * as googleSheetsService from '../services/googleSheetsService';
 
 interface VolunteerPortalProps {
   volunteers: VolunteerRecord[];
@@ -178,32 +179,63 @@ export function VolunteerPortal({
   }, [currentVolunteer]);
 
   // Handle Login
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoginError('');
 
-    const volunteer = volunteers.find(
-      v => v.volunteerCode.trim().toUpperCase() === loginVolunteerCode.trim().toUpperCase()
+    const volunteerCode = loginVolunteerCode
+      .trim()
+      .toUpperCase();
+
+    const pin = loginAuthCode.trim();
+
+    if (!volunteerCode || !pin) {
+      setLoginError(
+        'Please enter Volunteer ID and PIN.'
+      );
+      return;
+    }
+
+    const result =
+      await googleSheetsService.authenticateVolunteer(
+        volunteerCode,
+        pin
     );
 
-    if (!volunteer) {
-      setLoginError('Volunteer Code not recognized. Please check with administrator or add in Volunteer Management.');
+    if (!result.success || !result.volunteer) {
+      setLoginError(
+        result.error ||
+        'Invalid Volunteer ID or PIN.'
+      );
       return;
     }
 
-    if (volunteer.status !== 'Active') {
-      setLoginError('This volunteer account is closed / inactive.');
-      return;
-    }
-
-    if (volunteer.authCode !== loginAuthCode.trim()) {
-      setLoginError('Incorrect Security PIN / Auth Code.');
-      return;
-    }
+    const volunteer: VolunteerRecord = {
+      volunteerCode: result.volunteer.volunteerCode,
+      volunteerName: result.volunteer.volunteerName,
+      authCode: '',
+      status: result.volunteer.status === 'Active'
+        ? 'Active'
+        : 'Closed',
+      phone: result.volunteer.phone,
+      email: result.volunteer.email,
+      role: result.volunteer.role
+    };
 
     setCurrentVolunteer(volunteer);
-    sessionStorage.setItem('sjst_active_volunteer', JSON.stringify(volunteer));
-    setLoginError('');
+
+    try {
+      sessionStorage.setItem(
+        'sjst_active_volunteer',
+        JSON.stringify(volunteer)
+      );
+    } catch (e) {
+      console.warn(
+        'Unable to save volunteer session.'
+      );
+    }
+
+    setLoginAuthCode('');
   };
 
   const handleLogout = () => {
@@ -500,43 +532,11 @@ export function VolunteerPortal({
               </button>
             </div>
 
-            {/* Product & Trust Footer */}
-            <div className="mt-5 pt-5 border-t border-amber-200/70">
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 items-center">
-
-                {/* Solution Branding */}
-                <div className="text-center sm:text-left">
-                  <div className="text-sm font-black text-amber-900 font-serif">
-                    Digital Donation Solution
-                  </div>
-
-                  <div className="text-[11px] font-semibold text-slate-700 mt-0.5">
-                    Designed &amp; developed by Sachin Parab
-                  </div>
-
-                  <div className="text-[10px] font-bold text-amber-800 italic mt-1">
-                    Your Challenge. My Solution.
-                  </div>
-                </div>
-
-                {/* Trust / System Information */}
-                <div className="text-center sm:text-right">
-                  <div className="text-[10px] font-semibold text-slate-500 leading-relaxed">
-                    © 2026 Shree Jagannath Seva Trust, Thane
-                  </div>
-
-                  <div className="text-[10px] font-bold text-emerald-700 mt-0.5">
-                    • Autonomous Live Integration
-                  </div>
-
-                  <div className="text-[9px] text-slate-400 mt-1">
-                    Authorized volunteers only • Role-based access
-                  </div>
-                </div>
-
-              </div>
-
+            {/* Access Notice */}
+            <div className="mt-4 pt-3 border-t border-amber-200/70 text-center">
+              <p className="text-[10px] font-medium text-slate-500">
+                Authorized volunteers only&nbsp; • &nbsp;Role-based access
+              </p>
             </div>
           </div>
         </div>

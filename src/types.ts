@@ -29,6 +29,7 @@ export interface VolunteerRecord {
   status: 'Active' | 'Closed';
   phone?: string;
   email?: string;
+  role?: string;
 }
 
 export interface SevaOption {
