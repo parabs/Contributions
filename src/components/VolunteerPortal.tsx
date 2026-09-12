@@ -191,7 +191,7 @@ export function VolunteerPortal({
 
     // Volunteer PIN must be exactly 4 digits
     if (!/^\d{4}$/.test(pin)) {
-      setLoginError('Security PIN must be exactly 4 digits.');
+      setLoginError('Invalid Volunteer ID or PIN.');
       return;
     }
 
