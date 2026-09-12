@@ -189,10 +189,14 @@ export function VolunteerPortal({
 
     const pin = loginAuthCode.trim();
 
-    if (!volunteerCode || !pin) {
-      setLoginError(
-        'Please enter Volunteer ID and PIN.'
-      );
+    // Volunteer PIN must be exactly 4 digits
+    if (!/^\d{4}$/.test(pin)) {
+      setLoginError('Security PIN must be exactly 4 digits.');
+      return;
+    }
+
+    if (!volunteerCode) {
+      setLoginError('Please enter Volunteer ID.');
       return;
     }
 
@@ -200,12 +204,7 @@ export function VolunteerPortal({
       await googleSheetsService.authenticateVolunteer(
         volunteerCode,
         pin
-    );
-
-alert(
-  `VOLUNTEER AUTH RESULT:\n\n${JSON.stringify(result, null, 2)}`
-);
-
+      );
 
     if (!result.success || !result.volunteer) {
       setLoginError(
@@ -219,27 +218,16 @@ alert(
       volunteerCode: result.volunteer.volunteerCode,
       volunteerName: result.volunteer.volunteerName,
       authCode: '',
-      status: result.volunteer.status === 'Active'
-        ? 'Active'
-        : 'Closed',
+      status:
+        result.volunteer.status === 'Active'
+          ? 'Active'
+          : 'Closed',
       phone: result.volunteer.phone,
       email: result.volunteer.email,
       role: result.volunteer.role
     };
 
     setCurrentVolunteer(volunteer);
-
-    try {
-      sessionStorage.setItem(
-        'sjst_active_volunteer',
-        JSON.stringify(volunteer)
-      );
-    } catch (e) {
-      console.warn(
-        'Unable to save volunteer session.'
-      );
-    }
-
     setLoginAuthCode('');
   };
 
