@@ -200,6 +200,12 @@ export function VolunteerPortal({
       return;
     }
 
+    alert(
+  `AUTH INPUT CHECK\n\n` +
+  `Volunteer: ${volunteerCode}\n` +
+  `PIN length: ${pin.length}\n` +
+  `PIN matches test PIN: ${pin === '2345' ? 'YES' : 'NO'}`
+);
     const result =
       await googleSheetsService.authenticateVolunteer(
         volunteerCode,
