@@ -108,6 +108,10 @@ export function VolunteerPortal({
   const [loginAuthCode, setLoginAuthCode] = useState(volunteers[0]?.authCode || '246810');
   const [loginError, setLoginError] = useState('');
 
+  // Forgot PIN state
+  const [showForgotPin, setShowForgotPin] = useState(false);
+  const [forgotPinEmail, setForgotPinEmail] = useState('');
+
   // Internal Authenticated Sub-view
   const [activeInternalTab, setActiveInternalTab] = useState<'verify' | 'directEntry' | 'detailedDashboard' | 'liveSheet' | 'emailConfig'>('verify');
 
@@ -523,7 +527,9 @@ export function VolunteerPortal({
               <button
                 type="button"
                 onClick={() => {
-                  // Forgot PIN flow will be implemented in the next B2 step.
+                    setLoginError('');
+                    setForgotPinEmail('');
+                    setShowForgotPin(true);
                 }}
                 className="text-xs font-bold text-amber-800 hover:text-amber-900 underline underline-offset-4 transition cursor-pointer"
               >

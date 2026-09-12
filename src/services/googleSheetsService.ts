@@ -1124,15 +1124,8 @@ export async function authenticateVolunteer(
     try {
       const result = JSON.parse(responseText);
 
-      alert(
-  `AUTH HTTP STATUS: ${response.status}\n\n` +
-  `AUTH RESPONSE:\n\n${responseText.substring(0, 500)}`
-);
       return result;
     } catch (parseError) {
-        alert(
-    `AUTH RESPONSE IS NOT JSON:\n\n${responseText}`
-  );
       console.error(
         'AUTH RESPONSE IS NOT JSON:',
         responseText
