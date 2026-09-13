@@ -804,8 +804,10 @@ export function VolunteerPortal({
               </button>
             </div>
           </>
-        )}
+         )}
       </div>
+    </div>
+  </div>
     );
   }
 
