@@ -69,8 +69,11 @@ const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
   } = useGmailAuth();
 
   // Navigation: Public Devotee Form, Public Display Dashboard, Authenticated Volunteer/Admin Portal, Email & Receipts Setup, Code & Setup
-  const [activeView, setActiveView] = useState<'donor' | 'publicDashboard' | 'volunteer' | 'emailConfig' | 'code'>('donor');
-
+  const [activeView, setActiveView] =
+  useState<'donor' | 'publicDashboard' | 'volunteer' | 'emailConfig' | 'code'>(() => {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('resetPinToken') ? 'volunteer' : 'donor';
+  });
   // Modals
   const [modalReceiptDonation, setModalReceiptDonation] = useState<DonationRecord | null>(null);
   const [isVolunteerManagementOpen, setIsVolunteerManagementOpen] = useState(false);
