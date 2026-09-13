@@ -1146,6 +1146,229 @@ export async function authenticateVolunteer(
   }
 }
 
+export async function requestVolunteerPinReset(
+  volunteerCode: string,
+  email: string
+): Promise<{
+  success: boolean;
+  message?: string;
+  error?: string;
+}> {
+  const webhookUrl = DEFAULT_WEBHOOK_URL;
+
+  try {
+    const response = await fetch(webhookUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'text/plain;charset=utf-8'
+      },
+      body: JSON.stringify({
+        action: 'requestPinReset',
+        volunteerCode: volunteerCode.trim().toUpperCase(),
+        email: email.trim().toLowerCase()
+      }),
+      redirect: 'follow'
+    });
+
+    const responseText = await response.text();
+
+    try {
+      const result = JSON.parse(responseText);
+      return result;
+    } catch (parseError) {
+      console.error(
+        'PIN RESET RESPONSE IS NOT JSON:',
+        responseText
+      );
+
+      return {
+        success: false,
+        error: 'Backend returned an invalid reset response.'
+      };
+    }
+  } catch (err: any) {
+    return {
+      success: false,
+      error:
+        err.message ||
+        'Network error during PIN reset request.'
+    };
+  }
+}
+
+function resetVolunteerPin(data) {
+  try {
+    const token = String(data.token || '').trim();
+    const newPin = String(data.newPin || '').trim();
+
+    if (!token || !newPin) {
+      return ContentService
+        .createTextOutput(JSON.stringify({
+          success: false,
+          error: 'Reset token and new PIN are required.'
+        }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+
+    // Internal PIN validation.
+    // Do not reveal the PIN format requirement to the user.
+    if (!/^\d{4}$/.test(newPin)) {
+      return ContentService
+        .createTextOutput(JSON.stringify({
+          success: false,
+          error: 'Unable to reset PIN. Please enter a valid PIN.'
+        }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+
+    const properties =
+      PropertiesService.getScriptProperties();
+
+    const propertyKey = 'PIN_RESET_' + token;
+    const storedData = properties.getProperty(propertyKey);
+
+    if (!storedData) {
+      return ContentService
+        .createTextOutput(JSON.stringify({
+          success: false,
+          error: 'This PIN reset link is invalid or has expired.'
+        }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+
+    const resetData = JSON.parse(storedData);
+
+    // Check whether token was already used.
+    if (resetData.used === true) {
+      properties.deleteProperty(propertyKey);
+
+      return ContentService
+        .createTextOutput(JSON.stringify({
+          success: false,
+          error: 'This PIN reset link is no longer valid.'
+        }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+
+    // Check expiry.
+    if (
+      !resetData.expiresAt ||
+      Date.now() > Number(resetData.expiresAt)
+    ) {
+      properties.deleteProperty(propertyKey);
+
+      return ContentService
+        .createTextOutput(JSON.stringify({
+          success: false,
+          error: 'This PIN reset link has expired.'
+        }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+
+    const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+    const sheet = ss.getSheetByName('Volunteers');
+
+    if (!sheet) {
+      return ContentService
+        .createTextOutput(JSON.stringify({
+          success: false,
+          error: 'Volunteers sheet not found.'
+        }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+
+    const lastRow = sheet.getLastRow();
+
+    if (lastRow < 2) {
+      return ContentService
+        .createTextOutput(JSON.stringify({
+          success: false,
+          error: 'No volunteer records found.'
+        }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+
+    const rows = sheet
+      .getRange(2, 1, lastRow - 1, 7)
+      .getValues();
+
+    let matchedRowNumber = null;
+
+    for (let i = 0; i < rows.length; i++) {
+      const row = rows[i];
+
+      const volunteerCode = String(row[0] || '')
+        .trim()
+        .toUpperCase();
+
+      const email = String(row[3] || '')
+        .trim()
+        .toLowerCase();
+
+      const status = String(row[6] || '')
+        .trim()
+        .toLowerCase();
+
+      if (
+        volunteerCode === String(resetData.volunteerCode || '')
+          .trim()
+          .toUpperCase() &&
+        email === String(resetData.email || '')
+          .trim()
+          .toLowerCase()
+      ) {
+        if (status !== 'active') {
+          properties.deleteProperty(propertyKey);
+
+          return ContentService
+            .createTextOutput(JSON.stringify({
+              success: false,
+              error: 'This volunteer account is inactive.'
+            }))
+            .setMimeType(ContentService.MimeType.JSON);
+        }
+
+        matchedRowNumber = i + 2;
+        break;
+      }
+    }
+
+    if (!matchedRowNumber) {
+      properties.deleteProperty(propertyKey);
+
+      return ContentService
+        .createTextOutput(JSON.stringify({
+          success: false,
+          error: 'Volunteer account could not be verified.'
+        }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+
+    // Column F = PIN
+    sheet.getRange(matchedRowNumber, 6).setValue(newPin);
+
+    SpreadsheetApp.flush();
+
+    // Make token single-use.
+    properties.deleteProperty(propertyKey);
+
+    return ContentService
+      .createTextOutput(JSON.stringify({
+        success: true,
+        message: 'Your PIN has been reset successfully.'
+      }))
+      .setMimeType(ContentService.MimeType.JSON);
+
+  } catch (err) {
+    return ContentService
+      .createTextOutput(JSON.stringify({
+        success: false,
+        error: err.message || String(err)
+      }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
 // Helper to keep row parsing clean
 function parseRowsToDonations(allRows: any[][]): { success: boolean; donations: DonationRecord[] } {
   if (allRows.length === 0) return { success: true, donations: [] };

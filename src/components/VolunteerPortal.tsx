@@ -111,6 +111,12 @@ export function VolunteerPortal({
   // Forgot PIN state
   const [showForgotPin, setShowForgotPin] = useState(false);
   const [forgotPinEmail, setForgotPinEmail] = useState('');
+  const [resetPinToken, setResetPinToken] = useState<string | null>(null);
+
+  const [resetNewPin, setResetNewPin] = useState('');
+  const [resetConfirmPin, setResetConfirmPin] = useState('');
+  const [resetPinError, setResetPinError] = useState('');
+
 
   // Internal Authenticated Sub-view
   const [activeInternalTab, setActiveInternalTab] = useState<'verify' | 'directEntry' | 'detailedDashboard' | 'liveSheet' | 'emailConfig'>('verify');
@@ -172,6 +178,16 @@ export function VolunteerPortal({
       setTimeout(() => setRefreshQueueMsg(null), 3500);
     }
   };
+
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const token = params.get('resetPinToken');
+
+    if (token) {
+      setResetPinToken(token);
+    }
+  }, []);
 
   // Sync current volunteer to sessionStorage
   useEffect(() => {
@@ -429,6 +445,141 @@ export function VolunteerPortal({
   // RENDER: LOGIN FORM (IF NOT AUTHENTICATED)
   // ----------------------------------------------------
   if (!currentVolunteer) {
+    if (resetPinToken) {
+      return (
+        <div className="max-w-3xl mx-auto py-5 px-3 sm:py-6 sm:px-4">
+          <div className="relative overflow-hidden rounded-3xl border border-amber-200/80 shadow-lg bg-white/65 backdrop-blur-sm">
+
+            {/* Header */}
+            <div className="relative z-10 bg-amber-50/90 border-b border-amber-200/70 px-6 sm:px-10 py-5 text-center">
+              <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-amber-800">
+                Shree Jagannath Seva Trust
+              </div>
+
+              <h2 className="text-2xl font-black text-slate-900 font-serif leading-tight mt-1">
+                Reset Volunteer PIN
+              </h2>
+
+              <p className="text-xs text-slate-600 mt-2 leading-relaxed max-w-sm mx-auto">
+                Set a new Personal Security PIN for your volunteer account.
+              </p>
+            </div>
+
+            {/* Reset Form */}
+            <div className="relative z-10 px-6 py-6 sm:px-12">
+
+              {resetPinError && (
+                <div className="mb-4 p-3 bg-rose-50/95 border border-rose-200 rounded-xl text-xs text-rose-700 flex items-start gap-2">
+                  <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+                  <span>{resetPinError}</span>
+                </div>
+              )}
+
+              <form
+                onSubmit={async e => {
+                  e.preventDefault();
+                  setResetPinError('');
+
+                  if (!resetPinToken) {
+                    setResetPinError(
+                      'This PIN reset link is invalid or has expired.'
+                    );
+                    return;
+                  }
+
+                  if (!resetNewPin || !resetConfirmPin) {
+                    setResetPinError(
+                      'Please enter and confirm your new PIN.'
+                    );
+                    return;
+                  }
+
+                  if (resetNewPin !== resetConfirmPin) {
+                    setResetPinError(
+                      'New PIN and confirmation PIN do not match.'
+                    );
+                    return;
+                  }
+
+                  const result =
+                    await googleSheetsService.resetVolunteerPin(
+                      resetPinToken,
+                      resetNewPin
+                    );
+
+                  if (!result.success) {
+                    setResetPinError(
+                      result.error ||
+                      'Unable to reset PIN.'
+                    );
+                    return;
+                  }
+
+                  alert(
+                    result.message ||
+                    'Your PIN has been reset successfully.'
+                  );
+
+                  setResetNewPin('');
+                  setResetConfirmPin('');
+                  setResetPinToken(null);
+
+                  window.history.replaceState(
+                    {},
+                    document.title,
+                    window.location.pathname
+                  );
+                }}
+              >
+
+                {/* New PIN */}
+                <div>
+                  <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                    New Security PIN
+                  </label>
+
+                  <input
+                    type="password"
+                    required
+                    placeholder="Enter new PIN"
+                    value={resetNewPin}
+                    onChange={e => setResetNewPin(e.target.value)}
+                    className="w-full px-4 py-3 rounded-xl border border-slate-200/90 focus:outline-hidden focus:ring-2 focus:ring-amber-700 focus:border-amber-700 text-sm font-semibold text-slate-900 bg-white/85 font-mono tracking-wider transition"
+                  />
+                </div>
+
+                {/* Confirm PIN */}
+                <div>
+                  <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                    Confirm New PIN
+                  </label>
+
+                  <input
+                    type="password"
+                    required
+                    placeholder="Confirm new PIN"
+                    value={resetConfirmPin}
+                    onChange={e => setResetConfirmPin(e.target.value)}
+                    className="w-full px-4 py-3 rounded-xl border border-slate-200/90 focus:outline-hidden focus:ring-2 focus:ring-amber-700 focus:border-amber-700 text-sm font-semibold text-slate-900 bg-white/85 font-mono tracking-wider transition"
+                  />
+                </div>
+
+                {/* Reset */}
+                <button
+                  type="submit"
+                  className="w-full py-3.5 rounded-xl bg-amber-800 hover:bg-amber-900 text-white font-bold text-xs uppercase tracking-wider shadow-md shadow-amber-900/20 transition cursor-pointer"
+                >
+                  Reset PIN
+                </button>
+
+              </form>
+
+            </div>
+          </div>
+        </div>
+      );
+    }
+
     return (
       <div className="max-w-3xl mx-auto py-5 px-3 sm:py-6 sm:px-4">
         <div className="relative overflow-hidden rounded-3xl border border-amber-200/80 shadow-lg bg-white/65 backdrop-blur-sm">
@@ -460,9 +611,8 @@ export function VolunteerPortal({
 
           </div>
 
-          {/* Login Content */}
-          <div className="relative z-10 px-6 py-6 sm:px-12">
-
+          {!showForgotPin ? (
+          <>
             {loginError && (
               <div className="mb-4 p-3 bg-rose-50/95 border border-rose-200 rounded-xl text-xs text-rose-700 flex items-start gap-2">
                 <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
@@ -527,24 +677,134 @@ export function VolunteerPortal({
               <button
                 type="button"
                 onClick={() => {
-                    setLoginError('');
-                    setForgotPinEmail('');
-                    setShowForgotPin(true);
+                  setLoginError('');
+                  setForgotPinEmail('');
+                  setShowForgotPin(true);
                 }}
                 className="text-xs font-bold text-amber-800 hover:text-amber-900 underline underline-offset-4 transition cursor-pointer"
               >
                 Forgot PIN?
               </button>
             </div>
+          </>
+        ) : (
+          <>
+            {/* Forgot PIN Header */}
+            <div className="text-center mb-6">
+              <h3 className="text-lg font-black text-slate-900 font-serif">
+                Reset Volunteer PIN
+              </h3>
 
-            {/* Access Notice */}
-            <div className="mt-4 pt-3 border-t border-amber-200/70 text-center">
-              <p className="text-[10px] font-medium text-slate-500">
-                Authorized volunteers only&nbsp; • &nbsp;Role-based access
+              <p className="text-xs text-slate-500 mt-2 leading-relaxed max-w-sm mx-auto">
+                Enter your Volunteer Code and registered email address.
+                We will send you a secure PIN reset link.
               </p>
             </div>
-          </div>
-        </div>
+
+            {/* Forgot PIN Form */}
+            <form
+              onSubmit={async e => {
+                e.preventDefault();
+                setLoginError('');
+
+                const volunteerCode =
+                  loginVolunteerCode.trim().toUpperCase();
+
+                const email =
+                  forgotPinEmail.trim().toLowerCase();
+
+                if (!volunteerCode || !email) {
+                  setLoginError(
+                    'Please enter Volunteer Code and registered email.'
+                  );
+                  return;
+                }
+
+                const result =
+                  await googleSheetsService.requestVolunteerPinReset(
+                    volunteerCode,
+                    email
+                  );
+
+                if (!result.success) {
+                  setLoginError(
+                    result.error ||
+                    'Unable to send PIN reset link.'
+                  );
+                  return;
+                }
+
+                alert(
+                  result.message ||
+                  'A secure PIN reset link has been sent to your registered email.'
+                );
+
+                setForgotPinEmail('');
+              }}
+              className="space-y-4"
+            >
+
+
+              {/* Volunteer Code */}
+              <div>
+                <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                  Volunteer Code
+                </label>
+
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. VOL001"
+                  value={loginVolunteerCode}
+                  onChange={e =>
+                    setLoginVolunteerCode(e.target.value.toUpperCase())
+                  }
+                  className="w-full px-4 py-3 rounded-xl border border-slate-200/90 focus:outline-hidden focus:ring-2 focus:ring-amber-700 focus:border-amber-700 text-sm font-semibold text-slate-900 bg-white/85 uppercase transition"
+                />
+              </div>
+
+              {/* Registered Email */}
+              <div>
+                <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                  Registered Email
+                </label>
+
+                <input
+                  type="email"
+                  required
+                  placeholder="Enter registered email"
+                  value={forgotPinEmail}
+                  onChange={e => setForgotPinEmail(e.target.value)}
+                  className="w-full px-4 py-3 rounded-xl border border-slate-200/90 focus:outline-hidden focus:ring-2 focus:ring-amber-700 focus:border-amber-700 text-sm font-semibold text-slate-900 bg-white/85 transition"
+                />
+              </div>
+
+              {/* Send Reset Link */}
+              <button
+                type="submit"
+                className="w-full py-3.5 rounded-xl bg-amber-800 hover:bg-amber-900 text-white font-bold text-xs uppercase tracking-wider shadow-md shadow-amber-900/20 transition cursor-pointer"
+              >
+                Send Reset Link
+              </button>
+
+            </form>
+
+            {/* Back to Login */}
+            <div className="text-center mt-4">
+              <button
+                type="button"
+                onClick={() => {
+                  setLoginError('');
+                  setForgotPinEmail('');
+                  setShowForgotPin(false);
+                }}
+                className="text-xs font-bold text-slate-600 hover:text-slate-900 underline underline-offset-4 transition cursor-pointer"
+              >
+                ← Back to Login
+              </button>
+            </div>
+          </>
+        )}
       </div>
     );
   }
