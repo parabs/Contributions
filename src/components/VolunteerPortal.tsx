@@ -501,10 +501,11 @@ export function VolunteerPortal({
                     return;
                   }
 
-                  const result =
-                  let result;
+  alert('RESET STEP 2: Calling resetVolunteerPin');
 
-                  try {
+  let result;
+
+  try {
                     result = await googleSheetsService.resetVolunteerPin(
                       resetPinToken,
                       resetNewPin
