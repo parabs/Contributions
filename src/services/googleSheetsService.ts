@@ -1196,6 +1196,56 @@ export async function requestVolunteerPinReset(
   }
 }
 
+export async function resetVolunteerPin(
+  token: string,
+  newPin: string
+): Promise<{
+  success: boolean;
+  message?: string;
+  error?: string;
+}> {
+  const webhookUrl = DEFAULT_WEBHOOK_URL;
+
+  try {
+    const response = await fetch(webhookUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'text/plain;charset=utf-8'
+      },
+      body: JSON.stringify({
+        action: 'resetVolunteerPin',
+        token: token.trim(),
+        newPin: newPin.trim()
+      }),
+      redirect: 'follow'
+    });
+
+    const responseText = await response.text();
+
+    try {
+      const result = JSON.parse(responseText);
+      return result;
+    } catch (parseError) {
+      console.error(
+        'PIN RESET RESPONSE IS NOT JSON:',
+        responseText
+      );
+
+      return {
+        success: false,
+        error: 'Backend returned an invalid PIN reset response.'
+      };
+    }
+  } catch (err: any) {
+    return {
+      success: false,
+      error:
+        err.message ||
+        'Network error during PIN reset.'
+    };
+  }
+}
+
 function resetVolunteerPin(data) {
   try {
     const token = String(data.token || '').trim();

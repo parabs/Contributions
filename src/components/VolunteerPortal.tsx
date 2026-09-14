@@ -502,10 +502,19 @@ export function VolunteerPortal({
                   }
 
                   const result =
-                    await googleSheetsService.resetVolunteerPin(
+                  let result;
+
+                  try {
+                    result = await googleSheetsService.resetVolunteerPin(
                       resetPinToken,
                       resetNewPin
                     );
+                  } catch (err: any) {
+                    setResetPinError(
+                      err?.message || 'Unable to connect to the PIN reset service.'
+                    );
+                    return;
+                  }
 
                   if (!result.success) {
                     setResetPinError(
