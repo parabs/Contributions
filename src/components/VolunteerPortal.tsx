@@ -123,6 +123,21 @@ export function VolunteerPortal({
     'verify' | 'directEntry' | 'detailedDashboard' | 'liveSheet' | 'emailConfig' | 'profile'
   >('verify');
 
+  const [profileMobile, setProfileMobile] = useState(
+  currentVolunteer?.phone || ''
+);
+
+  const [profileEmail, setProfileEmail] = useState(
+    currentVolunteer?.email || ''
+  );
+
+  const [profileCurrentPin, setProfileCurrentPin] = useState('');
+  const [profileNewPin, setProfileNewPin] = useState('');
+  const [profileConfirmPin, setProfileConfirmPin] = useState('');
+
+  const [profileSaving, setProfileSaving] = useState(false);
+  const [profileMessage, setProfileMessage] = useState('');
+  const [profileError, setProfileError] = useState('');
 
   // Direct Counter Entry Form State
   const [directDonorName, setDirectDonorName] = useState('');
@@ -252,6 +267,72 @@ export function VolunteerPortal({
 
     setCurrentVolunteer(volunteer);
     setLoginAuthCode('');
+  };
+
+  const handleProfileSave = async () => {
+    setProfileError('');
+    setProfileMessage('');
+
+    if (!profileCurrentPin.trim()) {
+      setProfileError('Please enter your current Security PIN.');
+      return;
+    }
+
+    if (!profileMobile.trim() && !profileEmail.trim() && !profileNewPin.trim()) {
+      setProfileError('Please enter at least one change.');
+      return;
+    }
+
+    if (profileNewPin.trim() !== profileConfirmPin.trim()) {
+      setProfileError('New Security PIN and confirmation do not match.');
+      return;
+    }
+
+    setProfileSaving(true);
+
+    try {
+      const result =
+        await googleSheetsService.updateVolunteerProfile(
+          currentVolunteer?.volunteerCode || '',
+          profileCurrentPin,
+          profileMobile,
+          profileEmail,
+          profileNewPin
+        );
+
+      if (!result.success) {
+        setProfileError(
+          result.error || 'Unable to update your profile.'
+        );
+        return;
+      }
+
+      if (result.volunteer) {
+        setCurrentVolunteer({
+          ...currentVolunteer,
+          volunteerCode: result.volunteer.volunteerCode,
+          volunteerName: result.volunteer.volunteerName,
+          phone: result.volunteer.phone,
+          email: result.volunteer.email,
+          role: result.volunteer.role,
+          status: result.volunteer.status
+        });
+      }
+
+      setProfileCurrentPin('');
+      setProfileNewPin('');
+      setProfileConfirmPin('');
+
+      setProfileMessage(
+        result.message || 'Your profile has been updated successfully.'
+      );
+    } catch (err: any) {
+      setProfileError(
+        err.message || 'Unable to update your profile.'
+      );
+    } finally {
+      setProfileSaving(false);
+    }
   };
 
   const handleLogout = () => {
@@ -1668,6 +1749,104 @@ export function VolunteerPortal({
                   value={currentVolunteer?.role || ''}
                   disabled
                   className="mt-1 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-slate-700">
+                  Mobile Number
+                </label>
+                <input
+                  type="text"
+                  value={profileMobile}
+                  onChange={(e) => setProfileMobile(e.target.value)}
+                  className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-700 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  placeholder="Enter mobile number"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-slate-700">
+                  Email Address
+                </label>
+                <input
+                  type="email"
+                  value={profileEmail}
+                  onChange={(e) => setProfileEmail(e.target.value)}
+                  className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-700 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  placeholder="Enter email address"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-slate-700">
+                  Current Security PIN
+                </label>
+                <input
+                  type="password"
+                  value={profileCurrentPin}
+                  onChange={(e) => setProfileCurrentPin(e.target.value)}
+                  className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-700 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  placeholder="Enter current Security PIN"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-slate-700">
+                  New Security PIN
+                </label>
+                <input
+                  type="password"
+                  value={profileNewPin}
+                  onChange={(e) => setProfileNewPin(e.target.value)}
+                  className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-700 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  placeholder="Leave blank to keep current PIN"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-slate-700">
+                  Confirm New Security PIN
+                </label>
+
+                <input
+                  type="password"
+                  value={profileConfirmPin}
+                  onChange={(e) => setProfileConfirmPin(e.target.value)}
+                  className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-700 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  placeholder="Confirm new Security PIN"
+                />
+              </div>
+
+              <div className="pt-2">
+                <button
+                  type="button"
+                  onClick={handleProfileSave}
+                  disabled={profileSaving}
+                  className="w-full rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  {profileSaving ? 'Saving Changes...' : 'Save Changes'}
+                </button>
+              </div>
+
+              {profileMessage && (
+                <div className="rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700">
+                  {profileMessage}
+                </div>
+              )}
+
+              {profileError && (
+                <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                  {profileError}
+                </div>
+              )}
+
+                <input
+                  type="password"
+                  value={profileConfirmPin}
+                  onChange={(e) => setProfileConfirmPin(e.target.value)}
+                  className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-700 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  placeholder="Confirm new Security PIN"
                 />
               </div>
 
