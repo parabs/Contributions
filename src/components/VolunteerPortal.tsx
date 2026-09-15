@@ -501,16 +501,27 @@ export function VolunteerPortal({
                     return;
                   }
 
-  alert('RESET STEP 2: Calling resetVolunteerPin');
+                  alert(
+                    'RESET DEBUG\n\n' +
+                    'STEP 1: Button works\n' +
+                    'STEP 2: Token present = ' + (resetPinToken ? 'YES' : 'NO') + '\n' +
+                    'STEP 3: PINs match = YES\n' +
+                    'STEP 4: About to call backend'
+                  );
 
-  let result;
 
-  try {
+                  let result;
+
+                  try {
                     result = await googleSheetsService.resetVolunteerPin(
                       resetPinToken,
                       resetNewPin
                     );
                   } catch (err: any) {
+                    alert(
+                      'RESET CALL FAILED:\n\n' +
+                      (err?.message || String(err))
+                    );
                     setResetPinError(
                       err?.message || 'Unable to connect to the PIN reset service.'
                     );
@@ -715,6 +726,7 @@ export function VolunteerPortal({
             <form
               onSubmit={async e => {
                 e.preventDefault();
+                alert('RESET STEP 1: Button clicked');
                 setLoginError('');
 
                 const volunteerCode =
