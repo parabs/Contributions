@@ -119,7 +119,10 @@ export function VolunteerPortal({
 
 
   // Internal Authenticated Sub-view
-  const [activeInternalTab, setActiveInternalTab] = useState<'verify' | 'directEntry' | 'detailedDashboard' | 'liveSheet' | 'emailConfig'>('verify');
+  const [activeInternalTab, setActiveInternalTab] = useState<
+    'verify' | 'directEntry' | 'detailedDashboard' | 'liveSheet' | 'emailConfig' | 'profile'
+  >('verify');
+
 
   // Direct Counter Entry Form State
   const [directDonorName, setDirectDonorName] = useState('');
@@ -220,12 +223,6 @@ export function VolunteerPortal({
       return;
     }
 
-    alert(
-  `AUTH INPUT CHECK\n\n` +
-  `Volunteer: ${volunteerCode}\n` +
-  `PIN length: ${pin.length}\n` +
-  `PIN matches test PIN: ${pin === '2345' ? 'YES' : 'NO'}`
-);
     const result =
       await googleSheetsService.authenticateVolunteer(
         volunteerCode,
@@ -518,10 +515,6 @@ export function VolunteerPortal({
                       resetNewPin
                     );
                   } catch (err: any) {
-                    alert(
-                      'RESET CALL FAILED:\n\n' +
-                      (err?.message || String(err))
-                    );
                     setResetPinError(
                       err?.message || 'Unable to connect to the PIN reset service.'
                     );
@@ -536,10 +529,6 @@ export function VolunteerPortal({
                     return;
                   }
 
-                  alert(
-                    result.message ||
-                    'Your PIN has been reset successfully.'
-                  );
 
                   setResetNewPin('');
                   setResetConfirmPin('');
@@ -726,7 +715,6 @@ export function VolunteerPortal({
             <form
               onSubmit={async e => {
                 e.preventDefault();
-                alert('RESET STEP 1: Button clicked');
                 setLoginError('');
 
                 const volunteerCode =
@@ -755,12 +743,6 @@ export function VolunteerPortal({
                   );
                   return;
                 }
-
-                alert(
-                  result.message ||
-                  'A secure PIN reset link has been sent to your registered email.'
-                );
-
                 setForgotPinEmail('');
               }}
               className="space-y-4"
@@ -967,6 +949,17 @@ export function VolunteerPortal({
           <Mail className="w-4 h-4" />
           <span>Email Config</span>
           <span className="w-2 h-2 rounded-full bg-emerald-500" />
+        </button>
+
+        <button
+          onClick={() => setActiveInternalTab('profile')}
+          className={`px-4 py-2 rounded-lg text-sm font-medium transition ${
+            activeInternalTab === 'profile'
+              ? 'bg-blue-600 text-white'
+              : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+          }`}
+        >
+          My Profile
         </button>
 
       </div>
@@ -1626,6 +1619,60 @@ export function VolunteerPortal({
             recentDonations={donations}
             onViewReceipt={onViewReceipt}
           />
+        </div>
+      )}
+
+      {activeInternalTab === 'profile' && (
+        <div className="max-w-2xl mx-auto">
+          <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+            <h2 className="text-xl font-semibold text-slate-900">
+              My Profile
+            </h2>
+
+            <p className="mt-1 text-sm text-slate-500">
+              Update your registered mobile number, email address, or Security PIN.
+            </p>
+
+            <div className="mt-6 space-y-4">
+
+              <div>
+                <label className="block text-sm font-medium text-slate-700">
+                  Volunteer ID
+                </label>
+                <input
+                  type="text"
+                  value={currentVolunteer?.volunteerCode || ''}
+                  disabled
+                  className="mt-1 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-slate-700">
+                  Volunteer Name
+                </label>
+                <input
+                  type="text"
+                  value={currentVolunteer?.volunteerName || ''}
+                  disabled
+                  className="mt-1 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-slate-700">
+                  Role
+                </label>
+                <input
+                  type="text"
+                  value={currentVolunteer?.role || ''}
+                  disabled
+                  className="mt-1 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-500"
+                />
+              </div>
+
+            </div>
+          </div>
         </div>
       )}
 

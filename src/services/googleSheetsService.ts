@@ -1196,6 +1196,70 @@ export async function requestVolunteerPinReset(
   }
 }
 
+export async function updateVolunteerProfile(
+  volunteerCode: string,
+  currentPin: string,
+  mobile: string,
+  email: string,
+  newPin: string
+): Promise<{
+  success: boolean;
+  message?: string;
+  error?: string;
+  volunteer?: {
+    volunteerCode: string;
+    volunteerName: string;
+    phone: string;
+    email: string;
+    role: string;
+    status: string;
+  };
+}> {
+  const webhookUrl = DEFAULT_WEBHOOK_URL;
+
+  try {
+    const response = await fetch(webhookUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'text/plain;charset=utf-8'
+      },
+      body: JSON.stringify({
+        action: 'updateVolunteerProfile',
+        volunteerCode: volunteerCode.trim().toUpperCase(),
+        currentPin: currentPin.trim(),
+        mobile: mobile.trim(),
+        email: email.trim().toLowerCase(),
+        newPin: newPin.trim()
+      }),
+      redirect: 'follow'
+    });
+
+    const responseText = await response.text();
+
+    try {
+      const result = JSON.parse(responseText);
+      return result;
+    } catch (parseError) {
+      console.error(
+        'PROFILE UPDATE RESPONSE IS NOT JSON:',
+        responseText
+      );
+
+      return {
+        success: false,
+        error: 'Backend returned an invalid profile update response.'
+      };
+    }
+  } catch (err: any) {
+    return {
+      success: false,
+      error:
+        err.message ||
+        'Network error during profile update.'
+    };
+  }
+}
+
 export async function resetVolunteerPin(
   token: string,
   newPin: string
