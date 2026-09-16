@@ -15,6 +15,7 @@ import {
   Shield
 } from 'lucide-react';
 import { VolunteerRecord, DonationRecord } from '../types';
+import { addVolunteer } from '../services/googleSheetsService';
 
 interface VolunteerManagementModalProps {
   volunteers: VolunteerRecord[];
@@ -39,13 +40,10 @@ export function VolunteerManagementModal({
   const [resettingVolunteer, setResettingVolunteer] = useState<VolunteerRecord | null>(null);
   
   // New Volunteer Form State
-  const nextVolunteerCode = `VOL${String(volunteers.length + 1).padStart(3, '0')}`;
-  const [newCode, setNewCode] = useState(nextVolunteerCode);
   const [newName, setNewName] = useState('');
   const [newPhone, setNewPhone] = useState('');
   const [newEmail, setNewEmail] = useState('');
-  const [newAuthCode, setNewAuthCode] = useState('');
-  const [newStatus, setNewStatus] = useState<'Active' | 'Closed'>('Active');
+  const [newRole, setNewRole] = useState('Volunteer');
   const [formError, setFormError] = useState('');
   const [formSuccess, setFormSuccess] = useState('');
 
@@ -63,49 +61,63 @@ export function VolunteerManagementModal({
     (v.email && v.email.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
-  const handleAddSubmit = (e: React.FormEvent) => {
+  const handleAddSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setFormError('');
     setFormSuccess('');
 
-    if (!newCode.trim() || !newName.trim() || !newAuthCode.trim()) {
-      setFormError('Volunteer Code, Name, and Security PIN are required.');
+    if (!newName.trim() || !newPhone.trim() || !newEmail.trim() || !newRole.trim()) {
+      setFormError('Name, Mobile, Email, and Role are required.');
       return;
     }
 
-    if (volunteers.some(v => v.volunteerCode.toUpperCase() === newCode.trim().toUpperCase())) {
-      setFormError(`Volunteer Code ${newCode.trim().toUpperCase()} already exists. Please choose a unique code.`);
-      return;
+    try {
+      const result = await addVolunteer(
+        newName,
+        newPhone,
+        newEmail,
+        newRole
+      );
+
+      if (!result.success || !result.volunteer) {
+        setFormError(
+          result.error || 'Unable to create volunteer account.'
+        );
+        return;
+      }
+
+      const createdVolunteer: VolunteerRecord = {
+        volunteerCode: result.volunteer.volunteerCode,
+        volunteerName: result.volunteer.volunteerName,
+        authCode: '',
+        status: 'Created',
+        phone: result.volunteer.phone,
+        email: result.volunteer.email,
+        role: result.volunteer.role
+      };
+
+      onAddVolunteer(createdVolunteer);
+
+      setFormSuccess(
+        `Volunteer ${createdVolunteer.volunteerName} created successfully.`
+      );
+
+      // Reset form
+      setNewName('');
+      setNewPhone('');
+      setNewEmail('');
+      setNewRole('Volunteer');
+
+      setTimeout(() => {
+        setFormSuccess('');
+        setActiveTab('list');
+      }, 1500);
+
+    } catch (err: any) {
+      setFormError(
+        err.message || 'Unable to create volunteer account.'
+      );
     }
-
-    if (newAuthCode.trim().length < 4) {
-      setFormError('Security PIN / Password must be at least 4 digits.');
-      return;
-    }
-
-    const newVolunteer: VolunteerRecord = {
-      volunteerCode: newCode.trim().toUpperCase(),
-      volunteerName: newName.trim(),
-      authCode: newAuthCode.trim(),
-      status: newStatus,
-      phone: newPhone.trim() || undefined,
-      email: newEmail.trim() || undefined
-    };
-
-    onAddVolunteer(newVolunteer);
-    setFormSuccess(`Volunteer ${newName.trim()} (${newCode.trim().toUpperCase()}) added successfully!`);
-    
-    // Reset form
-    setNewName('');
-    setNewPhone('');
-    setNewEmail('');
-    setNewAuthCode('');
-    setNewCode(`VOL${String(volunteers.length + 2).padStart(3, '0')}`);
-    
-    setTimeout(() => {
-      setFormSuccess('');
-      setActiveTab('list');
-    }, 1500);
   };
 
   const handleEditSubmit = (e: React.FormEvent) => {
@@ -309,10 +321,13 @@ export function VolunteerManagementModal({
           {/* TAB: ADD NEW VOLUNTEER */}
           {activeTab === 'add' && (
             <form onSubmit={handleAddSubmit} className="space-y-4">
+
               <div className="bg-amber-50/60 p-4 rounded-2xl border border-amber-200 text-xs text-amber-950 flex items-start gap-2.5">
                 <ShieldCheck className="w-4 h-4 text-amber-800 shrink-0 mt-0.5" />
                 <div>
-                  Enter the volunteer profile details. They will use their <strong>Volunteer Code</strong> and <strong>Security PIN</strong> to sign in and confirm UPI contributions in the Mandap.
+                  Enter the volunteer's profile details. An activation link will be
+                  sent to their registered email so they can set their own
+                  Security PIN and activate the account.
                 </div>
               </div>
 
@@ -331,20 +346,8 @@ export function VolunteerManagementModal({
               )}
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                    Volunteer Code <span className="text-rose-500">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="e.g. VOL003"
-                    value={newCode}
-                    onChange={e => setNewCode(e.target.value.toUpperCase())}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-mono font-bold text-slate-900 bg-slate-50 focus:outline-hidden focus:ring-2 focus:ring-amber-700"
-                  />
-                </div>
 
+                {/* Full Name */}
                 <div>
                   <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
                     Full Name <span className="text-rose-500">*</span>
@@ -359,13 +362,15 @@ export function VolunteerManagementModal({
                   />
                 </div>
 
+                {/* Mobile */}
                 <div>
                   <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                    Mobile Number (Optional)
+                    Mobile Number <span className="text-rose-500">*</span>
                   </label>
                   <div className="relative">
                     <input
                       type="tel"
+                      required
                       placeholder="e.g. 9892805337"
                       value={newPhone}
                       onChange={e => setNewPhone(e.target.value)}
@@ -375,13 +380,15 @@ export function VolunteerManagementModal({
                   </div>
                 </div>
 
+                {/* Email */}
                 <div>
                   <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                    Email Address (Optional)
+                    Email Address <span className="text-rose-500">*</span>
                   </label>
                   <div className="relative">
                     <input
                       type="email"
+                      required
                       placeholder="e.g. volunteer@gmail.com"
                       value={newEmail}
                       onChange={e => setNewEmail(e.target.value)}
@@ -391,35 +398,30 @@ export function VolunteerManagementModal({
                   </div>
                 </div>
 
+                {/* Role */}
                 <div>
                   <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                    Security Auth PIN / Password <span className="text-rose-500">*</span>
-                  </label>
-                  <div className="relative">
-                    <input
-                      type="password"
-                      required
-                      placeholder="6-digit PIN (e.g. 123456)"
-                      value={newAuthCode}
-                      onChange={e => setNewAuthCode(e.target.value)}
-                      className="w-full pl-9 pr-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-mono font-bold text-slate-900 bg-slate-50 focus:outline-hidden focus:ring-2 focus:ring-amber-700"
-                    />
-                    <KeyRound className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                    Account Status
+                    Role <span className="text-rose-500">*</span>
                   </label>
                   <select
-                    value={newStatus}
-                    onChange={e => setNewStatus(e.target.value as any)}
+                    required
+                    value={newRole}
+                    onChange={e => setNewRole(e.target.value)}
                     className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-900 bg-slate-50 focus:outline-hidden focus:ring-2 focus:ring-amber-700"
                   >
-                    <option value="Active">Active (Can verify payments)</option>
-                    <option value="Closed">Closed / Inactive</option>
+                    <option value="Volunteer">Volunteer</option>
+                    <option value="Treasurer">Treasurer</option>
+                    <option value="Admin">Admin</option>
                   </select>
+                </div>
+
+              </div>
+
+              <div className="pt-3 border-t border-slate-100">
+                <div className="text-[11px] text-slate-500">
+                  The system will automatically generate a unique Volunteer Code.
+                  The account will remain <strong>Created</strong> until the
+                  volunteer activates it and sets a Security PIN.
                 </div>
               </div>
 
@@ -431,14 +433,16 @@ export function VolunteerManagementModal({
                 >
                   Cancel
                 </button>
+
                 <button
                   type="submit"
                   className="px-5 py-2.5 rounded-xl bg-amber-800 hover:bg-amber-900 text-white text-xs font-bold transition flex items-center gap-1.5 shadow-sm cursor-pointer"
                 >
                   <UserPlus className="w-4 h-4" />
-                  <span>Save Volunteer</span>
+                  <span>Create Volunteer</span>
                 </button>
               </div>
+
             </form>
           )}
 

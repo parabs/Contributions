@@ -26,7 +26,7 @@ export interface VolunteerRecord {
   volunteerCode: string;
   volunteerName: string;
   authCode: string; // Plain or Hashed PIN
-  status: 'Active' | 'Closed';
+  status: 'Created' | 'Active' | 'Closed';
   phone?: string;
   email?: string;
   role?: string;

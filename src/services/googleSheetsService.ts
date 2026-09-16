@@ -1146,6 +1146,69 @@ export async function authenticateVolunteer(
   }
 }
 
+export async function addVolunteer(
+  volunteerName: string,
+  mobile: string,
+  email: string,
+  role: string
+): Promise<{
+  success: boolean;
+  volunteer?: {
+    volunteerCode: string;
+    volunteerName: string;
+    phone?: string;
+    email?: string;
+    role?: string;
+    status: string;
+  };
+  message?: string;
+  error?: string;
+}> {
+  const webhookUrl = DEFAULT_WEBHOOK_URL;
+
+  try {
+    const response = await fetch(webhookUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'text/plain;charset=utf-8'
+      },
+      body: JSON.stringify({
+        action: 'addVolunteer',
+        volunteerName: volunteerName.trim(),
+        mobile: mobile.trim(),
+        email: email.trim(),
+        role: role.trim()
+      }),
+      redirect: 'follow'
+    });
+
+    const responseText = await response.text();
+
+    try {
+      const result = JSON.parse(responseText);
+
+      return result;
+    } catch (parseError) {
+      console.error(
+        'ADD VOLUNTEER RESPONSE IS NOT JSON:',
+        responseText
+      );
+
+      return {
+        success: false,
+        error: 'Backend returned an invalid volunteer creation response.'
+      };
+    }
+  } catch (err: any) {
+    return {
+      success: false,
+      error:
+        err.message ||
+        'Network error during volunteer creation.'
+    };
+  }
+}
+
 export async function requestVolunteerPinReset(
   volunteerCode: string,
   email: string

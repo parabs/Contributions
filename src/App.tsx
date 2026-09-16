@@ -395,6 +395,7 @@ const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
           body: JSON.stringify({
             action: 'confirm_sheet_donation',
             donationId: donationId.trim(),
+            volunteerCode: currentVolunteer?.volunteerCode || '',
             confirmedBy: volunteerName
           }),
           redirect: 'follow'
