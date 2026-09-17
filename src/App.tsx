@@ -356,6 +356,30 @@ const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
     setVolunteers(prev => [...prev, newVolunteer]);
   };
 
+  const handleRefreshVolunteers = async () => {
+    const result = await googleSheetsService.fetchVolunteers();
+
+    if (!result.success || !result.volunteers) {
+      console.error(
+        'VOLUNTEER REFRESH ERROR:',
+        result.error || 'Unable to load volunteers.'
+      );
+      return;
+    }
+
+    setVolunteers(
+      result.volunteers.map(v => ({
+        volunteerCode: v.volunteerCode,
+        volunteerName: v.volunteerName,
+        authCode: '',
+        status: v.status as 'Created' | 'Active' | 'Closed',
+        phone: v.phone,
+        email: v.email,
+        role: v.role
+      }))
+    );
+  };
+
   const handleEditVolunteer = (updatedVolunteer: VolunteerRecord) => {
     setVolunteers(prev => prev.map(v => 
       v.volunteerCode === updatedVolunteer.volunteerCode ? updatedVolunteer : v
@@ -730,6 +754,7 @@ const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
           onAddVolunteer={handleAddVolunteer}
           onEditVolunteer={handleEditVolunteer}
           onResetPassword={handleResetPassword}
+          onRefreshVolunteers={handleRefreshVolunteers}
           onClose={() => setIsVolunteerManagementOpen(false)}
         />
       )}

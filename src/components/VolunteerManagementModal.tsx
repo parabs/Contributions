@@ -23,6 +23,7 @@ interface VolunteerManagementModalProps {
   onAddVolunteer: (volunteer: VolunteerRecord) => void;
   onEditVolunteer: (volunteer: VolunteerRecord) => void;
   onResetPassword: (volunteerCode: string, newAuthCode: string) => void;
+  onRefreshVolunteers: () => Promise<void>;
   onClose: () => void;
 }
 
@@ -32,8 +33,13 @@ export function VolunteerManagementModal({
   onAddVolunteer,
   onEditVolunteer,
   onResetPassword,
+  onRefreshVolunteers,
   onClose
 }: VolunteerManagementModalProps) {
+  React.useEffect(() => {
+    onRefreshVolunteers();
+  }, [onRefreshVolunteers]);
+
   const [searchTerm, setSearchTerm] = useState('');
   const [activeTab, setActiveTab] = useState<'list' | 'add'>('list');
   const [editingVolunteer, setEditingVolunteer] = useState<VolunteerRecord | null>(null);
