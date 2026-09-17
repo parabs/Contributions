@@ -579,15 +579,6 @@ export function VolunteerPortal({
                     return;
                   }
 
-                  alert(
-                    'RESET DEBUG\n\n' +
-                    'STEP 1: Button works\n' +
-                    'STEP 2: Token present = ' + (resetPinToken ? 'YES' : 'NO') + '\n' +
-                    'STEP 3: PINs match = YES\n' +
-                    'STEP 4: About to call backend'
-                  );
-
-
                   let result;
 
                   try {
@@ -609,7 +600,7 @@ export function VolunteerPortal({
                     );
                     return;
                   }
-                  
+
                   alert(
                     result.message ||
                     'Your account has been activated successfully.'

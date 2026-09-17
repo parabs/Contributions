@@ -1184,8 +1184,7 @@ export async function addVolunteer(
 
     const responseText = await response.text();
 
-    alert('ADD VOLUNTEER RAW RESPONSE:\n\n' + responseText);
-    
+   
     try {
       const result = JSON.parse(responseText);
 
