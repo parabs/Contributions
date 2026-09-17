@@ -615,7 +615,11 @@ export function VolunteerPortal({
                   setResetConfirmPin('');
                   setResetPinToken(null);
 
-                  window.location.href = window.location.pathname;
+                  window.history.replaceState(
+                    {},
+                    document.title,
+                    window.location.pathname
+                  );
                 }}
               >
 
