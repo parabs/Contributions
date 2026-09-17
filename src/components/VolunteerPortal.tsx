@@ -609,7 +609,11 @@ export function VolunteerPortal({
                     );
                     return;
                   }
-
+                  
+                  alert(
+                    result.message ||
+                    'Your account has been activated successfully.'
+                  );
 
                   setResetNewPin('');
                   setResetConfirmPin('');
