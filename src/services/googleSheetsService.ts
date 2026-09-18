@@ -1334,6 +1334,8 @@ export async function deleteVolunteer(
 
     const responseText = await response.text();
 
+    alert('DELETE VOLUNTEER RAW RESPONSE:\n\n' + responseText);
+    
     try {
       return JSON.parse(responseText);
     } catch (parseError) {
