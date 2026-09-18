@@ -36,10 +36,10 @@ export function VolunteerManagementModal({
   onRefreshVolunteers,
   onClose
 }: VolunteerManagementModalProps) {
-  React.useEffect(() => {
+ /* React.useEffect(() => {
     onRefreshVolunteers();
   }, [onRefreshVolunteers]);
-
+*/
   const [searchTerm, setSearchTerm] = useState('');
   const [activeTab, setActiveTab] = useState<'list' | 'add'>('list');
   const [editingVolunteer, setEditingVolunteer] = useState<VolunteerRecord | null>(null);
