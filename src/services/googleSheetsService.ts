@@ -1262,6 +1262,54 @@ export async function fetchVolunteers(): Promise<{
   }
 }
 
+export async function sendVolunteerActivation(
+  volunteerCode: string
+): Promise<{
+  success: boolean;
+  message?: string;
+  error?: string;
+}> {
+  const webhookUrl = DEFAULT_WEBHOOK_URL;
+
+  try {
+    const response = await fetch(webhookUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'text/plain;charset=utf-8'
+      },
+      body: JSON.stringify({
+        action: 'sendVolunteerActivation',
+        volunteerCode
+      }),
+      redirect: 'follow'
+    });
+
+    const responseText = await response.text();
+
+    try {
+      return JSON.parse(responseText);
+    } catch (parseError) {
+      console.error(
+        'SEND ACTIVATION RESPONSE IS NOT JSON:',
+        responseText
+      );
+
+      return {
+        success: false,
+        error: 'Backend returned an invalid activation response.'
+      };
+    }
+
+  } catch (err: any) {
+    return {
+      success: false,
+      error:
+        err.message ||
+        'Network error while sending activation link.'
+    };
+  }
+}
+
 export async function requestVolunteerPinReset(
   volunteerCode: string,
   email: string

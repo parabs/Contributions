@@ -15,7 +15,10 @@ import {
   Shield
 } from 'lucide-react';
 import { VolunteerRecord, DonationRecord } from '../types';
-import { addVolunteer } from '../services/googleSheetsService';
+import {
+  addVolunteer,
+  sendVolunteerActivation
+} from '../services/googleSheetsService';
 
 interface VolunteerManagementModalProps {
   volunteers: VolunteerRecord[];
@@ -320,6 +323,28 @@ export function VolunteerManagementModal({
                                   >
                                     <Edit3 className="w-3.5 h-3.5" />
                                   </button>
+                                    {vol.status === 'Created' && (
+                                      <button
+                                        type="button"
+                                        onClick={async () => {
+                                          const result = await sendVolunteerActivation(vol.volunteerCode);
+
+                                          if (result.success) {
+                                            alert(`Activation link sent to ${vol.volunteerName}.`);
+                                          } else {
+                                            alert(
+                                              result.error ||
+                                              'Unable to send activation link.'
+                                            );
+                                          }
+                                        }}
+                                        title="Send Activation Link"
+                                        className="p-1.5 rounded-lg text-slate-600 hover:text-amber-900 hover:bg-amber-100 transition cursor-pointer"
+                                      >
+                                        <UserCheck className="w-3.5 h-3.5" />
+                                      </button>
+                                    )}
+
 
                                   {vol.status === 'Active' && (
                                     <button
