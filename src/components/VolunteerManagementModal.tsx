@@ -325,6 +325,7 @@ export function VolunteerManagementModal({
                                     <Edit3 className="w-3.5 h-3.5" />
                                   </button>
                                     {vol.status === 'Created' && (
+                                      <>
                                       <button
                                         type="button"
                                         onClick={async () => {
@@ -370,6 +371,7 @@ export function VolunteerManagementModal({
                                       >
                                         <UserX className="w-3.5 h-3.5" />
                                       </button>
+                                      </>
                                     )}
 
 
