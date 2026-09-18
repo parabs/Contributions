@@ -18,7 +18,7 @@ import {
 } from 'lucide-react';
 
 import { DonationRecord, VolunteerRecord, TrustConfig } from './types';
-import { TRUST_CONFIG, INITIAL_VOLUNTEERS } from './data/mockData';
+import { TRUST_CONFIG } from './data/mockData';
 import { DonorForm } from './components/DonorForm';
 import { VolunteerPortal } from './components/VolunteerPortal';
 import { GoogleSheetView } from './components/GoogleSheetView';
@@ -55,10 +55,7 @@ const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
     return [];
   });
 
-  const [volunteers, setVolunteers] = useState<VolunteerRecord[]>(() => {
-    const saved = localStorage.getItem('sjst_volunteers');
-    return saved ? JSON.parse(saved) : INITIAL_VOLUNTEERS;
-  });
+  const [volunteers, setVolunteers] = useState<VolunteerRecord[]>([]);
 
   // Real Google & Gmail Auth Context
   const {
@@ -168,11 +165,6 @@ const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
     }
   }, [googleAccessToken]);
   
-
-  React.useEffect(() => {
-    localStorage.setItem('sjst_volunteers', JSON.stringify(volunteers));
-  }, [volunteers]);
-
   React.useEffect(() => {
     localStorage.setItem('sjst_trust_config', JSON.stringify(trustConfig));
   }, [trustConfig]);
@@ -359,7 +351,7 @@ const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
   const handleRefreshVolunteers = async () => {
     const result = await googleSheetsService.fetchVolunteers();
 
-    alert('VOLUNTEER REFRESH RESULT:\n\n' + JSON.stringify(result, null, 2));
+    //alert('VOLUNTEER REFRESH RESULT:\n\n' + JSON.stringify(result, null, 2));
     if (!result.success || !result.volunteers) {
       console.error(
         'VOLUNTEER REFRESH ERROR:',

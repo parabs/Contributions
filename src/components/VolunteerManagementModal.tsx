@@ -40,6 +40,9 @@ export function VolunteerManagementModal({
     onRefreshVolunteers();
   }, []);
 
+
+  const [statusFilter, setStatusFilter] = useState<'All' | 'Created' | 'Active' | 'Closed'>('All');
+
   const [searchTerm, setSearchTerm] = useState('');
   const [activeTab, setActiveTab] = useState<'list' | 'add'>('list');
   const [editingVolunteer, setEditingVolunteer] = useState<VolunteerRecord | null>(null);
@@ -60,12 +63,18 @@ export function VolunteerManagementModal({
   const [resetSuccess, setResetSuccess] = useState('');
 
   // Filter volunteers
-  const filteredVolunteers = volunteers.filter(v => 
-    v.volunteerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    v.volunteerCode.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    (v.phone && v.phone.includes(searchTerm)) ||
-    (v.email && v.email.toLowerCase().includes(searchTerm.toLowerCase()))
-  );
+  const filteredVolunteers = volunteers.filter(v => {
+    const matchesSearch =
+      v.volunteerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      v.volunteerCode.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (v.phone && v.phone.includes(searchTerm)) ||
+      (v.email && v.email.toLowerCase().includes(searchTerm.toLowerCase()));
+
+    const matchesStatus =
+      statusFilter === 'All' || v.status === statusFilter;
+
+    return matchesSearch && matchesStatus;
+  });
 
   const handleAddSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -223,17 +232,34 @@ export function VolunteerManagementModal({
           {/* TAB: LIST VOLUNTEERS */}
           {activeTab === 'list' && !editingVolunteer && !resettingVolunteer && (
             <div className="space-y-4">
-              
-              {/* Search Bar */}
-              <div className="relative">
-                <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
-                <input
-                  type="text"
-                  placeholder="Search volunteer by code, name, phone or email..."
-                  value={searchTerm}
-                  onChange={e => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2.5 text-xs rounded-xl border border-slate-200 bg-slate-50/50 focus:outline-hidden focus:ring-2 focus:ring-amber-700"
-                />
+                    
+              {/* Search & Status Filter */}
+              <div className="flex flex-col sm:flex-row gap-2">
+                <div className="relative flex-1">
+                  <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                  <input
+                    type="text"
+                    placeholder="Search volunteer by code, name, phone or email..."
+                    value={searchTerm}
+                    onChange={e => setSearchTerm(e.target.value)}
+                    className="w-full pl-10 pr-4 py-2.5 text-xs rounded-xl border border-slate-200 bg-slate-50/50 focus:outline-hidden focus:ring-2 focus:ring-amber-700"
+                  />
+                </div>
+
+                <select
+                  value={statusFilter}
+                  onChange={e =>
+                    setStatusFilter(
+                      e.target.value as 'All' | 'Created' | 'Active' | 'Closed'
+                    )
+                  }
+                  className="sm:w-40 px-3.5 py-2.5 text-xs font-bold text-slate-700 rounded-xl border border-slate-200 bg-slate-50 focus:outline-hidden focus:ring-2 focus:ring-amber-700"
+                >
+                  <option value="All">All Status</option>
+                  <option value="Created">Created</option>
+                  <option value="Active">Active</option>
+                  <option value="Closed">Closed</option>
+                </select>
               </div>
 
               {/* Volunteers Table */}
@@ -294,19 +320,23 @@ export function VolunteerManagementModal({
                                   >
                                     <Edit3 className="w-3.5 h-3.5" />
                                   </button>
-                                  <button
-                                    onClick={() => {
-                                      setResettingVolunteer(vol);
-                                      setResetAuthCode('');
-                                      setResetConfirmCode('');
-                                      setResetError('');
-                                    }}
-                                    title="Reset Security PIN / Password"
-                                    className="p-1.5 rounded-lg text-slate-600 hover:text-amber-900 hover:bg-amber-100 transition cursor-pointer"
-                                  >
-                                    <KeyRound className="w-3.5 h-3.5" />
-                                  </button>
+
+                                  {vol.status === 'Active' && (
+                                    <button
+                                      onClick={() => {
+                                        setResettingVolunteer(vol);
+                                        setResetAuthCode('');
+                                        setResetConfirmCode('');
+                                        setResetError('');
+                                      }}
+                                      title="Reset Security PIN / Password"
+                                      className="p-1.5 rounded-lg text-slate-600 hover:text-amber-900 hover:bg-amber-100 transition cursor-pointer"
+                                    >
+                                      <KeyRound className="w-3.5 h-3.5" />
+                                    </button>
+                                  )}
                                 </div>
+
                               </td>
                             </tr>
                           );
