@@ -359,7 +359,7 @@ const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
   const handleRefreshVolunteers = async () => {
     const result = await googleSheetsService.fetchVolunteers();
 
-    alert('VOLUNTEER REFRESH RESULT:\n\n' + JSON.stringify(result, null, 2));
+    //alert('VOLUNTEER REFRESH RESULT:\n\n' + JSON.stringify(result, null, 2));
     if (!result.success || !result.volunteers) {
       console.error(
         'VOLUNTEER REFRESH ERROR:',
