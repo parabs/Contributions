@@ -17,7 +17,8 @@ import {
 import { VolunteerRecord, DonationRecord } from '../types';
 import {
   addVolunteer,
-  sendVolunteerActivation
+  sendVolunteerActivation,
+  deleteVolunteer
 } from '../services/googleSheetsService';
 
 interface VolunteerManagementModalProps {
@@ -342,6 +343,32 @@ export function VolunteerManagementModal({
                                         className="p-1.5 rounded-lg text-slate-600 hover:text-amber-900 hover:bg-amber-100 transition cursor-pointer"
                                       >
                                         <UserCheck className="w-3.5 h-3.5" />
+                                      </button>
+                                      <button
+                                        type="button"
+                                        onClick={async () => {
+                                          const confirmed = window.confirm(
+                                            `Delete volunteer ${vol.volunteerName} (${vol.volunteerCode})?`
+                                          );
+
+                                          if (!confirmed) return;
+
+                                          const result = await deleteVolunteer(vol.volunteerCode);
+
+                                          if (result.success) {
+                                            alert(`Volunteer ${vol.volunteerName} deleted successfully.`);
+                                            await onRefreshVolunteers();
+                                          } else {
+                                            alert(
+                                              result.error ||
+                                              'Unable to delete volunteer.'
+                                            );
+                                          }
+                                        }}
+                                        title="Delete Volunteer"
+                                        className="p-1.5 rounded-lg text-slate-600 hover:text-rose-700 hover:bg-rose-100 transition cursor-pointer"
+                                      >
+                                        <UserX className="w-3.5 h-3.5" />
                                       </button>
                                     )}
 
