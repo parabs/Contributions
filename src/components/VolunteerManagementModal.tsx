@@ -12,7 +12,11 @@ import {
   Mail,
   UserX,
   UserCheck,
-  Shield
+  Shield,
+  Send,
+  Trash2,
+  Ban,
+  RefreshCw
 } from 'lucide-react';
 import { VolunteerRecord, DonationRecord } from '../types';
 import {
@@ -45,9 +49,19 @@ export function VolunteerManagementModal({
   onClose
 }: VolunteerManagementModalProps) {
 
-React.useEffect(() => {
-    onRefreshVolunteers();
-  }, []);
+  React.useEffect(() => {
+  const loadVolunteers = async () => {
+    setLoadingVolunteers(true);
+
+    try {
+      await onRefreshVolunteers();
+    } finally {
+      setLoadingVolunteers(false);
+    }
+  };
+
+  loadVolunteers();
+}, []);
 
 
   const [statusFilter, setStatusFilter] = useState<'All' | 'Created' | 'Active' | 'Closed'>('All');
@@ -55,8 +69,8 @@ React.useEffect(() => {
   const [searchTerm, setSearchTerm] = useState('');
   const [activeTab, setActiveTab] = useState<'list' | 'add'>('list');
   const [editingVolunteer, setEditingVolunteer] = useState<VolunteerRecord | null>(null);
+  const [loadingVolunteers, setLoadingVolunteers] = useState(false);
 
-  
   // New Volunteer Form State
   const [newName, setNewName] = useState('');
   const [newPhone, setNewPhone] = useState('');
@@ -279,7 +293,15 @@ return (
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100 font-normal">
-                      {filteredVolunteers.length === 0 ? (
+                      {loadingVolunteers ? (
+                        <tr>
+                          <td colSpan={5} className="py-10 text-center">
+                            <div className="text-sm font-semibold text-slate-500 animate-pulse">
+                              ⏳ Loading Volunteers...
+                            </div>
+                          </td>
+                        </tr>
+                      ) : filteredVolunteers.length === 0 ? (
                         <tr>
                           <td colSpan={5} className="py-8 text-center text-slate-400 text-xs">
                             No volunteers found matching &quot;{searchTerm}&quot;
@@ -342,7 +364,7 @@ return (
                                         title="Send Activation Link"
                                         className="p-1.5 rounded-lg text-slate-600 hover:text-amber-900 hover:bg-amber-100 transition cursor-pointer"
                                       >
-                                        <UserCheck className="w-3.5 h-3.5" />
+                                        <Send className="w-3.5 h-3.5" />
                                       </button>
                                       <button
                                         type="button"
@@ -368,7 +390,7 @@ return (
                                         title="Delete Volunteer"
                                         className="p-1.5 rounded-lg text-slate-600 hover:text-rose-700 hover:bg-rose-100 transition cursor-pointer"
                                       >
-                                        <UserX className="w-3.5 h-3.5" />
+                                        <Trash2 className="w-3.5 h-3.5" />
                                       </button>
                                       </>
                                     )}
@@ -420,7 +442,7 @@ return (
                                       title="Disable Volunteer"
                                       className="text-slate-500 hover:text-rose-700 transition cursor-pointer"
                                     >
-                                      <UserX className="w-3.5 h-3.5" />
+                                      <Ban className="w-3.5 h-3.5" />
                                     </button>
                                     </>
                                   )}
@@ -454,7 +476,7 @@ return (
                                     title="Reactivate Volunteer"
                                     className="p-1.5 rounded-lg text-slate-600 hover:text-emerald-700 hover:bg-emerald-100 transition cursor-pointer"
                                   >
-                                    <UserCheck className="w-3.5 h-3.5" />
+                                    <RefreshCw className="w-3.5 h-3.5" />
                                   </button>
                                 )}
                                 </div>
