@@ -1310,6 +1310,54 @@ export async function sendVolunteerActivation(
   }
 }
 
+export async function sendVolunteerPinReset(
+  volunteerCode: string
+): Promise<{
+  success: boolean;
+  message?: string;
+  error?: string;
+}> {
+  const webhookUrl = DEFAULT_WEBHOOK_URL;
+
+  try {
+    const response = await fetch(webhookUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'text/plain;charset=utf-8'
+      },
+      body: JSON.stringify({
+        action: 'sendVolunteerPinReset',
+        volunteerCode
+      }),
+      redirect: 'follow'
+    });
+
+    const responseText = await response.text();
+
+    try {
+      return JSON.parse(responseText);
+    } catch (parseError) {
+      console.error(
+        'PIN RESET LINK RESPONSE IS NOT JSON:',
+        responseText
+      );
+
+      return {
+        success: false,
+        error: 'Backend returned an invalid PIN reset link response.'
+      };
+    }
+
+  } catch (err: any) {
+    return {
+      success: false,
+      error:
+        err.message ||
+        'Network error while sending PIN reset link.'
+    };
+  }
+}
+
 export async function deleteVolunteer(
   volunteerCode: string
 ): Promise<{
@@ -1334,8 +1382,6 @@ export async function deleteVolunteer(
 
     const responseText = await response.text();
 
-    alert('DELETE VOLUNTEER RAW RESPONSE:\n\n' + responseText);
-    
     try {
       return JSON.parse(responseText);
     } catch (parseError) {

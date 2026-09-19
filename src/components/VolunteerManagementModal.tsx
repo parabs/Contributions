@@ -18,7 +18,8 @@ import { VolunteerRecord, DonationRecord } from '../types';
 import {
   addVolunteer,
   sendVolunteerActivation,
-  deleteVolunteer
+  deleteVolunteer,
+  sendVolunteerPinReset
 } from '../services/googleSheetsService';
 
 interface VolunteerManagementModalProps {
@@ -50,7 +51,7 @@ export function VolunteerManagementModal({
   const [searchTerm, setSearchTerm] = useState('');
   const [activeTab, setActiveTab] = useState<'list' | 'add'>('list');
   const [editingVolunteer, setEditingVolunteer] = useState<VolunteerRecord | null>(null);
-  const [resettingVolunteer, setResettingVolunteer] = useState<VolunteerRecord | null>(null);
+
   
   // New Volunteer Form State
   const [newName, setNewName] = useState('');
@@ -59,12 +60,6 @@ export function VolunteerManagementModal({
   const [newRole, setNewRole] = useState('Volunteer');
   const [formError, setFormError] = useState('');
   const [formSuccess, setFormSuccess] = useState('');
-
-  // Reset PIN Form State
-  const [resetAuthCode, setResetAuthCode] = useState('');
-  const [resetConfirmCode, setResetConfirmCode] = useState('');
-  const [resetError, setResetError] = useState('');
-  const [resetSuccess, setResetSuccess] = useState('');
 
   // Filter volunteers
   const filteredVolunteers = volunteers.filter(v => {
@@ -152,33 +147,6 @@ export function VolunteerManagementModal({
     setEditingVolunteer(null);
   };
 
-  const handleResetSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setResetError('');
-    setResetSuccess('');
-
-    if (!resettingVolunteer) return;
-
-    if (!resetAuthCode.trim() || resetAuthCode.trim().length < 4) {
-      setResetError('PIN must be at least 4 digits/characters.');
-      return;
-    }
-
-    if (resetAuthCode !== resetConfirmCode) {
-      setResetError('PIN and Confirmation PIN do not match.');
-      return;
-    }
-
-    onResetPassword(resettingVolunteer.volunteerCode, resetAuthCode.trim());
-    setResetSuccess(`Security PIN for ${resettingVolunteer.volunteerName} updated successfully!`);
-    
-    setTimeout(() => {
-      setResetSuccess('');
-      setResettingVolunteer(null);
-      setResetAuthCode('');
-      setResetConfirmCode('');
-    }, 1500);
-  };
 
   return (
     <div className="fixed inset-0 z-50 bg-slate-900/70 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
@@ -377,11 +345,19 @@ export function VolunteerManagementModal({
 
                                   {vol.status === 'Active' && (
                                     <button
-                                      onClick={() => {
-                                        setResettingVolunteer(vol);
-                                        setResetAuthCode('');
-                                        setResetConfirmCode('');
-                                        setResetError('');
+                                      onClick={async () => {
+                                        const result = await sendVolunteerPinReset(
+                                          vol.volunteerCode
+                                        );
+
+                                        if (result.success) {
+                                          alert(`PIN reset link sent to ${vol.volunteerName}.`);
+                                        } else {
+                                          alert(
+                                            result.error ||
+                                            'Unable to send PIN reset link.'
+                                          );
+                                        }
                                       }}
                                       title="Reset Security PIN / Password"
                                       className="p-1.5 rounded-lg text-slate-600 hover:text-amber-900 hover:bg-amber-100 transition cursor-pointer"
@@ -626,90 +602,7 @@ export function VolunteerManagementModal({
             </form>
           )}
 
-          {/* RESET PASSWORD / PIN SUB-VIEW */}
-          {resettingVolunteer && (
-            <form onSubmit={handleResetSubmit} className="space-y-4">
-              <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-                <div>
-                  <h3 className="font-bold text-sm text-slate-900">
-                    Reset Security PIN for {resettingVolunteer.volunteerName}
-                  </h3>
-                  <p className="text-xs text-slate-500 font-mono">
-                    Code: {resettingVolunteer.volunteerCode}
-                  </p>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setResettingVolunteer(null)}
-                  className="text-xs text-slate-500 hover:text-slate-800"
-                >
-                  Back to List
-                </button>
-              </div>
-
-              {resetError && (
-                <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-700 flex items-start gap-2">
-                  <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
-                  <span>{resetError}</span>
-                </div>
-              )}
-
-              {resetSuccess && (
-                <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-xs text-emerald-800 flex items-start gap-2">
-                  <Check className="w-4 h-4 shrink-0 mt-0.5" />
-                  <span>{resetSuccess}</span>
-                </div>
-              )}
-
-              <div className="space-y-3 max-w-md">
-                <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                    New Security PIN / Auth Code <span className="text-rose-500">*</span>
-                  </label>
-                  <input
-                    type="password"
-                    required
-                    placeholder="Enter new PIN (e.g. 6-digits)"
-                    value={resetAuthCode}
-                    onChange={e => setResetAuthCode(e.target.value)}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-mono font-bold text-slate-900 bg-slate-50 focus:outline-hidden focus:ring-2 focus:ring-amber-700"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                    Confirm New Security PIN <span className="text-rose-500">*</span>
-                  </label>
-                  <input
-                    type="password"
-                    required
-                    placeholder="Re-enter new PIN"
-                    value={resetConfirmCode}
-                    onChange={e => setResetConfirmCode(e.target.value)}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-mono font-bold text-slate-900 bg-slate-50 focus:outline-hidden focus:ring-2 focus:ring-amber-700"
-                  />
-                </div>
-              </div>
-
-              <div className="pt-3 flex justify-end gap-2 border-t border-slate-100">
-                <button
-                  type="button"
-                  onClick={() => setResettingVolunteer(null)}
-                  className="px-4 py-2.5 rounded-xl border border-slate-200 text-slate-700 text-xs font-bold hover:bg-slate-50 transition cursor-pointer"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-5 py-2.5 rounded-xl bg-amber-800 hover:bg-amber-900 text-white text-xs font-bold transition flex items-center gap-1.5 shadow-sm cursor-pointer"
-                >
-                  <KeyRound className="w-4 h-4" />
-                  <span>Update Security PIN</span>
-                </button>
-              </div>
-            </form>
-          )}
-
+          
         </div>
 
       </div>
