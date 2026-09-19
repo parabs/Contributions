@@ -41,6 +41,9 @@ export function VolunteerManagementModal({
   onRefreshVolunteers,
   onClose
 }: VolunteerManagementModalProps) {
+
+  alert('DEBUG: VolunteerManagementModal loaded');
+  
   React.useEffect(() => {
     onRefreshVolunteers();
   }, []);
