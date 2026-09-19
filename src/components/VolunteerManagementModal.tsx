@@ -21,7 +21,8 @@ import {
   deleteVolunteer,
   sendVolunteerPinReset,
   disableVolunteer,
-  reactivateVolunteer
+  reactivateVolunteer,
+  adminUpdateVolunteer
 } from '../services/googleSheetsService';
 
 interface VolunteerManagementModalProps {
@@ -137,8 +138,9 @@ React.useEffect(() => {
     }
   };
 
-  const handleEditSubmit = (e: React.FormEvent) => {
+  const handleEditSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
     if (!editingVolunteer) return;
 
     if (!editingVolunteer.volunteerName.trim()) {
@@ -146,8 +148,28 @@ React.useEffect(() => {
       return;
     }
 
-    onEditVolunteer(editingVolunteer);
+    const result = await adminUpdateVolunteer({
+      volunteerCode: editingVolunteer.volunteerCode,
+      volunteerName: editingVolunteer.volunteerName.trim(),
+      phone: editingVolunteer.phone || '',
+      email: editingVolunteer.email || '',
+      role: editingVolunteer.role || ''
+    });
+
+    if (!result.success) {
+      alert(
+        result.error ||
+        'Unable to update volunteer.'
+      );
+      return;
+    }
+
+    alert(
+      `Volunteer ${editingVolunteer.volunteerName} updated successfully.`
+    );
+
     setEditingVolunteer(null);
+    await onRefreshVolunteers();
   };
 
 return (

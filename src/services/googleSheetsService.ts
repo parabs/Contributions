@@ -1502,6 +1502,72 @@ export async function reactivateVolunteer(
   }
 }
 
+export async function adminUpdateVolunteer(
+  volunteer: {
+    volunteerCode: string;
+    volunteerName: string;
+    phone?: string;
+    email?: string;
+    role?: string;
+  }
+): Promise<{
+  success: boolean;
+  message?: string;
+  error?: string;
+  volunteer?: {
+    volunteerCode: string;
+    volunteerName: string;
+    phone?: string;
+    email?: string;
+    role?: string;
+    status?: string;
+  };
+}> {
+  const webhookUrl = DEFAULT_WEBHOOK_URL;
+
+  try {
+    const response = await fetch(webhookUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'text/plain;charset=utf-8'
+      },
+      body: JSON.stringify({
+        action: 'adminUpdateVolunteer',
+        volunteerCode: volunteer.volunteerCode,
+        volunteerName: volunteer.volunteerName,
+        mobile: volunteer.phone || '',
+        email: volunteer.email || '',
+        role: volunteer.role || ''
+      }),
+      redirect: 'follow'
+    });
+
+    const responseText = await response.text();
+
+    try {
+      return JSON.parse(responseText);
+    } catch (parseError) {
+      console.error(
+        'ADMIN UPDATE VOLUNTEER RESPONSE IS NOT JSON:',
+        responseText
+      );
+
+      return {
+        success: false,
+        error: 'Backend returned an invalid volunteer update response.'
+      };
+    }
+
+  } catch (err: any) {
+    return {
+      success: false,
+      error:
+        err.message ||
+        'Network error while updating volunteer.'
+    };
+  }
+}
+
 export async function requestVolunteerPinReset(
   volunteerCode: string,
   email: string
