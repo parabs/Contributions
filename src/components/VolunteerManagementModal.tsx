@@ -180,7 +180,10 @@ alert('DEBUG: VolunteerManagementModal reached return');
         {/* Tab Navigation */}
         <div className="flex border-b border-slate-200 bg-slate-50 px-6 pt-3 gap-2">
           <button
-            onClick={() => { setActiveTab('list'); setEditingVolunteer(null); setResettingVolunteer(null); }}
+            onClick={() => {
+              setActiveTab('list');
+              setEditingVolunteer(null);
+            }}
             className={`pb-3 px-4 text-xs font-bold border-b-2 transition cursor-pointer ${
               activeTab === 'list'
                 ? 'border-amber-800 text-amber-950'
@@ -190,7 +193,10 @@ alert('DEBUG: VolunteerManagementModal reached return');
             All Volunteers ({volunteers.length})
           </button>
           <button
-            onClick={() => { setActiveTab('add'); setEditingVolunteer(null); setResettingVolunteer(null); }}
+            onClick={() => {
+              setActiveTab('add');
+              setEditingVolunteer(null);
+            }}
             className={`pb-3 px-4 text-xs font-bold border-b-2 transition flex items-center gap-1.5 cursor-pointer ${
               activeTab === 'add'
                 ? 'border-amber-800 text-amber-950'
@@ -207,7 +213,7 @@ alert('DEBUG: VolunteerManagementModal reached return');
           
           {/* TAB: LIST VOLUNTEERS */}
           {alert('DEBUG: LIST TAB SECTION')}
-          {activeTab === 'list' && !editingVolunteer && !resettingVolunteer && (
+          {activeTab === 'list' && !editingVolunteer && (
             <div className="space-y-4">
                     
               {/* Search & Status Filter */}
