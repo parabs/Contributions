@@ -618,8 +618,8 @@ return (
                   </label>
                   <select
                     value={editingVolunteer.status}
-                    onChange={e => setEditingVolunteer({ ...editingVolunteer, status: e.target.value as any })}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-900 bg-slate-50"
+                    disabled
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-500 bg-slate-100 cursor-not-allowed"
                   >
                     <option value="Active">Active</option>
                     <option value="Closed">Closed / Inactive</option>
