@@ -20,7 +20,8 @@ import {
   sendVolunteerActivation,
   deleteVolunteer,
   sendVolunteerPinReset,
-  disableVolunteer
+  disableVolunteer,
+  reactivateVolunteer
 } from '../services/googleSheetsService';
 
 interface VolunteerManagementModalProps {
@@ -401,6 +402,39 @@ return (
                                     </button>
                                     </>
                                   )}
+
+                                  {vol.status === 'Closed' && (
+                                  <button
+                                    type="button"
+                                    onClick={async () => {
+                                      const confirmed = window.confirm(
+                                        `Reactivate volunteer ${vol.volunteerName} (${vol.volunteerCode})?`
+                                      );
+
+                                      if (!confirmed) return;
+
+                                      const result = await reactivateVolunteer(
+                                        vol.volunteerCode
+                                      );
+
+                                      if (result.success) {
+                                        alert(
+                                          `Volunteer ${vol.volunteerName} has been reactivated.`
+                                        );
+                                        await onRefreshVolunteers();
+                                      } else {
+                                        alert(
+                                          result.error ||
+                                          'Unable to reactivate volunteer.'
+                                        );
+                                      }
+                                    }}
+                                    title="Reactivate Volunteer"
+                                    className="p-1.5 rounded-lg text-slate-600 hover:text-emerald-700 hover:bg-emerald-100 transition cursor-pointer"
+                                  >
+                                    <UserCheck className="w-3.5 h-3.5" />
+                                  </button>
+                                )}
                                 </div>
 
                               </td>
