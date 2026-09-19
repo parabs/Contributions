@@ -19,7 +19,8 @@ import {
   addVolunteer,
   sendVolunteerActivation,
   deleteVolunteer,
-  sendVolunteerPinReset
+  sendVolunteerPinReset,
+  disableVolunteer
 } from '../services/googleSheetsService';
 
 interface VolunteerManagementModalProps {
@@ -351,6 +352,7 @@ return (
 
 
                                   {vol.status === 'Active' && (
+                                    <>
                                     <button
                                       onClick={async () => {
                                         const result = await sendVolunteerPinReset(
@@ -371,6 +373,33 @@ return (
                                     >
                                       <KeyRound className="w-3.5 h-3.5" />
                                     </button>
+                                    <button
+                                      type="button"
+                                      onClick={async () => {
+                                        const confirmed = window.confirm(
+                                          `Disable volunteer ${vol.volunteerName} (${vol.volunteerCode})?`
+                                        );
+
+                                        if (!confirmed) return;
+
+                                        const result = await disableVolunteer(vol.volunteerCode);
+
+                                        if (result.success) {
+                                          alert(`Volunteer ${vol.volunteerName} has been disabled.`);
+                                          await onRefreshVolunteers();
+                                        } else {
+                                          alert(
+                                            result.error ||
+                                            'Unable to disable volunteer.'
+                                          );
+                                        }
+                                      }}
+                                      title="Disable Volunteer"
+                                      className="text-slate-500 hover:text-rose-700 transition cursor-pointer"
+                                    >
+                                      <UserX className="w-3.5 h-3.5" />
+                                    </button>
+                                    </>
                                   )}
                                 </div>
 

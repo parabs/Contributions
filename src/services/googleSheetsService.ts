@@ -1406,6 +1406,54 @@ export async function deleteVolunteer(
   }
 }
 
+export async function disableVolunteer(
+  volunteerCode: string
+): Promise<{
+  success: boolean;
+  message?: string;
+  error?: string;
+}> {
+  const webhookUrl = DEFAULT_WEBHOOK_URL;
+
+  try {
+    const response = await fetch(webhookUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'text/plain;charset=utf-8'
+      },
+      body: JSON.stringify({
+        action: 'disableVolunteer',
+        volunteerCode
+      }),
+      redirect: 'follow'
+    });
+
+    const responseText = await response.text();
+
+    try {
+      return JSON.parse(responseText);
+    } catch (parseError) {
+      console.error(
+        'DISABLE VOLUNTEER RESPONSE IS NOT JSON:',
+        responseText
+      );
+
+      return {
+        success: false,
+        error: 'Backend returned an invalid disable volunteer response.'
+      };
+    }
+
+  } catch (err: any) {
+    return {
+      success: false,
+      error:
+        err.message ||
+        'Network error while disabling volunteer.'
+    };
+  }
+}
+
 export async function requestVolunteerPinReset(
   volunteerCode: string,
   email: string
