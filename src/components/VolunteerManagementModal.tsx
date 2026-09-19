@@ -42,9 +42,7 @@ export function VolunteerManagementModal({
   onClose
 }: VolunteerManagementModalProps) {
 
-  alert('DEBUG: VolunteerManagementModal loaded');
-
-  React.useEffect(() => {
+React.useEffect(() => {
     onRefreshVolunteers();
   }, []);
 
@@ -150,8 +148,7 @@ export function VolunteerManagementModal({
     setEditingVolunteer(null);
   };
 
-alert('DEBUG: VolunteerManagementModal reached return');
-  return (
+return (
     <>
     <div className="fixed inset-0 z-50 bg-slate-900/70 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
       <div className="bg-white w-full max-w-3xl rounded-3xl shadow-2xl border border-slate-200 overflow-hidden my-6">
@@ -212,7 +209,6 @@ alert('DEBUG: VolunteerManagementModal reached return');
         <div className="p-6">
           
           {/* TAB: LIST VOLUNTEERS */}
-          {alert('DEBUG: LIST TAB SECTION')}
           {activeTab === 'list' && !editingVolunteer && (
             <div className="space-y-4">
                     
