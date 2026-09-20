@@ -309,6 +309,21 @@ return (
                         </tr>
                       ) : (
                         filteredVolunteers.map(vol => {
+                          if (vol.volunteerCode === 'VOL001') {
+                            alert(
+                              `VOL001\nDonations loaded: ${donations.length}\n` +
+                              `ConfirmedBy matches: ${donations.filter(
+                                d => String(d.confirmedBy || '').trim() === 'VOL001'
+                              ).length}\n` +
+                              `Sample ConfirmedBy:\n` +
+                              donations
+                                .filter(d => d.confirmedBy)
+                                .slice(0, 10)
+                                .map(d => `[${d.confirmedBy}]`)
+                                .join(', ')
+                            );
+                          }
+                          
                           const verifiedDonations = donations.filter(
                             d => d.confirmedBy === vol.volunteerCode
                           );
