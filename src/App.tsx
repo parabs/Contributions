@@ -88,7 +88,7 @@ const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
   async function handleRefreshFromGoogleSheet(): Promise<{ count: number; error?: string }> {
 
     try {
-      const donRes = await fetchDonationsFromGoogleSheet(
+      const donRes = await googleSheetsService.fetchDonationsFromGoogleSheet(
         googleAccessToken,
         TARGET_SPREADSHEET_ID,
         'Donations'
