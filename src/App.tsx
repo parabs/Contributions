@@ -171,10 +171,10 @@ const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
 
   // Automatically pull live rows from the single master Donations sheet on load if authenticated
   React.useEffect(() => {
-    if (googleAccessToken) {
+    if (googleAccessToken && activeView === 'volunteer') {
       handleRefreshFromGoogleSheet();
     }
-  }, [googleAccessToken]);
+  }, [googleAccessToken, activeView]);
   
   React.useEffect(() => {
     localStorage.setItem('sjst_trust_config', JSON.stringify(trustConfig));
