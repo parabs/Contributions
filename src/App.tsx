@@ -82,40 +82,59 @@ const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
     .filter(d => d.paymentStatus === 'Paid')
     .reduce((acc, curr) => acc + curr.amount, 0);
 
+  const refreshRequestRef = React.useRef(0);
   // ----------------------------------------------------
   // REFRESH / SYNC FROM GOOGLE SHEET
   // ----------------------------------------------------
   async function handleRefreshFromGoogleSheet(): Promise<{ count: number; error?: string }> {
-    try {
-      const donRes = await googleSheetsService.fetchDonationsFromGoogleSheet(
-        googleAccessToken,
-        googleSheetsService.TARGET_SPREADSHEET_ID,
-        'Donations'
-      );
+  if (!googleAccessToken) {
+    return {
+      count: 0,
+      error: 'Please connect Google account in the top bar to fetch directly from Google Sheet.'
+    };
+  }
 
-      if (!donRes.success) {
-        return {
-          count: 0,
-          error: donRes.error || 'Failed to fetch Donations sheet'
-        };
-      }
+  const requestId = ++refreshRequestRef.current;
 
-      const freshList = donRes.donations || [];
+  try {
+    const donRes = await googleSheetsService.fetchDonationsFromGoogleSheet(
+      googleAccessToken,
+      googleSheetsService.TARGET_SPREADSHEET_ID,
+      'Donations'
+    );
 
-      setDonations(freshList);
-
-      try {
-        localStorage.setItem('sjst_donations', JSON.stringify(freshList));
-      } catch (e) {}
-
-      return { count: freshList.length };
-    } catch (e: any) {
+    if (!donRes.success) {
       return {
         count: 0,
-        error: e.message || 'Failed to refresh from Google Sheet'
+        error: donRes.error || 'Failed to fetch Donations sheet'
       };
     }
+
+    const freshList = donRes.donations || [];
+
+    // Ignore this response if a newer refresh has already started.
+    if (requestId !== refreshRequestRef.current) {
+      return { count: freshList.length };
+    }
+
+    setDonations(freshList);
+
+    try {
+      localStorage.setItem(
+        'sjst_donations',
+        JSON.stringify(freshList)
+      );
+    } catch (e) {}
+
+    return { count: freshList.length };
+
+  } catch (e: any) {
+    return {
+      count: 0,
+      error: e.message || 'Failed to refresh from Google Sheet'
+    };
   }
+}
 
   // ----------------------------------------------------
   // FETCH PENDING VERIFICATION QUEUE
