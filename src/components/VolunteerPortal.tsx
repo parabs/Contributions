@@ -947,11 +947,13 @@ export function VolunteerPortal({
               className="px-3 py-2 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-950 border border-amber-200 text-xs font-bold flex items-center gap-1.5 transition cursor-pointer"
             >
               <Users className="w-3.5 h-3.5 text-amber-800" />
-              <span>
-                {donationsLoading
-                  ? 'Loading Donations...'
-                  : 'Volunteers Roster'}
-              </span>
+            <span>
+              {donationsLoading
+                ? 'Loading Donations...'
+                : donationsLoaded
+                  ? 'Volunteers Roster'
+                  : 'Waiting for Donations...'}
+            </span>
             </button>
           )}
 
