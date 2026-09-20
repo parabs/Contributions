@@ -695,7 +695,9 @@ const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
               onRefreshPendingQueue={handleRefreshPendingQueue}
               onUpdateTrustConfig={upd => setTrustConfig(prev => ({ ...prev, ...upd }))}
               onOpenVolunteerManagement={async () => {
+                alert('OPEN HANDLER IS RUNNING');
                 await handleRefreshFromGoogleSheet();
+                alert('REFRESH HANDLER FINISHED');
                 setIsVolunteerManagementOpen(true);
               }}
             />
