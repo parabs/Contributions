@@ -55,6 +55,8 @@ const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
     return [];
   });
 
+  const [donationsLoaded, setDonationsLoaded] = useState(false);
+
   const [volunteers, setVolunteers] = useState<VolunteerRecord[]>([]);
 
   // Real Google & Gmail Auth Context
@@ -97,6 +99,7 @@ const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
       const freshList = donRes.donations || [];
 
       setDonations(freshList);
+      setDonationsLoaded(true);
       try {
         localStorage.setItem('sjst_donations', JSON.stringify(freshList));
       } catch (e) {}
@@ -691,6 +694,11 @@ const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
               onRefreshPendingQueue={handleRefreshPendingQueue}
               onUpdateTrustConfig={upd => setTrustConfig(prev => ({ ...prev, ...upd }))}
               onOpenVolunteerManagement={() => {
+                if (!donationsLoaded) {
+                  alert('Donations are still loading. Please try Volunteers Roster again in a moment.');
+                  return;
+                }
+
                 setIsVolunteerManagementOpen(true);
               }}
             />
