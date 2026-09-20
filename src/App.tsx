@@ -93,9 +93,17 @@ const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
         'Donations'
       );
 
+      if (!donRes.success) {
+        return {
+          count: 0,
+          error: donRes.error || 'Failed to fetch Donations sheet'
+        };
+      }
+
       const freshList = donRes.donations || [];
 
       setDonations(freshList);
+
       try {
         localStorage.setItem('sjst_donations', JSON.stringify(freshList));
       } catch (e) {}
