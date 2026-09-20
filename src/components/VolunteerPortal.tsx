@@ -39,8 +39,6 @@ import * as googleSheetsService from '../services/googleSheetsService';
 interface VolunteerPortalProps {
   volunteers: VolunteerRecord[];
   donations: DonationRecord[];
-  donationsLoading: boolean;
-  donationsLoaded: boolean;
   trustConfig: TrustConfig;
   onVerifyDonation: (
     confirmationCode: string,
@@ -82,8 +80,6 @@ interface PendingQueueItem {
 export function VolunteerPortal({
   volunteers,
   donations,
-  donationsLoading,
-  donationsLoaded,
   trustConfig,
   onVerifyDonation,
   onDirectDonationSubmit,
@@ -943,17 +939,10 @@ export function VolunteerPortal({
           {onOpenVolunteerManagement && (
             <button
               onClick={onOpenVolunteerManagement}
-              disabled={donationsLoading || !donationsLoaded}
               className="px-3 py-2 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-950 border border-amber-200 text-xs font-bold flex items-center gap-1.5 transition cursor-pointer"
             >
               <Users className="w-3.5 h-3.5 text-amber-800" />
-            <span>
-              {donationsLoading
-                ? 'Loading Donations...'
-                : donationsLoaded
-                  ? 'Volunteers Roster'
-                  : 'Waiting for Donations...'}
-            </span>
+            <span>Volunteers Roster</span>
             </button>
           )}
 
@@ -1681,7 +1670,7 @@ export function VolunteerPortal({
             volunteers={volunteers}
             onViewReceipt={onViewReceipt}
             onConfirmDonation={onConfirmDonationFromSheet || (() => {})}
-            onOpenVolunteerManagement={onOpenVolunteerManagement}
+            onRefreshFromGoogleSheet={onRefreshFromGoogleSheet}
           />
         </div>
       )}

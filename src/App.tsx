@@ -55,9 +55,6 @@ const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
     return [];
   });
 
-  const [donationsLoading, setDonationsLoading] = useState(false);
-  const [donationsLoaded, setDonationsLoaded] = useState(false);
-
   const [volunteers, setVolunteers] = useState<VolunteerRecord[]>([]);
 
   // Real Google & Gmail Auth Context
@@ -89,7 +86,6 @@ const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
   // REFRESH / SYNC FROM GOOGLE SHEET
   // ----------------------------------------------------
   async function handleRefreshFromGoogleSheet(): Promise<{ count: number; error?: string }> {
-    setDonationsLoading(true);
     try {
       const donRes = await googleSheetsService.fetchDonationsFromGoogleSheet(
         googleAccessToken,
@@ -100,7 +96,6 @@ const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
       const freshList = donRes.donations || [];
 
       setDonations(freshList);
-      setDonationsLoaded(true);
       try {
         localStorage.setItem('sjst_donations', JSON.stringify(freshList));
       } catch (e) {}
@@ -111,8 +106,6 @@ const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
         count: 0,
         error: e.message || 'Failed to refresh from Google Sheet'
       };
-      } finally {
-    setDonationsLoading(false);
     }
   }
 
@@ -689,8 +682,6 @@ const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
             <VolunteerPortal
               volunteers={volunteers}
               donations={donations}
-              donationsLoading={donationsLoading}
-              donationsLoaded={donationsLoaded}
               trustConfig={trustConfig}
               onVerifyDonation={handleVolunteerVerify}
               onDirectDonationSubmit={handleVolunteerDirectDonation}
@@ -700,10 +691,6 @@ const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
               onRefreshPendingQueue={handleRefreshPendingQueue}
               onUpdateTrustConfig={upd => setTrustConfig(prev => ({ ...prev, ...upd }))}
               onOpenVolunteerManagement={() => {
-                if (donationsLoading || !donationsLoaded) {
-                  return;
-                }
-
                 setIsVolunteerManagementOpen(true);
               }}
             />
