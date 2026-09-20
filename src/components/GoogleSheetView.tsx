@@ -250,8 +250,7 @@ export function GoogleSheetView({
         )}
       </div>
 
-      {activeTab === 'donations' && (
-        <div className="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden">
+      <div className="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden">
           
           {/* Multi-Filter Bar with Search, Status, Mode, Volunteer & Category Filter */}
           <div className="p-4 sm:p-6 border-b border-slate-200 bg-slate-50/50 space-y-3">
@@ -492,7 +491,7 @@ export function GoogleSheetView({
           </div>
 
         </div>
-      )}
+      
 
       {/* CONFIRM PAYMENT MODAL (DIRECT FROM LIVESHEET) */}
       {confirmingDonation && (
