@@ -690,9 +690,9 @@ const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
               onRefreshFromGoogleSheet={handleRefreshFromGoogleSheet}
               onRefreshPendingQueue={handleRefreshPendingQueue}
               onUpdateTrustConfig={upd => setTrustConfig(prev => ({ ...prev, ...upd }))}
-              onOpenVolunteerManagement={async () => {
-                  await handleRefreshFromGoogleSheet();
+              onOpenVolunteerManagement={() => {
                 setIsVolunteerManagementOpen(true);
+                handleRefreshFromGoogleSheet();
               }}
             />
           </div>
