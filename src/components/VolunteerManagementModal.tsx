@@ -309,7 +309,11 @@ return (
                         </tr>
                       ) : (
                         filteredVolunteers.map(vol => {
-                          const verifiedCount = donations.filter(d => d.confirmedBy.includes(vol.volunteerCode)).length;
+                          const verifiedDonations = donations.filter(
+                            d => d.confirmedBy === vol.volunteerCode
+                          );
+
+                          const verifiedCount = verifiedDonations.length;
                           return (
                             <tr key={vol.volunteerCode} className="hover:bg-amber-50/40 transition">
                               <td className="py-3.5 px-4 font-mono font-bold text-amber-950">
