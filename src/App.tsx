@@ -136,52 +136,6 @@ const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
     return await googleSheetsService.fetchPendingVerificationQueue();
   }
 
-  // Cross-tab real-time sync with BroadcastChannel and storage events
-  React.useEffect(() => {
-    let channel: BroadcastChannel | null = null;
-    try {
-      if (typeof BroadcastChannel !== 'undefined') {
-        channel = new BroadcastChannel('sjst_donations_channel');
-        channel.onmessage = (event) => {
-          if (event.data?.type === 'DONATIONS_UPDATED' || event.data?.type === 'DONATION_VERIFIED' || event.data?.type === 'DONATION_SUBMITTED') {
-            const saved = localStorage.getItem('sjst_donations');
-            if (saved) {
-              try {
-                setDonations(JSON.parse(saved));
-              } catch (e) {}
-            }
-          }
-        };
-      }
-    } catch (e) {}
-
-    const handleStorage = (e: StorageEvent) => {
-      if (e.key === 'sjst_donations' && e.newValue) {
-        try {
-          setDonations(JSON.parse(e.newValue));
-        } catch (err) {}
-      }
-    };
-
-    window.addEventListener('storage', handleStorage);
-    return () => {
-      window.removeEventListener('storage', handleStorage);
-      if (channel) channel.close();
-    };
-  }, []);
-
-  // Persist state changes to localStorage and broadcast
-  React.useEffect(() => {
-    localStorage.setItem('sjst_donations', JSON.stringify(donations));
-    try {
-      if (typeof BroadcastChannel !== 'undefined') {
-        const channel = new BroadcastChannel('sjst_donations_channel');
-        channel.postMessage({ type: 'DONATIONS_UPDATED', count: donations.length, timestamp: Date.now() });
-        channel.close();
-      }
-    } catch (e) {}
-  }, [donations]);
-
   // Automatically pull live rows from the single master Donations sheet on load if authenticated
   React.useEffect(() => {
     if (activeView === 'volunteer') {
