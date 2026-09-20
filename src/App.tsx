@@ -55,6 +55,7 @@ const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
     return [];
   });
 
+  const [donationsLoading, setDonationsLoading] = useState(false);
   const [donationsLoaded, setDonationsLoaded] = useState(false);
 
   const [volunteers, setVolunteers] = useState<VolunteerRecord[]>([]);
@@ -88,7 +89,7 @@ const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
   // REFRESH / SYNC FROM GOOGLE SHEET
   // ----------------------------------------------------
   async function handleRefreshFromGoogleSheet(): Promise<{ count: number; error?: string }> {
-
+    setDonationsLoading(true);
     try {
       const donRes = await googleSheetsService.fetchDonationsFromGoogleSheet(
         googleAccessToken,
@@ -110,6 +111,8 @@ const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
         count: 0,
         error: e.message || 'Failed to refresh from Google Sheet'
       };
+      } finally {
+    setDonationsLoading(false);
     }
   }
 
@@ -685,6 +688,8 @@ const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
             <VolunteerPortal
               volunteers={volunteers}
               donations={donations}
+              donationsLoading={donationsLoading}
+              donationsLoaded={donationsLoaded}
               trustConfig={trustConfig}
               onVerifyDonation={handleVolunteerVerify}
               onDirectDonationSubmit={handleVolunteerDirectDonation}
@@ -694,8 +699,7 @@ const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
               onRefreshPendingQueue={handleRefreshPendingQueue}
               onUpdateTrustConfig={upd => setTrustConfig(prev => ({ ...prev, ...upd }))}
               onOpenVolunteerManagement={() => {
-                if (!donationsLoaded) {
-                  alert('Donations are still loading. Please try Volunteers Roster again in a moment.');
+                if (donationsLoading || !donationsLoaded) {
                   return;
                 }
 
