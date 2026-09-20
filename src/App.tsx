@@ -90,7 +90,7 @@ const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
     try {
       const donRes = await googleSheetsService.fetchDonationsFromGoogleSheet(
         googleAccessToken,
-        TARGET_SPREADSHEET_ID,
+        googleSheetsService.TARGET_SPREADSHEET_ID,
         'Donations'
       );
 
