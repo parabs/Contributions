@@ -94,13 +94,6 @@ const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
         'Donations'
       );
 
-      alert(
-        `Donation Refresh Result\n\n` +
-        `Success: ${donRes.success}\n` +
-        `Donations: ${donRes.donations?.length ?? 0}\n` +
-        `Error: ${donRes.error || 'None'}`
-      );
-
       const freshList = donRes.donations || [];
 
       setDonations(freshList);
@@ -110,11 +103,6 @@ const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
 
       return { count: freshList.length };
     } catch (e: any) {
-      alert(
-        `DONATION REFRESH EXCEPTION\n\n` +
-        `${e.message || String(e)}`
-      );
-
       return {
         count: 0,
         error: e.message || 'Failed to refresh from Google Sheet'
@@ -703,9 +691,7 @@ const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
               onRefreshPendingQueue={handleRefreshPendingQueue}
               onUpdateTrustConfig={upd => setTrustConfig(prev => ({ ...prev, ...upd }))}
               onOpenVolunteerManagement={async () => {
-                alert('OPEN HANDLER IS RUNNING');
-                await handleRefreshFromGoogleSheet();
-                alert('REFRESH HANDLER FINISHED');
+                  await handleRefreshFromGoogleSheet();
                 setIsVolunteerManagementOpen(true);
               }}
             />
