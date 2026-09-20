@@ -379,7 +379,8 @@ const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
         status: v.status as 'Created' | 'Active' | 'Closed',
         phone: v.phone,
         email: v.email,
-        role: v.role
+        role: v.role,
+        verifiedSeva: v.verifiedSeva ?? 0
       }))
     );
   };

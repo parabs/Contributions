@@ -313,11 +313,8 @@ return (
                            
                           }
                           
-                          const verifiedDonations = donations.filter(
-                            d => d.confirmedBy === vol.volunteerCode
-                          );
-
-                          const verifiedCount = verifiedDonations.length;
+                          const verifiedCount = vol.verifiedSeva ?? 0;
+                          
                           return (
                             <tr key={vol.volunteerCode} className="hover:bg-amber-50/40 transition">
                               <td className="py-3.5 px-4 font-mono font-bold text-amber-950">

@@ -30,6 +30,7 @@ export interface VolunteerRecord {
   phone?: string;
   email?: string;
   role?: string;
+  verifiedSeva?: number;
 }
 
 export interface SevaOption {

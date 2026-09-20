@@ -1219,6 +1219,7 @@ export async function fetchVolunteers(): Promise<{
     email?: string;
     role?: string;
     status: string;
+    verifiedSeva?: number;
   }>;
   error?: string;
 }> {
