@@ -110,7 +110,15 @@ const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
 
       return { count: freshList.length };
     } catch (e: any) {
-      return { count: 0, error: e.message || 'Failed to refresh from Google Sheet' };
+      alert(
+        `DONATION REFRESH EXCEPTION\n\n` +
+        `${e.message || String(e)}`
+      );
+
+      return {
+        count: 0,
+        error: e.message || 'Failed to refresh from Google Sheet'
+      };
     }
   }
 
