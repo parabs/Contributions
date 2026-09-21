@@ -390,21 +390,17 @@ export function GoogleSheetView({
             <table className="w-full text-left text-xs whitespace-nowrap">
               <thead className="bg-slate-100 text-slate-600 font-bold border-b border-slate-200 uppercase text-[10px] tracking-wider">
                 <tr>
-                  <thead className="bg-slate-100 text-slate-600 font-bold border-b border-slate-200 uppercase text-[10px] tracking-wider">
-                    <tr>
-                      <th className="py-3 px-3">Donation ID</th>
-                      <th className="py-3 px-3">Towards / Seva</th>
-                      <th className="py-3 px-3">Donor Name</th>
-                      <th className="py-3 px-3">Email</th>
-                      <th className="py-3 px-3 text-right">Amount (₹)</th>
-                      <th className="py-3 px-3">Payment Mode</th>
-                      <th className="py-3 px-3">Status</th>
-                      <th className="py-3 px-3">Payment Reference</th>
-                      <th className="py-3 px-3">Confirmed By</th>
-                      <th className="py-3 px-3">Receipt</th>
-                      <th className="py-3 px-3 text-center">Action</th>
-                    </tr>
-                  </thead>
+                  <th className="py-3 px-3">Donation ID</th>
+                  <th className="py-3 px-3">Towards / Seva</th>
+                  <th className="py-3 px-3">Donor Name</th>
+                  <th className="py-3 px-3">Email</th>
+                  <th className="py-3 px-3 text-right">Amount (₹)</th>
+                  <th className="py-3 px-3">Payment Mode</th>
+                  <th className="py-3 px-3">Status</th>
+                  <th className="py-3 px-3">Payment Reference</th>
+                  <th className="py-3 px-3">Confirmed By</th>
+                  <th className="py-3 px-3">Receipt</th>
+                  <th className="py-3 px-3 text-center">Action</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-200 font-normal">
