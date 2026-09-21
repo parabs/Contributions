@@ -410,57 +410,94 @@ export function GoogleSheetView({
               <tbody className="divide-y divide-slate-200 font-normal">
                 {filteredDonations.length === 0 ? (
                   <tr>
-                    <td colSpan={16} className="py-10 text-center text-slate-400 text-xs">
+                    <td colSpan={11} className="py-10 text-center text-slate-400 text-xs">
                       No donation records match the selected filters.
                     </td>
                   </tr>
                 ) : (
                   filteredDonations.map(row => (
-                    <tr key={row.donationId} className="hover:bg-amber-50/30 transition">
+                    <tr
+                      key={row.donationId}
+                      className="hover:bg-amber-50/30 transition"
+                    >
+                      {/* Donation ID */}
                       <td className="py-3 px-3 font-mono font-bold text-slate-900">
                         {row.donationId}
                       </td>
-                      <td className="py-3 px-3 font-mono text-slate-500 text-[11px]">
-                        {row.submittedAt ? new Date(row.submittedAt).toLocaleString('en-IN') : new Date().toLocaleString('en-IN')}
-                      </td>
+
+                      {/* Towards / Seva */}
                       <td className="py-3 px-3">
                         <span className="px-2 py-0.5 rounded bg-amber-50 border border-amber-200 text-amber-900 font-bold text-[10px]">
                           {row.sevaHead || row.sevaCategory || 'General Seva'}
                         </span>
                       </td>
+
+                      {/* Donor Name */}
                       <td className="py-3 px-3 font-bold text-slate-800">
-                        {row.donorName}
+                        {row.donorName || '—'}
                       </td>
+
+                      {/* Email */}
                       <td className="py-3 px-3 font-mono text-slate-600">
                         {row.email || '—'}
                       </td>
+
+                      {/* Amount */}
                       <td className="py-3 px-3 text-right font-black font-mono text-slate-900">
-                        ₹{row.amount.toLocaleString('en-IN')}
+                        ₹{Number(row.amount || 0).toLocaleString('en-IN')}
                       </td>
+
+                      {/* Payment Mode */}
                       <td className="py-3 px-3">
-                        <span className={`px-2 py-0.5 rounded font-bold uppercase text-[10px] ${
-                          row.paymentMode === 'UPI' ? 'bg-amber-100 text-amber-900' : 'bg-emerald-100 text-emerald-800'
-                        }`}>
-                          {row.paymentMode}
+                        <span
+                          className={`px-2 py-0.5 rounded font-bold uppercase text-[10px] ${
+                            row.paymentMode === 'UPI'
+                              ? 'bg-amber-100 text-amber-900'
+                              : 'bg-emerald-100 text-emerald-800'
+                          }`}
+                        >
+                          {row.paymentMode || '—'}
                         </span>
                       </td>
+
+                      {/* Status */}
                       <td className="py-3 px-3">
-                        <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold ${
-                          row.paymentStatus === 'Paid'
-                            ? 'bg-emerald-100 text-emerald-800'
-                            : 'bg-amber-100 text-amber-800'
-                        }`}>
+                        <span
+                          className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                            row.paymentStatus === 'Paid'
+                              ? 'bg-emerald-100 text-emerald-800'
+                              : 'bg-amber-100 text-amber-800'
+                          }`}
+                        >
                           {row.paymentStatus === 'Paid' ? (
                             <CheckCircle2 className="w-3 h-3" />
                           ) : (
                             <Clock className="w-3 h-3" />
                           )}
-                          <span>{row.paymentStatus}</span>
+
+                          <span>{row.paymentStatus || 'Pending'}</span>
                         </span>
                       </td>
+
+                      {/* Payment Reference */}
                       <td className="py-3 px-3 font-mono text-slate-600 text-[11px]">
-                        {row.paymentReference || (row.paymentMode === 'Cash' ? 'CASH-COUNTER' : (row.confirmationCode ? `UPI-PIN-${row.confirmationCode}` : '—'))}
+                        {row.paymentReference || '—'}
                       </td>
+
+                      {/* Confirmed By / Volunteer Name */}
+                      <td className="py-3 px-3 text-slate-600 font-medium">
+                        {row.confirmedBy ? (
+                          <span className="bg-emerald-50 text-emerald-900 px-2 py-0.5 rounded border border-emerald-200 font-bold text-[11px]">
+                            {row.confirmedBy}
+                          </span>
+                        ) : (
+                          <span className="text-slate-400 italic text-[11px]">
+                            Pending
+                          </span>
+                        )}
+                      </td>
+
+                      {/* Receipt */}
                       <td className="py-3 px-3">
                         {row.receiptUrl ? (
                           <button
@@ -474,59 +511,19 @@ export function GoogleSheetView({
                         ) : (
                           <span className="text-slate-300">—</span>
                         )}
-                        {row.receiptUrl && (
-                          <button
-                            type="button"
-                            onClick={() => onSendReceipt?.(row)}
-                            className="ml-1 px-2.5 py-1 bg-slate-700 hover:bg-slate-800 text-white rounded-lg text-[10px] font-bold inline-flex items-center gap-1 transition cursor-pointer"
-                          >
-                            <span>Send Receipt</span>
-                          </button>
-                        )}
+                      </td>
 
-                      </td>
-                      <td className="py-3 px-3">
-                        <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-                          (row.whatsappStatus || (row.paymentStatus === 'Paid' ? 'Sent' : 'Pending')) === 'Sent'
-                            ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-                            : 'bg-slate-100 text-slate-600'
-                        }`}>
-                          {row.whatsappStatus || (row.paymentStatus === 'Paid' ? 'Sent' : 'Pending')}
-                        </span>
-                      </td>
-                      <td className="py-3 px-3 font-mono text-slate-500 text-[11px]">
-                        {row.whatsappMessageId || (row.paymentStatus === 'Paid' ? `WA-${row.donationId.split('-').pop()}` : '—')}
-                      </td>
-                      <td className="py-3 px-3 font-mono text-slate-500 text-[11px]">
-                        {row.createdAt || row.submittedAt || new Date().toISOString()}
-                      </td>
-                      <td className="py-3 px-3 font-mono text-slate-500 text-[11px]">
-                        {row.updatedAt || row.submittedAt || new Date().toISOString()}
-                      </td>
-                      <td className="py-3 px-3 text-slate-600 font-medium">
-                        {row.confirmedBy ? (
-                          <span className="bg-emerald-50 text-emerald-900 px-2 py-0.5 rounded border border-emerald-200 font-bold text-[11px]">
-                            {row.confirmedBy}
-                          </span>
-                        ) : (
-                          <span className="text-slate-400 italic text-[11px]">Pending Verification</span>
-                        )}
-                      </td>
+                      {/* Action */}
                       <td className="py-3 px-3 text-center">
                         {row.paymentStatus === 'Paid' ? (
-                          <button
-                            onClick={() => onViewReceipt(row)}
-                            className="px-2.5 py-1 bg-amber-800 hover:bg-amber-900 text-white rounded-lg text-[10px] font-bold inline-flex items-center gap-1 transition shadow-2xs cursor-pointer"
-                          >
-                            <Receipt className="w-3 h-3" />
-                            <span>View</span>
-                          </button>
+                          <span className="text-[10px] font-bold text-emerald-700">
+                            Paid
+                          </span>
                         ) : (
-                          /* INLINE OPTION TO CONFIRM PAYMENT DIRECT FROM LIVESHEET */
                           <button
+                            type="button"
                             onClick={() => setConfirmingDonation(row)}
-                            className="px-2.5 py-1 bg-emerald-700 hover:bg-emerald-800 text-white rounded-lg text-[10px] font-bold inline-flex items-center gap-1 transition shadow-2xs cursor-pointer"
-                            title="Confirm Payment & Issue Receipt"
+                            className="px-2.5 py-1 bg-emerald-700 hover:bg-emerald-800 text-white rounded-lg text-[10px] font-bold inline-flex items-center gap-1 transition cursor-pointer"
                           >
                             <Check className="w-3 h-3" />
                             <span>Confirm</span>
@@ -603,25 +600,7 @@ export function GoogleSheetView({
                     </div>
                   )}
                 </div>
-
-                {/* Confirming Volunteer Selector */}
-                <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                    Select Verifying Volunteer <span className="text-rose-500">*</span>
-                  </label>
-                  <select
-                    value={selectedVolunteerForConfirm}
-                    onChange={e => setSelectedVolunteerForConfirm(e.target.value)}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-900 bg-slate-50 focus:outline-hidden focus:ring-2 focus:ring-amber-700"
-                  >
-                    {volunteers.map(v => (
-                      <option key={v.volunteerCode} value={`${v.volunteerName} (${v.volunteerCode})`}>
-                        {v.volunteerName} ({v.volunteerCode})
-                      </option>
-                    ))}
-                    <option value="Cash Counter">Cash Counter Staff</option>
-                  </select>
-                </div>
+               
 
                 {/* Modal Buttons */}
                 <div className="flex gap-2 pt-2">
