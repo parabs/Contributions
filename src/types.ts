@@ -17,6 +17,7 @@ export interface DonationRecord {
   createdAt: string; // Created At
   updatedAt: string; // Updated At
   confirmedBy: string; // Confirmed by
+  volunteerName?: string;
   confirmationCode: string; // 6-digit PIN in Form Responses 1 Col G & verification PIN
   sevaCategory?: string; // e.g. "General Seva", "Maha Ashtami Puja"
   sevaHead?: string; // e.g. "Maa's Bhog", "Anna Dana"
