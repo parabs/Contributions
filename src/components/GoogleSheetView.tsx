@@ -511,15 +511,97 @@ export function GoogleSheetView({
 
                       {/* Action */}
                       <td className="py-3 px-3 text-center">
-                        {row.paymentStatus !== 'Paid' && (
+                        {row.paymentStatus === 'Confirmation Pending' && (
+                          <div className="flex items-center justify-center gap-1.5">
+                            <button
+                              type="button"
+                              onClick={() => setConfirmingDonation(row)}
+                              className="px-2.5 py-1 bg-emerald-700 hover:bg-emerald-800 text-white rounded-lg text-[10px] font-bold inline-flex items-center gap-1 transition cursor-pointer"
+                            >
+                              <Check className="w-3 h-3" />
+                              <span>Confirm</span>
+                            </button>
+
+                            <button
+                              type="button"
+                              className="px-2.5 py-1 bg-amber-600 hover:bg-amber-700 text-white rounded-lg text-[10px] font-bold transition cursor-pointer"
+                            >
+                              REPAYMENT
+                            </button>
+
+                            <button
+                              type="button"
+                              className="px-2.5 py-1 bg-red-600 hover:bg-red-700 text-white rounded-lg text-[10px] font-bold transition cursor-pointer"
+                            >
+                              Cancel
+                            </button>
+                          </div>
+                        )}
+
+                        {row.paymentStatus === 'Paid' && (
+                          <div className="flex items-center justify-center gap-1.5">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                if (row.receiptUrl) {
+                                  window.open(row.receiptUrl, '_blank');
+                                }
+                              }}
+                              className="px-2.5 py-1 bg-blue-700 hover:bg-blue-800 text-white rounded-lg text-[10px] font-bold transition cursor-pointer"
+                            >
+                              View Receipt
+                            </button>
+
+                            <button
+                              type="button"
+                              className="px-2.5 py-1 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-[10px] font-bold transition cursor-pointer"
+                            >
+                              Send Invoice
+                            </button>
+
+                            <button
+                              type="button"
+                              className="px-2.5 py-1 bg-red-600 hover:bg-red-700 text-white rounded-lg text-[10px] font-bold transition cursor-pointer"
+                            >
+                              Cancel
+                            </button>
+                          </div>
+                        )}
+
+                        {row.paymentStatus === 'Cancelled' && (
                           <button
                             type="button"
-                            onClick={() => setConfirmingDonation(row)}
-                            className="px-2.5 py-1 bg-emerald-700 hover:bg-emerald-800 text-white rounded-lg text-[10px] font-bold inline-flex items-center gap-1 transition cursor-pointer"
+                            className="px-2.5 py-1 bg-amber-600 hover:bg-amber-700 text-white rounded-lg text-[10px] font-bold transition cursor-pointer"
                           >
-                            <Check className="w-3 h-3" />
-                            <span>Confirm</span>
+                            Repayment
                           </button>
+                        )}
+
+                        {row.paymentStatus === 'Repayment' && (
+                          <div className="flex items-center justify-center gap-1.5">
+                            <button
+                              type="button"
+                              onClick={() => setConfirmingDonation(row)}
+                              className="px-2.5 py-1 bg-emerald-700 hover:bg-emerald-800 text-white rounded-lg text-[10px] font-bold inline-flex items-center gap-1 transition cursor-pointer"
+                            >
+                              <Check className="w-3 h-3" />
+                              <span>Confirm</span>
+                            </button>
+
+                            <button
+                              type="button"
+                              className="px-2.5 py-1 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-[10px] font-bold transition cursor-pointer"
+                            >
+                              Send Invoice
+                            </button>
+
+                            <button
+                              type="button"
+                              className="px-2.5 py-1 bg-red-600 hover:bg-red-700 text-white rounded-lg text-[10px] font-bold transition cursor-pointer"
+                            >
+                              Cancel
+                            </button>
+                          </div>
                         )}
                       </td>
                     </tr>
