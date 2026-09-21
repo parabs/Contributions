@@ -82,34 +82,75 @@ export function GoogleSheetView({
     }
   };
   
+  // Live filter values derived from the Donations master sheet
+  const volunteerOptions = Array.from(
+    new Set(
+      donations
+        .map(d => String(d.confirmedBy || '').trim())
+        .filter(Boolean)
+    )
+  ).sort((a, b) => a.localeCompare(b));
+
+  const categoryOptions = Array.from(
+    new Set(
+      donations
+        .map(d => String(d.sevaHead || d.sevaCategory || '').trim())
+        .filter(Boolean)
+    )
+  ).sort((a, b) => a.localeCompare(b));
+
   // Filter donations
   const filteredDonations = donations.filter(d => {
-    const matchesSearch = 
-      d.donationId.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      d.donorName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      d.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (d.sevaHead && d.sevaHead.toLowerCase().includes(searchTerm.toLowerCase())) ||
-      (d.sevaCategory && d.sevaCategory.toLowerCase().includes(searchTerm.toLowerCase())) ||
-      (d.confirmationCode && d.confirmationCode.includes(searchTerm));
+    const search = searchTerm.trim().toLowerCase();
 
-    const matchesStatus = statusFilter === 'All' || d.paymentStatus === statusFilter;
-    const matchesMode = modeFilter === 'All' || d.paymentMode === modeFilter;
-    
-    let matchesVolunteer = true;
-    if (volunteerFilter !== 'All') {
-      if (volunteerFilter === 'Cash Counter') {
-        matchesVolunteer = d.paymentMode === 'Cash' || d.confirmedBy.includes('Cash Counter');
-      } else {
-        matchesVolunteer = d.confirmedBy.includes(volunteerFilter);
-      }
-    }
+    const searchableText = [
+      d.donationId,
+      d.donorName,
+      d.email,
+      d.sevaHead,
+      d.sevaCategory,
+      d.paymentReference,
+      d.confirmedBy
+    ]
+      .filter(Boolean)
+      .join(' ')
+      .toLowerCase();
 
-    let matchesCategory = true;
-    if (categoryFilter !== 'All') {
-      matchesCategory = d.sevaCategory === categoryFilter || (d.sevaHead ? d.sevaHead.includes(categoryFilter) : false);
-    }
+    const matchesSearch =
+      !search || searchableText.includes(search);
 
-    return matchesSearch && matchesStatus && matchesMode && matchesVolunteer && matchesCategory;
+    const normalizedStatus = String(d.paymentStatus || '')
+      .trim()
+      .toLowerCase();
+
+    const matchesStatus =
+      statusFilter === 'All' ||
+      normalizedStatus === statusFilter.toLowerCase();
+
+    const matchesMode =
+      modeFilter === 'All' ||
+      String(d.paymentMode || '').trim().toLowerCase() ===
+        modeFilter.toLowerCase();
+
+    const matchesVolunteer =
+      volunteerFilter === 'All' ||
+      String(d.confirmedBy || '').trim() === volunteerFilter;
+
+    const donationCategory = String(
+      d.sevaHead || d.sevaCategory || ''
+    ).trim();
+
+    const matchesCategory =
+      categoryFilter === 'All' ||
+      donationCategory === categoryFilter;
+
+    return (
+      matchesSearch &&
+      matchesStatus &&
+      matchesMode &&
+      matchesVolunteer &&
+      matchesCategory
+    );
   });
 
   const handleExecuteConfirm = () => {
