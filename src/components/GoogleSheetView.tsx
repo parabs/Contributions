@@ -511,11 +511,7 @@ export function GoogleSheetView({
 
                       {/* Action */}
                       <td className="py-3 px-3 text-center">
-                        {row.paymentStatus === 'Paid' ? (
-                          <span className="text-[10px] font-bold text-emerald-700">
-                            Paid
-                          </span>
-                        ) : (
+                        {row.paymentStatus !== 'Paid' && (
                           <button
                             type="button"
                             onClick={() => setConfirmingDonation(row)}
