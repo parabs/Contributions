@@ -941,7 +941,17 @@ export async function fetchDonationsFromGoogleSheet(
       const amount = (amtIdx >= 0 && row[amtIdx]) ? Number(String(row[amtIdx]).replace(/[^0-9.]/g, '')) || 0 : 0;
       const paymentMode = (modeIdx >= 0 && String(row[modeIdx]).toLowerCase().includes('cash')) ? 'Cash' : 'UPI';
       const statusVal = (statusIdx >= 0 && row[statusIdx]) ? String(row[statusIdx]).trim().toLowerCase() : '';
-      const paymentStatus = (statusVal === 'paid' || statusVal === 'completed' || statusVal === 'confirmed') ? 'Paid' : 'Confirmation Pending';
+      const paymentStatus =
+        statusVal === 'paid' ||
+        statusVal === 'completed' ||
+        statusVal === 'confirmed'
+          ? 'Paid'
+          : statusVal === 'cancelled'
+          ? 'Cancelled'
+          : statusVal === 'repayment'
+          ? 'Repayment'
+          : 'Confirmation Pending';
+
       const paymentReference = (refIdx >= 0 && row[refIdx]) ? String(row[refIdx]).trim() : '';
       const receiptUrl = (receiptIdx >= 0 && row[receiptIdx]) ? String(row[receiptIdx]).trim() : '';
       const emailStatus = (emailStatusIdx >= 0 && String(row[emailStatusIdx]).toLowerCase().includes('sent')) ? 'Sent' : 'Pending';

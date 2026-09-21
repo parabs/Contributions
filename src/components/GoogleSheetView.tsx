@@ -325,7 +325,7 @@ export function GoogleSheetView({
                   className="w-full px-2.5 py-2 rounded-xl border border-slate-200 bg-white text-xs font-medium text-slate-700"
                 >
                   <option value="All">All Statuses</option>
-                  <option value="Pending">Pending</option>
+                  <option value="Confirmation Pending">Confirmation Pending</option>
                   <option value="Paid">Paid</option>
                   <option value="Repayment">Repayment</option>
                   <option value="Cancelled">Cancelled</option>
@@ -471,7 +471,7 @@ export function GoogleSheetView({
                             <Clock className="w-3 h-3" />
                           )}
 
-                          <span>{row.paymentStatus || 'Pending'}</span>
+                          <span>{row.paymentStatus || 'Confirmation Pending'}</span>
                         </span>
                       </td>
 
