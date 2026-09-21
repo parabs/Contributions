@@ -86,7 +86,7 @@ export function GoogleSheetView({
   const volunteerOptions = Array.from(
     new Set(
       donations
-        .map(d => String(d.confirmedBy || '').trim())
+        .map(d => String(d.volunteerName || '').trim())
         .filter(Boolean)
     )
   ).sort((a, b) => a.localeCompare(b));
@@ -110,7 +110,7 @@ export function GoogleSheetView({
       d.sevaHead,
       d.sevaCategory,
       d.paymentReference,
-      d.confirmedBy
+      d.volunteerName
     ]
       .filter(Boolean)
       .join(' ')
@@ -134,7 +134,7 @@ export function GoogleSheetView({
 
     const matchesVolunteer =
       volunteerFilter === 'All' ||
-      String(d.confirmedBy || '').trim() === volunteerFilter;
+      String(d.volunteerName || '').trim() === volunteerFilter;
 
     const donationCategory = String(
       d.sevaHead || d.sevaCategory || ''
@@ -194,7 +194,7 @@ export function GoogleSheetView({
       d.createdAt,
       d.updatedAt,
       d.confirmationCode,
-      `"${(d.confirmedBy || '').replace(/"/g, '""')}"`,
+      `"${(d.volunteerName || '').replace(/"/g, '""')}"`,
       `"${(d.sevaCategory || '').replace(/"/g, '""')}"`,
       `"${(d.sevaHead || '').replace(/"/g, '""')}"`
     ]);
