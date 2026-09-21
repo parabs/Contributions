@@ -407,13 +407,13 @@ export function GoogleSheetView({
                 {filteredDonations.length === 0 ? (
                   <tr>
                     <td colSpan={11} className="py-10 text-center text-slate-400 text-xs">
-                      Warning: No donation records match the selected filters.
+                      No donation records match the selected filters.
                     </td>
                   </tr>
                 ) : (
                   filteredDonations.map(row => (
                     <tr
-                      key={`${row.donationId}-${index}`}
+                      key={row.donationId}
                       className="hover:bg-amber-50/30 transition"
                     >
                       {/* Donation ID */}
