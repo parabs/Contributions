@@ -885,7 +885,7 @@ export async function fetchDonationsFromGoogleSheet(
       }
     } else {
       // Standard Google Sheets API fetch when OAuth token is available
-      const range = formatA1Range(sheetName, 'A1:O');
+      const range = formatA1Range(sheetName, 'A1:Q');
       const url = `https://sheets.googleapis.com/v4/spreadsheets/${encodeURIComponent(spreadsheetId)}/values/${encodeURIComponent(range)}`;
 
       const response = await fetch(url, {
@@ -1776,6 +1776,7 @@ function parseRowsToDonations(allRows: any[][]): { success: boolean; donations: 
     const createdAt = (createIdx >= 0 && row[createIdx]) ? String(row[createIdx]).trim() : submittedAt;
     const updatedAt = (updateIdx >= 0 && row[updateIdx]) ? String(row[updateIdx]).trim() : new Date().toISOString();
     const confirmedBy = (confirmIdx >= 0 && row[confirmIdx]) ? String(row[confirmIdx]).trim() : '';
+    const volunteerName = row[16] ? String(row[16]).trim() : '';
     const confirmationCode = (codeIdx >= 0 && row[codeIdx]) 
       ? String(row[codeIdx]).trim() 
       : (() => {
@@ -1802,6 +1803,7 @@ function parseRowsToDonations(allRows: any[][]): { success: boolean; donations: 
       createdAt,
       updatedAt,
       confirmedBy,
+      volunteerName,
       confirmationCode,
       sevaHead,
       sevaCategory: sevaHead
