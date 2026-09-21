@@ -23,6 +23,7 @@ interface GoogleSheetViewProps {
   donations: DonationRecord[];
   volunteers: VolunteerRecord[];
   onViewReceipt: (donation: DonationRecord) => void;
+  onSendReceipt?: (donation: DonationRecord) => Promise<void>;
   onConfirmDonation?: (donationId: string, volunteerName: string) => void;
   onRefreshFromGoogleSheet?: () => Promise<{ count: number; error?: string }>;
 }
@@ -473,6 +474,16 @@ export function GoogleSheetView({
                         ) : (
                           <span className="text-slate-300">—</span>
                         )}
+                        {row.receiptUrl && (
+                          <button
+                            type="button"
+                            onClick={() => onSendReceipt?.(row)}
+                            className="ml-1 px-2.5 py-1 bg-slate-700 hover:bg-slate-800 text-white rounded-lg text-[10px] font-bold inline-flex items-center gap-1 transition cursor-pointer"
+                          >
+                            <span>Send Receipt</span>
+                          </button>
+                        )}
+
                       </td>
                       <td className="py-3 px-3">
                         <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
