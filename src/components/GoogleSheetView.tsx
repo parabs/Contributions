@@ -14,7 +14,6 @@ import {
   RefreshCw
 } from 'lucide-react';
 import { DonationRecord, VolunteerRecord } from '../types';
-import { SEVA_CATEGORIES } from '../data/mockData';
 import { useGmailAuth } from '../context/GmailAuthContext';
 import { 
   TARGET_SPREADSHEET_URL, 
@@ -37,7 +36,7 @@ export function GoogleSheetView({
 }: GoogleSheetViewProps) {
   const { isAuthenticated, accessToken, userProfile, loginWithGoogle } = useGmailAuth();
   const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState<'All' | 'Paid' | 'Confirmation Pending'>('All');
+  const [statusFilter, setStatusFilter] =  useState<string>('All');
   const [modeFilter, setModeFilter] = useState<'All' | 'Cash' | 'UPI'>('All');
   const [volunteerFilter, setVolunteerFilter] = useState<string>('All');
   const [categoryFilter, setCategoryFilter] = useState<string>('All');
@@ -325,8 +324,10 @@ export function GoogleSheetView({
                   className="w-full px-2.5 py-2 rounded-xl border border-slate-200 bg-white text-xs font-medium text-slate-700"
                 >
                   <option value="All">All Statuses</option>
-                  <option value="Paid">Paid Only</option>
-                  <option value="Confirmation Pending">Pending Confirmation Only</option>
+                  <option value="Pending">Pending</option>
+                  <option value="Paid">Paid</option>
+                  <option value="Repayment">Repayment</option>
+                  <option value="Cancelled">Cancelled</option>
                 </select>
               </div>
 
@@ -339,8 +340,8 @@ export function GoogleSheetView({
                   className="w-full px-2.5 py-2 rounded-xl border border-slate-200 bg-white text-xs font-medium text-slate-700"
                 >
                   <option value="All">All Modes</option>
-                  <option value="UPI">UPI Direct Only</option>
-                  <option value="Cash">Cash at Counter Only</option>
+                  <option value="UPI">UPI</option>
+                  <option value="Cash">Cash</option>
                 </select>
               </div>
 
@@ -353,10 +354,10 @@ export function GoogleSheetView({
                   className="w-full px-2.5 py-2 rounded-xl border border-slate-200 bg-white text-xs font-medium text-slate-700"
                 >
                   <option value="All">All Volunteers</option>
-                  <option value="Cash Counter">Cash Counter Staff</option>
-                  {volunteers.map(v => (
-                    <option key={v.volunteerCode} value={v.volunteerCode}>
-                      {v.volunteerName} ({v.volunteerCode})
+
+                  {volunteerOptions.map(volunteer => (
+                    <option key={volunteer} value={volunteer}>
+                      {volunteer}
                     </option>
                   ))}
                 </select>
@@ -371,10 +372,11 @@ export function GoogleSheetView({
                   className="w-full px-2.5 py-2 rounded-xl border border-slate-200 bg-white text-xs font-medium text-slate-700"
                 >
                   <option value="All">All Categories</option>
-                  {SEVA_CATEGORIES.map(c => (
-                    <option key={c.category} value={c.category}>{c.category}</option>
-                  ))}
-                  <option value="Custom / Other Seva">Custom / Other Seva</option>
+                    {categoryOptions.map(category => (
+                      <option key={category} value={category}>
+                        {category}
+                      </option>
+                    ))}
                 </select>
               </div>
 
