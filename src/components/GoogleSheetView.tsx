@@ -407,7 +407,7 @@ export function GoogleSheetView({
                 {filteredDonations.length === 0 ? (
                   <tr>
                     <td colSpan={11} className="py-10 text-center text-slate-400 text-xs">
-                      No donation records match the selected filters.
+                      Warning: No donation records match the selected filters.
                     </td>
                   </tr>
                 ) : (
