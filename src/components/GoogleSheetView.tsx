@@ -486,9 +486,9 @@ export function GoogleSheetView({
 
                       {/* Confirmed By / Volunteer Name */}
                       <td className="py-3 px-3 text-slate-600 font-medium">
-                        {row.confirmedBy ? (
+                        {row.volunteerName ? (
                           <span className="bg-emerald-50 text-emerald-900 px-2 py-0.5 rounded border border-emerald-200 font-bold text-[11px]">
-                            {row.confirmedBy}
+                            {row.volunteerName}
                           </span>
                         ) : (
                           <span className="text-slate-400 italic text-[11px]">
