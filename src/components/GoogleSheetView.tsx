@@ -460,11 +460,16 @@ export function GoogleSheetView({
                       <td className="py-3 px-3 font-mono text-slate-600 text-[11px]">
                         {row.paymentReference || (row.paymentMode === 'Cash' ? 'CASH-COUNTER' : (row.confirmationCode ? `UPI-PIN-${row.confirmationCode}` : '—'))}
                       </td>
-                      <td className="py-3 px-3 font-mono text-[11px]">
+                      <td className="py-3 px-3">
                         {row.receiptUrl ? (
-                          <span className="text-amber-800 underline truncate max-w-[120px] inline-block" title={row.receiptUrl}>
-                            {row.receiptUrl}
-                          </span>
+                          <button
+                            type="button"
+                            onClick={() => onViewReceipt(row)}
+                            className="px-2.5 py-1 bg-amber-800 hover:bg-amber-900 text-white rounded-lg text-[10px] font-bold inline-flex items-center gap-1 transition cursor-pointer"
+                          >
+                            <Receipt className="w-3 h-3" />
+                            <span>View Receipt</span>
+                          </button>
                         ) : (
                           <span className="text-slate-300">—</span>
                         )}
