@@ -413,7 +413,7 @@ export function GoogleSheetView({
                 ) : (
                   filteredDonations.map(row => (
                     <tr
-                      key={row.donationId}
+                      key={`${row.donationId}-${row.submittedAt}-${row.paymentReference}`}
                       className="hover:bg-amber-50/30 transition"
                     >
                       {/* Donation ID */}
