@@ -949,7 +949,7 @@ export async function fetchDonationsFromGoogleSheet(
       const createdAt = (createIdx >= 0 && row[createIdx]) ? String(row[createIdx]).trim() : submittedAt;
       const updatedAt = (updateIdx >= 0 && row[updateIdx]) ? String(row[updateIdx]).trim() : new Date().toISOString();
       const confirmedBy = (confirmIdx >= 0 && row[confirmIdx]) ? String(row[confirmIdx]).trim() : '';
-      
+      const volunteerName =  row[16] ? String(row[16]).trim() : '';
       const confirmationCode = (codeIdx >= 0 && row[codeIdx]) 
         ? String(row[codeIdx]).trim() 
         : (() => {
@@ -976,6 +976,7 @@ export async function fetchDonationsFromGoogleSheet(
         createdAt,
         updatedAt,
         confirmedBy,
+        volunteerName,
         confirmationCode,
         sevaHead,
         sevaCategory: sevaHead
