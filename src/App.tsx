@@ -215,13 +215,7 @@ const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
     );
   };
 
-  const handleConfirmRepaymentFromSheet = async (
-    donation: DonationRecord
-  ): Promise<void> => {
-    alert(
-      `Repayment confirmation selected for ${donation.donationId}`
-    );
-  };
+
 
   // Automatically pull live rows from the single master Donations sheet on load if authenticated
   React.useEffect(() => {
@@ -820,8 +814,7 @@ const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
               onViewReceipt={d => setModalReceiptDonation(d)}
               onConfirmDonationFromSheet={handleConfirmDonationFromSheet}
               onSendReceipt={handleSendReceiptFromSheet}
-              onRepayment={handleRepaymentFromSheet}
-              onConfirmRepayment={handleConfirmRepaymentFromSheet}
+              onRepayment={handleRepaymentFromSheet}         
               onCancelDonationFromSheet={handleCancelDonationFromSheet}
               onRefreshFromGoogleSheet={handleRefreshFromGoogleSheet}
               onRefreshPendingQueue={handleRefreshPendingQueue}

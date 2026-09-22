@@ -27,7 +27,6 @@ interface GoogleSheetViewProps {
   onConfirmDonation?: (donationId: string, volunteerName: string) => void;
   onCancelDonation?: (donationId: string, volunteerName: string) => Promise<void>;
   onRepayment?: (donation: DonationRecord) => Promise<void>;
-  onConfirmRepayment?: (donation: DonationRecord) => Promise<void>;
   onRefreshFromGoogleSheet?: () => Promise<{ count: number; error?: string }>;
 }
 

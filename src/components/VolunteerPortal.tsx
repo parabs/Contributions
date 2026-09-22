@@ -58,7 +58,6 @@ interface VolunteerPortalProps {
   onConfirmDonationFromSheet?: (donationId: string, volunteerName: string) => void;
   onSendReceipt?: (donation: DonationRecord) => Promise<void>;
   onRepayment?: (donation: DonationRecord) => Promise<void>;
-  onConfirmRepayment?: (donation: DonationRecord) => Promise<void>;
   onCancelDonationFromSheet?: (donationId: string, volunteerName: string) => Promise<void>;
   onRefreshFromGoogleSheet?: () => Promise<{ count: number; error?: string }>;
   onRefreshPendingQueue?: () => Promise<{
@@ -1679,7 +1678,6 @@ export function VolunteerPortal({
             onConfirmDonation={onConfirmDonationFromSheet || (() => {})}
             onSendReceipt={onSendReceipt}
             onRepayment={onRepayment}
-            onConfirmRepayment={onConfirmRepayment}
             onRefreshFromGoogleSheet={onRefreshFromGoogleSheet}
             onCancelDonation={onCancelDonationFromSheet}
           />
