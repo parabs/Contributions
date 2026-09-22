@@ -444,14 +444,8 @@ const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
     donationId: string,
     volunteerName: string
   ) => {
-    alert(`APP HANDLER REACHED: ${donationId}`);
     const target = donations.find(d => d.donationId === donationId);
 
-    alert(
-      target
-        ? `TARGET FOUND: ${target.donationId}`
-        : `TARGET NOT FOUND: ${donationId}`
-    );
     if (!target) {
       return {
         success: false,
@@ -459,11 +453,18 @@ const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
       };
     }
 
+    const cancelledBy = (() => {
+      try {
+        const saved = sessionStorage.getItem('sjst_active_volunteer');
+        const parsed = saved ? JSON.parse(saved) : null;
+        return parsed?.volunteerCode || '';
+      } catch {
+        return '';
+      }
+    })();
+
     try {
-      alert(
-        `WEBHOOK URL:\n${googleSheetsService.DEFAULT_WEBHOOK_URL}`
-      );
-      const response = await fetch(
+      await fetch(
         googleSheetsService.DEFAULT_WEBHOOK_URL,
         {
           method: 'POST',
@@ -473,70 +474,42 @@ const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
           body: JSON.stringify({
             action: 'cancel_donation',
             donationId: donationId.trim(),
-            volunteerCode: (() => {
-              try {
-                const saved = sessionStorage.getItem('sjst_active_volunteer');
-                const parsed = saved ? JSON.parse(saved) : null;
-                return parsed?.volunteerCode || '';
-              } catch {
-                return '';
-              }
-            })(),
-            cancelledBy: (() => {
-              try {
-                const saved = sessionStorage.getItem('sjst_active_volunteer');
-                const parsed = saved ? JSON.parse(saved) : null;
-                return parsed?.volunteerCode || '';
-              } catch {
-                return '';
-              }
-            })()
+            volunteerCode: cancelledBy,
+            cancelledBy: cancelledBy
           }),
           redirect: 'follow'
         }
       );
-
-      alert(`BACKEND RESPONSE RECEIVED: ${response.status}`);
-
-      const result = await response.json();
-
-      if (!result.success) {
-        return result;
-      }
-
-      const updatedRecord: DonationRecord = {
-        ...target,
-        paymentStatus: 'Cancelled',
-        confirmedBy: result.cancelledBy || volunteerName,
-        updatedAt: new Date().toISOString()
-      };
-
-      setDonations(prev =>
-        prev.map(d =>
-          d.donationId === donationId
-            ? updatedRecord
-            : d
-        )
-      );
-
-      return {
-        ...result,
-        donation: updatedRecord
-      };
     } catch (err: any) {
-      console.error('SHEET CANCELLATION ERROR:', err);
+      console.warn(
+        'Cancellation request response could not be read. Verifying from Google Sheet.',
+        err
+      );
+    }
 
-        alert(
-          `CANCEL API ERROR:\n${err?.message || 'Unknown network error'}`
-        );
-        
+    /*
+    * Apps Script may complete the cancellation successfully even when
+    * the browser reports "Failed to fetch".
+    *
+    * Therefore, refresh the actual Google Sheet and use that as the
+    * source of truth for the UI.
+    */
+    const syncResult = await handleRefreshFromGoogleSheet();
+
+    if (syncResult.error) {
       return {
         success: false,
-        error: err.message || 'Network error during donation cancellation.'
+        error: syncResult.error
       };
     }
-  };
 
+    return {
+      success: true,
+      donationId: donationId,
+      paymentStatus: 'Cancelled',
+      cancelledBy: cancelledBy
+    };
+  };
 
   return (
     <div className="min-h-screen bg-amber-50/30 text-slate-900 flex flex-col font-sans relative overflow-x-hidden">
