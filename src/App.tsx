@@ -773,7 +773,7 @@ const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
               onConfirmDonationFromSheet={handleConfirmDonationFromSheet}
               onSendReceipt={handleSendReceiptFromSheet}
               onCancelDonationFromSheet={handleCancelDonationFromSheet}
-              onRefreshFromGoogleSheet={handleRefreshFro  mGoogleSheet}
+              onRefreshFromGoogleSheet={handleRefreshFromGoogleSheet}
               onRefreshPendingQueue={handleRefreshPendingQueue}
               onUpdateTrustConfig={upd => setTrustConfig(prev => ({ ...prev, ...upd }))}
               onOpenVolunteerManagement={() => {
