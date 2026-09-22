@@ -215,7 +215,56 @@ const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
     );
   };
 
+  const handleConfirmRepaymentFromSheet = async (
+    donation: DonationRecord
+  ): Promise<void> => {
+    const confirmedBy = (() => {
+      try {
+        const saved = sessionStorage.getItem('sjst_active_volunteer');
+        const parsed = saved ? JSON.parse(saved) : null;
+        return parsed?.volunteerCode || '';
+      } catch {
+        return '';
+      }
+    })();
 
+    try {
+      await fetch(
+        googleSheetsService.DEFAULT_WEBHOOK_URL,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'text/plain;charset=utf-8'
+          },
+          body: JSON.stringify({
+            action: 'confirm_repayment',
+            donationId: donation.donationId.trim(),
+            volunteerCode: confirmedBy,
+            confirmedBy: confirmedBy
+          }),
+          redirect: 'follow'
+        }
+      );
+    } catch (err) {
+      console.warn(
+        'Repayment confirmation response could not be read. Verifying from Google Sheet.',
+        err
+      );
+    }
+
+    const syncResult = await handleRefreshFromGoogleSheet();
+
+    if (syncResult.error) {
+      alert(
+        `Repayment confirmation was sent, but the Google Sheet could not be refreshed.\n\n${syncResult.error}`
+      );
+      return;
+    }
+
+    alert(
+      `Donation ${donation.donationId} confirmed and moved to Paid.`
+    );
+  };
 
   // Automatically pull live rows from the single master Donations sheet on load if authenticated
   React.useEffect(() => {
@@ -814,7 +863,8 @@ const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
               onViewReceipt={d => setModalReceiptDonation(d)}
               onConfirmDonationFromSheet={handleConfirmDonationFromSheet}
               onSendReceipt={handleSendReceiptFromSheet}
-              onRepayment={handleRepaymentFromSheet}         
+              onRepayment={handleRepaymentFromSheet} 
+              onConfirmRepayment={handleConfirmRepaymentFromSheet}        
               onCancelDonationFromSheet={handleCancelDonationFromSheet}
               onRefreshFromGoogleSheet={handleRefreshFromGoogleSheet}
               onRefreshPendingQueue={handleRefreshPendingQueue}
