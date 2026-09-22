@@ -27,6 +27,7 @@ interface GoogleSheetViewProps {
   onConfirmDonation?: (donationId: string, volunteerName: string) => void;
   onCancelDonation?: (donationId: string, volunteerName: string) => Promise<void>;
   onRepayment?: (donation: DonationRecord) => Promise<void>;
+  onConfirmRepayment?: (donation: DonationRecord) => Promise<void>;
   onRefreshFromGoogleSheet?: () => Promise<{ count: number; error?: string }>;
 }
 
@@ -38,6 +39,7 @@ export function GoogleSheetView({
   onConfirmDonation,
   onCancelDonation,
   onRepayment,
+  onConfirmRepayment,
   onRefreshFromGoogleSheet
 }: GoogleSheetViewProps) {
   const { isAuthenticated, accessToken, userProfile, loginWithGoogle } = useGmailAuth();
@@ -614,7 +616,14 @@ export function GoogleSheetView({
                           <div className="flex items-center justify-center gap-1.5">
                             <button
                               type="button"
-                              onClick={() => setConfirmingDonation(row)}
+                              onClick={async () => {
+                                if (!onConfirmRepayment) {
+                                  alert('Repayment confirmation handler is not available.');
+                                  return;
+                                }
+
+                                await onConfirmRepayment(row);
+                              }}
                               className="px-2.5 py-1 bg-emerald-700 hover:bg-emerald-800 text-white rounded-lg text-[10px] font-bold inline-flex items-center gap-1 transition cursor-pointer"
                             >
                               <Check className="w-3 h-3" />
