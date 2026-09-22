@@ -175,6 +175,11 @@ const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
 
     alert('Official receipt request sent successfully.');
   }
+  const handleRepaymentFromSheet = async (
+    donation: DonationRecord
+  ): Promise<void> => {
+    alert(`Repayment handler connected for ${donation.donationId}`);
+  };
   // Automatically pull live rows from the single master Donations sheet on load if authenticated
   React.useEffect(() => {
     if (activeView === 'volunteer') {
@@ -772,6 +777,7 @@ const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
               onViewReceipt={d => setModalReceiptDonation(d)}
               onConfirmDonationFromSheet={handleConfirmDonationFromSheet}
               onSendReceipt={handleSendReceiptFromSheet}
+              onRepayment={handleRepaymentFromSheet}
               onCancelDonationFromSheet={handleCancelDonationFromSheet}
               onRefreshFromGoogleSheet={handleRefreshFromGoogleSheet}
               onRefreshPendingQueue={handleRefreshPendingQueue}
