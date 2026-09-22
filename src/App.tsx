@@ -478,6 +478,8 @@ const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
         }
       );
 
+      alert(`BACKEND RESPONSE RECEIVED: ${response.status}`);
+      
       const result = await response.json();
 
       if (!result.success) {
