@@ -447,6 +447,11 @@ const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
     alert(`APP HANDLER REACHED: ${donationId}`);
     const target = donations.find(d => d.donationId === donationId);
 
+    alert(
+      target
+        ? `TARGET FOUND: ${target.donationId}`
+        : `TARGET NOT FOUND: ${donationId}`
+    );
     if (!target) {
       return {
         success: false,
