@@ -610,11 +610,15 @@ export function GoogleSheetView({
                             <button
                               type="button"
                               onClick={() => {
+                                alert(`CANCEL CLICKED: ${row.donationId}`);
                                 if (onCancelDonation) {
+                                  alert('CANCEL HANDLER EXISTS');
                                   onCancelDonation(
                                     row.donationId,
                                     row.volunteerName || 'Trust Volunteer'
                                   );
+                                } else {
+                                   alert('CANCEL HANDLER MISSING');
                                 }
                               }}
                               className="px-2.5 py-1 bg-red-600 hover:bg-red-700 text-white rounded-lg text-[10px] font-bold transition cursor-pointer"
