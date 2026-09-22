@@ -1673,7 +1673,16 @@ export function VolunteerPortal({
             onViewReceipt={onViewReceipt}
             onConfirmDonation={onConfirmDonationFromSheet || (() => {})}
             onRefreshFromGoogleSheet={onRefreshFromGoogleSheet}
-            onCancelDonation={onCancelDonationFromSheet}
+            onCancelDonation={async (donationId, volunteerName) => {
+              alert('VOLUNTEER PORTAL HANDLER RECEIVED');
+
+              if (onCancelDonationFromSheet) {
+                alert('FORWARDING TO APP');
+                return onCancelDonationFromSheet(donationId, volunteerName);
+              }
+
+              alert('VOLUNTEER PORTAL PROP IS MISSING');
+            }}
           />
         </div>
       )}
