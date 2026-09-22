@@ -471,7 +471,15 @@ const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
           body: JSON.stringify({
             action: 'cancel_donation',
             donationId: donationId.trim(),
-            volunteerCode: currentVolunteer?.volunteerCode || '',
+            volunteerCode: (() => {
+              try {
+                const saved = sessionStorage.getItem('sjst_active_volunteer');
+                const parsed = saved ? JSON.parse(saved) : null;
+                return parsed?.volunteerCode || '';
+              } catch {
+                return '';
+              }
+            })(),
             cancelledBy: volunteerName
           }),
           redirect: 'follow'
