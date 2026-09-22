@@ -479,7 +479,7 @@ const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
       );
 
       alert(`BACKEND RESPONSE RECEIVED: ${response.status}`);
-      
+
       const result = await response.json();
 
       if (!result.success) {
@@ -508,6 +508,10 @@ const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
     } catch (err: any) {
       console.error('SHEET CANCELLATION ERROR:', err);
 
+        alert(
+          `CANCEL API ERROR:\n${err?.message || 'Unknown network error'}`
+        );
+        
       return {
         success: false,
         error: err.message || 'Network error during donation cancellation.'
