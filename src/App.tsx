@@ -136,6 +136,45 @@ const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
     return await googleSheetsService.fetchPendingVerificationQueue();
   }
 
+  async function handleSendReceiptFromSheet(
+    donation: DonationRecord
+  ): Promise<void> {
+
+    try {
+      await fetch(
+        googleSheetsService.DEFAULT_WEBHOOK_URL,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'text/plain;charset=utf-8'
+          },
+          body: JSON.stringify({
+            action: 'send_receipt',
+            donationId: donation.donationId
+          }),
+          redirect: 'follow'
+        }
+      );
+    } catch (err) {
+      console.warn(
+        'Receipt request response could not be read. Verifying from Google Sheet.',
+        err
+      );
+    }
+
+    // Refresh the live sheet after the backend request.
+    // This avoids depending on the Apps Script browser response.
+    const syncResult = await handleRefreshFromGoogleSheet();
+
+    if (syncResult.error) {
+      alert(
+        `Receipt request was sent, but the Google Sheet could not be refreshed.\n\n${syncResult.error}`
+      );
+      return;
+    }
+
+    alert('Official receipt request sent successfully.');
+  }
   // Automatically pull live rows from the single master Donations sheet on load if authenticated
   React.useEffect(() => {
     if (activeView === 'volunteer') {
@@ -732,8 +771,9 @@ const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
               onDirectDonationSubmit={handleVolunteerDirectDonation}
               onViewReceipt={d => setModalReceiptDonation(d)}
               onConfirmDonationFromSheet={handleConfirmDonationFromSheet}
+              onSendReceipt={handleSendReceiptFromSheet}
               onCancelDonationFromSheet={handleCancelDonationFromSheet}
-              onRefreshFromGoogleSheet={handleRefreshFromGoogleSheet}
+              onRefreshFromGoogleSheet={handleRefreshFro  mGoogleSheet}
               onRefreshPendingQueue={handleRefreshPendingQueue}
               onUpdateTrustConfig={upd => setTrustConfig(prev => ({ ...prev, ...upd }))}
               onOpenVolunteerManagement={() => {

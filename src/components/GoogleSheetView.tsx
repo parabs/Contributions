@@ -504,7 +504,7 @@ export function GoogleSheetView({
                             className="px-2.5 py-1 bg-amber-800 hover:bg-amber-900 text-white rounded-lg text-[10px] font-bold inline-flex items-center gap-1 transition cursor-pointer"
                           >
                             <Receipt className="w-3 h-3" />
-                            <span>View Receipt</span>
+                            <span>View Receipte</span>
                           </button>
                         ) : (
                           <span className="text-slate-300">—</span>
@@ -552,21 +552,17 @@ export function GoogleSheetView({
                           <div className="flex items-center justify-center gap-1.5">
                             <button
                               type="button"
-                              onClick={() => {
-                                if (row.receiptUrl) {
-                                  window.open(row.receiptUrl, '_blank');
+                              onClick={async () => {
+                                if (!onSendReceipt) {
+                                  alert('Send Receipt handler is not available.');
+                                  return;
                                 }
-                              }}
-                              className="px-2.5 py-1 bg-blue-700 hover:bg-blue-800 text-white rounded-lg text-[10px] font-bold transition cursor-pointer"
-                            >
-                              View Receipt
-                            </button>
 
-                            <button
-                              type="button"
+                                await onSendReceipt(row);
+                              }}
                               className="px-2.5 py-1 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-[10px] font-bold transition cursor-pointer"
                             >
-                              Send Invoice
+                              Send Receipte
                             </button>
 
                             <button
@@ -610,15 +606,11 @@ export function GoogleSheetView({
                             <button
                               type="button"
                               onClick={() => {
-                                alert(`CANCEL CLICKED: ${row.donationId}`);
                                 if (onCancelDonation) {
-                                  alert('CANCEL HANDLER EXISTS');
                                   onCancelDonation(
                                     row.donationId,
                                     row.volunteerName || 'Trust Volunteer'
                                   );
-                                } else {
-                                   alert('CANCEL HANDLER MISSING');
                                 }
                               }}
                               className="px-2.5 py-1 bg-red-600 hover:bg-red-700 text-white rounded-lg text-[10px] font-bold transition cursor-pointer"

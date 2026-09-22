@@ -56,6 +56,7 @@ interface VolunteerPortalProps {
   }) => Promise<DonationRecord>;
   onViewReceipt: (donation: DonationRecord) => void;
   onConfirmDonationFromSheet?: (donationId: string, volunteerName: string) => void;
+  onSendReceipt?: (donation: DonationRecord) => Promise<void>;
   onCancelDonationFromSheet?: (donationId: string, volunteerName: string) => Promise<void>;
   onRefreshFromGoogleSheet?: () => Promise<{ count: number; error?: string }>;
   onRefreshPendingQueue?: () => Promise<{
@@ -86,6 +87,7 @@ export function VolunteerPortal({
   onDirectDonationSubmit,
   onViewReceipt,
   onConfirmDonationFromSheet,
+  onSendReceipt,
   onCancelDonationFromSheet,
   onRefreshFromGoogleSheet,
   onRefreshPendingQueue,
@@ -1672,17 +1674,9 @@ export function VolunteerPortal({
             volunteers={volunteers}
             onViewReceipt={onViewReceipt}
             onConfirmDonation={onConfirmDonationFromSheet || (() => {})}
+            onSendReceipt={onSendReceipt}
             onRefreshFromGoogleSheet={onRefreshFromGoogleSheet}
-            onCancelDonation={async (donationId, volunteerName) => {
-              alert('VOLUNTEER PORTAL HANDLER RECEIVED');
-
-              if (onCancelDonationFromSheet) {
-                alert('FORWARDING TO APP');
-                return onCancelDonationFromSheet(donationId, volunteerName);
-              }
-
-              alert('VOLUNTEER PORTAL PROP IS MISSING');
-            }}
+            onCancelDonation={onCancelDonationFromSheet}
           />
         </div>
       )}
