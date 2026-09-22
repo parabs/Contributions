@@ -460,6 +460,7 @@ const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
     }
 
     try {
+       alert('ABOUT TO CALL BACKEND');
       const response = await fetch(
         googleSheetsService.DEFAULT_WEBHOOK_URL,
         {
