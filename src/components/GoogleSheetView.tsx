@@ -33,6 +33,7 @@ export function GoogleSheetView({
   donations,
   volunteers,
   onViewReceipt,
+  onSendReceipt,
   onConfirmDonation,
   onCancelDonation,
   onRefreshFromGoogleSheet
