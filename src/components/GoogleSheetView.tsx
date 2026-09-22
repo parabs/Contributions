@@ -25,6 +25,7 @@ interface GoogleSheetViewProps {
   onViewReceipt: (donation: DonationRecord) => void;
   onSendReceipt?: (donation: DonationRecord) => Promise<void>;
   onConfirmDonation?: (donationId: string, volunteerName: string) => void;
+  onCancelDonation?: (donationId: string, volunteerName: string) => Promise<void>;
   onRefreshFromGoogleSheet?: () => Promise<{ count: number; error?: string }>;
 }
 
@@ -33,6 +34,7 @@ export function GoogleSheetView({
   volunteers,
   onViewReceipt,
   onConfirmDonation,
+  onCancelDonation,
   onRefreshFromGoogleSheet
 }: GoogleSheetViewProps) {
   const { isAuthenticated, accessToken, userProfile, loginWithGoogle } = useGmailAuth();
@@ -531,6 +533,14 @@ export function GoogleSheetView({
 
                             <button
                               type="button"
+                              onClick={() => {
+                                if (onCancelDonation) {
+                                  onCancelDonation(
+                                    row.donationId,
+                                    row.volunteerName || 'Trust Volunteer'
+                                  );
+                                }
+                              }}
                               className="px-2.5 py-1 bg-red-600 hover:bg-red-700 text-white rounded-lg text-[10px] font-bold transition cursor-pointer"
                             >
                               Cancel
@@ -561,6 +571,14 @@ export function GoogleSheetView({
 
                             <button
                               type="button"
+                              onClick={() => {
+                                if (onCancelDonation) {
+                                  onCancelDonation(
+                                    row.donationId,
+                                    row.volunteerName || 'Trust Volunteer'
+                                  );
+                                }
+                              }}
                               className="px-2.5 py-1 bg-red-600 hover:bg-red-700 text-white rounded-lg text-[10px] font-bold transition cursor-pointer"
                             >
                               Cancel
@@ -588,15 +606,17 @@ export function GoogleSheetView({
                               <span>Confirm</span>
                             </button>
 
-                            <button
-                              type="button"
-                              className="px-2.5 py-1 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-[10px] font-bold transition cursor-pointer"
-                            >
-                              Send Invoice
-                            </button>
 
                             <button
                               type="button"
+                              onClick={() => {
+                                if (onCancelDonation) {
+                                  onCancelDonation(
+                                    row.donationId,
+                                    row.volunteerName || 'Trust Volunteer'
+                                  );
+                                }
+                              }}
                               className="px-2.5 py-1 bg-red-600 hover:bg-red-700 text-white rounded-lg text-[10px] font-bold transition cursor-pointer"
                             >
                               Cancel

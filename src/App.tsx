@@ -440,6 +440,73 @@ const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
     }
   };
 
+  const handleCancelDonationFromSheet = async (
+    donationId: string,
+    volunteerName: string
+  ) => {
+    const target = donations.find(d => d.donationId === donationId);
+
+    if (!target) {
+      return {
+        success: false,
+        error: 'Donation not found.'
+      };
+    }
+
+    try {
+      const response = await fetch(
+        googleSheetsService.DEFAULT_WEBHOOK_URL,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'text/plain;charset=utf-8'
+          },
+          body: JSON.stringify({
+            action: 'cancel_donation',
+            donationId: donationId.trim(),
+            volunteerCode: currentVolunteer?.volunteerCode || '',
+            cancelledBy: volunteerName
+          }),
+          redirect: 'follow'
+        }
+      );
+
+      const result = await response.json();
+
+      if (!result.success) {
+        return result;
+      }
+
+      const updatedRecord: DonationRecord = {
+        ...target,
+        paymentStatus: 'Cancelled',
+        confirmedBy: result.cancelledBy || volunteerName,
+        updatedAt: new Date().toISOString()
+      };
+
+      setDonations(prev =>
+        prev.map(d =>
+          d.donationId === donationId
+            ? updatedRecord
+            : d
+        )
+      );
+
+      return {
+        ...result,
+        donation: updatedRecord
+      };
+    } catch (err: any) {
+      console.error('SHEET CANCELLATION ERROR:', err);
+
+      return {
+        success: false,
+        error: err.message || 'Network error during donation cancellation.'
+      };
+    }
+  };
+
+
   return (
     <div className="min-h-screen bg-amber-50/30 text-slate-900 flex flex-col font-sans relative overflow-x-hidden">
       <div className="fixed inset-0 pointer-events-none flex items-center justify-center z-0 overflow-hidden select-none">
@@ -661,6 +728,7 @@ const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
               onDirectDonationSubmit={handleVolunteerDirectDonation}
               onViewReceipt={d => setModalReceiptDonation(d)}
               onConfirmDonationFromSheet={handleConfirmDonationFromSheet}
+              onCancelDonationFromSheet={handleCancelDonationFromSheet}
               onRefreshFromGoogleSheet={handleRefreshFromGoogleSheet}
               onRefreshPendingQueue={handleRefreshPendingQueue}
               onUpdateTrustConfig={upd => setTrustConfig(prev => ({ ...prev, ...upd }))}
