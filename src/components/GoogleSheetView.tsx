@@ -26,6 +26,7 @@ interface GoogleSheetViewProps {
   onSendReceipt?: (donation: DonationRecord) => Promise<void>;
   onConfirmDonation?: (donationId: string, volunteerName: string) => void;
   onCancelDonation?: (donationId: string, volunteerName: string) => Promise<void>;
+  onRepayment?: (donation: DonationRecord) => Promise<void>;
   onRefreshFromGoogleSheet?: () => Promise<{ count: number; error?: string }>;
 }
 
@@ -36,6 +37,7 @@ export function GoogleSheetView({
   onSendReceipt,
   onConfirmDonation,
   onCancelDonation,
+  onRepayment,
   onRefreshFromGoogleSheet
 }: GoogleSheetViewProps) {
   const { isAuthenticated, accessToken, userProfile, loginWithGoogle } = useGmailAuth();
@@ -331,6 +333,8 @@ export function GoogleSheetView({
                   <option value="Confirmation Pending">Confirmation Pending</option>
                   <option value="Paid">Paid</option>
                   <option value="Repayment">Repayment</option>
+                  <option value="Repayment - Confirmation">Repayment - Confirmation</option>
+                  <option value="Repayment - Dispute">Repayment - Dispute</option>
                   <option value="Cancelled">Cancelled</option>
                 </select>
               </div>
@@ -568,6 +572,12 @@ export function GoogleSheetView({
 
                             <button
                               type="button"
+                              className="px-2.5 py-1 bg-amber-600 hover:bg-amber-700 text-white rounded-lg text-[10px] font-bold transition cursor-pointer"
+                            >
+                              Repayment
+                            </button>
+                            <button
+                              type="button"
                               onClick={() => {
                                 if (onCancelDonation) {
                                   onCancelDonation(
@@ -586,6 +596,14 @@ export function GoogleSheetView({
                         {row.paymentStatus === 'Cancelled' && (
                           <button
                             type="button"
+                            onClick={async () => {
+                              if (!onRepayment) {
+                                alert('Repayment handler is not available.');
+                                return;
+                              }
+
+                              await onRepayment(row);
+                            }}
                             className="px-2.5 py-1 bg-amber-600 hover:bg-amber-700 text-white rounded-lg text-[10px] font-bold transition cursor-pointer"
                           >
                             Repayment
