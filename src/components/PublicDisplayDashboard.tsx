@@ -266,8 +266,8 @@ export function PublicDisplayDashboard({
                 Total Donations
               </span>
 
-              <div className="mt-5">
-                <div className="text-4xl sm:text-5xl lg:text-6xl font-black text-slate-900 font-mono tracking-tight flex items-baseline gap-1">
+              <div className="mt-3">
+                <div className="text-3xl sm:text-4xl lg:text-5xl font-black text-slate-900 font-mono tracking-tight flex items-baseline gap-1">
                   <span className="text-amber-800 text-3xl sm:text-4xl font-serif">
                     ₹
                   </span>
@@ -281,9 +281,8 @@ export function PublicDisplayDashboard({
                   {grandTotalCount} Donations
                 </p>
 
-                <p className="text-xs sm:text-sm text-slate-500 font-medium mt-2 max-w-xl">
-                  Total collections across all Seva categories
-                  (verified UPI &amp; Cash offerings).
+                <p className="text-xs text-slate-500 font-medium mt-1 max-w-lg">
+                  Total collections across all Seva categories (verified UPI &amp; Cash offerings).
                 </p>
               </div>
 
