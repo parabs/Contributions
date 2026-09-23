@@ -61,15 +61,24 @@ export function PublicDisplayDashboard({
   };
 
   // ---------------------------------------------------------------------------
-  // 1. OVERALL METRICS & TYPE-WISE COLLECTIONS (PAID ONLY)
+  // 1. OVERALL METRICS - FROM CALCULATION SHEET
   // ---------------------------------------------------------------------------
+
+  // Calculation!B4 = Total Donations
+  // Calculation!B5 = Total Collection
+
+  const grandTotalCount =
+    Number(dashboardCalculation?.[3]?.[1]) || 0;
+
+  const grandTotalAmount =
+    Number(dashboardCalculation?.[4]?.[1]) || 0;
+
+  // Keep paid donations available for legacy sections
+  // until the remaining dashboard sections are migrated.
   const paidDonations = useMemo(() => {
     return donations.filter(d => d.paymentStatus === 'Paid');
   }, [donations]);
-
-  const grandTotalAmount = paidDonations.reduce((sum, d) => sum + d.amount, 0);
-  const grandTotalCount = paidDonations.length;
-
+  
   // Payment Type Breakdown (UPI vs Cash vs NEFT/Other)
   const paymentTypeStats = useMemo(() => {
     const upiDonations = paidDonations.filter(d => d.paymentMode?.toUpperCase() === 'UPI');
@@ -198,7 +207,7 @@ export function PublicDisplayDashboard({
         category: String(row[1] || ''),
         count: Number(row[2]) || 0,
         amount: Number(row[3]) || 0,
-        percent: Number(row[4]) || 0
+        percent: (Number(row[4]) || 0) * 100
       }));
   }, [dashboardCalculation]);
 
