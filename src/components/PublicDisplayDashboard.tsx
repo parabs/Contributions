@@ -202,6 +202,23 @@ export function PublicDisplayDashboard({
       }));
   }, [dashboardCalculation]);
 
+  // ---------------------------------------------------------------------------
+  // DASHBOARD CALCULATION - LAST 5 AVAILABLE DONATION DATES
+  // ---------------------------------------------------------------------------
+  const dayDashboardData = useMemo(() => {
+    if (!dashboardCalculation || dashboardCalculation.length < 27) {
+      return [];
+    }
+
+    return dashboardCalculation
+      .slice(22, 27)
+      .filter(row => row && row[0])
+      .map(row => ({
+        date: String(row[0] || ''),
+        amount: Number(row[1]) || 0
+      }));
+  }, [dashboardCalculation]);
+
   // Target Seva Goal for Mandap / Hall display (e.g. 5,00,000)
   const targetGoal = 500000;
   const goalPercentage = Math.min(100, Math.round((grandTotalAmount / targetGoal) * 100));
@@ -661,7 +678,7 @@ export function PublicDisplayDashboard({
             </div>
           )}
         </div>
-        
+
         {/* Transparency & Bank Footnote */}
         <div className="bg-amber-50/80 rounded-2xl p-4 border border-amber-200 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-amber-950">
           <div className="flex items-center gap-2">
