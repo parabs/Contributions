@@ -38,10 +38,6 @@ export function PublicDisplayDashboard({
   onOpenDonorForm,
   onOpenVolunteerLogin
 }: PublicDisplayDashboardProps) {
-  alert(
-  'DASHBOARD CALCULATION DATA:\n\n' +
-  JSON.stringify(dashboardCalculation, null, 2)
-);
   const [isFullScreen, setIsFullScreen] = useState(false);
   const [currentTime, setCurrentTime] = useState(new Date());
 
