@@ -588,7 +588,6 @@ export function PublicDisplayDashboard({
                   );
                 })()}
 
-              </div>
             </div>
           )}
         </div>
