@@ -248,44 +248,51 @@ export function PublicDisplayDashboard({
         {/* ========================================================================= */}
         <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
           
-          {/* Main Grand Total Card (7 Cols) */}
-          <div className="md:col-span-7 bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-slate-200 flex flex-col justify-between space-y-6 relative overflow-hidden">
-            <div className="absolute right-4 top-0 bottom-0 w-64 sm:w-72 pointer-events-none flex items-center justify-center opacity-30">
+                    {/* Main Grand Total Card (7 Cols) */}
+          <div className="md:col-span-7 bg-white rounded-3xl p-5 sm:p-6 shadow-sm border border-slate-200 relative overflow-hidden min-h-[280px]">
+
+            {/* Watermark */}
+            <div className="absolute right-2 top-0 bottom-0 w-56 sm:w-64 pointer-events-none flex items-center justify-center opacity-25">
               <MaaDurgaWatermark opacity={0.10} size="full" />
             </div>
-            <div className="absolute top-0 right-0 w-64 h-64 bg-amber-100/50 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none" />
 
-            <div className="space-y-2 relative z-10">
-              <div className="flex items-center justify-between flex-wrap gap-2">
-                <span className="text-xs font-black uppercase tracking-wider text-amber-900 bg-amber-100 px-3 py-1 rounded-full flex items-center gap-1.5">
-                  <Flame className="w-3.5 h-3.5 text-amber-700" />
-                  <span>Total Donations</span>
-                  <p className="text-sm sm:text-base text-slate-500 font-medium mt-1">
-                    {grandTotalCount} Donations
-                  </p>
+            {/* Soft background glow */}
+            <div className="absolute top-0 right-0 w-56 h-56 bg-amber-100/50 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none" />
 
-                  <p className="text-xs sm:text-sm text-slate-500 font-medium mt-2">
-                    Total collections across all Seva categories (verified UPI & Cash offerings).
-                  </p>
-                </span>
-                  
-              <div className="pt-2">
+            <div className="relative z-10 max-w-[65%]">
+
+              <span className="text-xs font-black uppercase tracking-wider text-amber-900 bg-amber-100 px-3 py-1.5 rounded-full inline-flex items-center gap-1.5">
+                <Flame className="w-3.5 h-3.5 text-amber-700" />
+                Total Donations
+              </span>
+
+              <div className="mt-5">
                 <div className="text-4xl sm:text-5xl lg:text-6xl font-black text-slate-900 font-mono tracking-tight flex items-baseline gap-1">
-                  <span className="text-amber-800 text-3xl sm:text-4xl font-serif">₹</span>
-                  <span>{grandTotalAmount.toLocaleString('en-IN')}</span>
+                  <span className="text-amber-800 text-3xl sm:text-4xl font-serif">
+                    ₹
+                  </span>
+
+                  <span>
+                    {grandTotalAmount.toLocaleString('en-IN')}
+                  </span>
                 </div>
-                <p className="text-xs text-slate-500 font-medium mt-1">
-                  Consolidated total collections across verified UPI QR &amp; Cash Counter offerings.
+
+                <p className="text-base font-semibold text-slate-700 mt-1">
+                  {grandTotalCount} Donations
+                </p>
+
+                <p className="text-xs sm:text-sm text-slate-500 font-medium mt-2 max-w-xl">
+                  Total collections across all Seva categories
+                  (verified UPI &amp; Cash offerings).
                 </p>
               </div>
-            </div>
 
-             </div>
+            </div>
 
           </div>
 
           {/* Scan & Pay Direct QR Card (5 Cols) */}
-          <div className="md:col-span-5 bg-gradient-to-br from-amber-900 to-amber-950 text-white rounded-3xl p-6 sm:p-8 shadow-sm border border-amber-800 flex flex-col items-center justify-between text-center space-y-4">
+          <div className="md:col-span-5 bg-gradient-to-br from-amber-900 to-amber-950 text-white rounded-3xl p-4 sm:p-5 shadow-sm border border-amber-800 flex flex-col items-center justify-between text-center space-y-4">
             <div className="space-y-1">
               <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 text-amber-300 text-xs font-bold">
                 <QrCode className="w-3.5 h-3.5" />
@@ -297,7 +304,7 @@ export function PublicDisplayDashboard({
 
             {/* QR Code Container */}
             <div className="p-4 bg-white rounded-3xl shadow-xl border-4 border-amber-200/40 text-slate-900 flex flex-col items-center justify-center">
-              <div className="w-36 h-36 sm:w-40 sm:h-40 bg-slate-900 rounded-2xl p-2.5 flex items-center justify-center shadow-inner relative">
+              <div className="w-28 h-28 sm:w-32 sm:h-32 bg-slate-900 rounded-2xl p-2.5 flex items-center justify-center shadow-inner relative">
                 <svg viewBox="0 0 100 100" className="w-full h-full text-white fill-current">
                   <path d="M0 0h30v30H0zm5 5v20h20V5zm5 5h10v10H10zM70 0h30v30H70zm5 5v20h20V5zm5 5h10v10H80zM0 70h30v30H0zm5 5v20h20V5zm5 5h10v10H10zM40 10h10v10H40zm10 10h10v10H50zm-10 10h10v10H40zm30 10h10v10H70zm10 10h10v10H80zm-40 20h10v10H40zm10 10h10v10H50zm10-10h10v10H60zm10 10h10v10H70zm10 0h10v10H80zm0 10h10v10H80zm-10 10h10v10H70z" />
                 </svg>
@@ -417,7 +424,7 @@ export function PublicDisplayDashboard({
                       {/* Chart area */}
                       <div className="ml-16">
 
-                        <div className="relative h-72 border-l border-b border-slate-300">
+                        <div className="relative h-52 border-l border-b border-slate-300">
 
                           {/* Horizontal grid lines */}
                           <div className="absolute inset-0 flex flex-col justify-between pointer-events-none">
@@ -532,7 +539,7 @@ export function PublicDisplayDashboard({
               <div className="flex items-center justify-center">
 
                 <div
-                  className="relative w-56 h-56 rounded-full"
+                  className="relative w-40 h-40 rounded-full"
                   style={{
                     background: (() => {
                       let start = 0;
@@ -559,7 +566,7 @@ export function PublicDisplayDashboard({
                     })()
                   }}
                 >
-                  <div className="absolute inset-8 rounded-full bg-white flex flex-col items-center justify-center shadow-inner">
+                  <div className="absolute inset-6 rounded-full bg-white flex flex-col items-center justify-center shadow-inner">
 
                     <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wide">
                       Total Seva
@@ -581,7 +588,7 @@ export function PublicDisplayDashboard({
               </div>
 
               {/* Seva Legend / Ranking */}
-              <div className="space-y-3">
+              <div className="space-y-2">
 
                 {sevaDashboardData.map((item, index) => {
                   const colors = [
@@ -596,7 +603,7 @@ export function PublicDisplayDashboard({
                   return (
                     <div
                       key={`${item.category}-${index}`}
-                      className="flex items-center justify-between gap-4 p-3 rounded-xl bg-amber-50/40 border border-amber-100"
+                      className="flex items-center justify-between gap-4 p-2.5 rounded-xl bg-amber-50/40 border border-amber-100"
                     >
 
                       <div className="flex items-center gap-3 min-w-0">
