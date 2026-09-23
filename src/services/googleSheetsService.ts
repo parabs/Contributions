@@ -903,10 +903,7 @@ export async function fetchDashboardCalculation(
       }
 
       values = data.values;
-      alert(
-        'CALCULATION SHEET DATA:\n\n' +
-        JSON.stringify(values, null, 2)
-      );
+
     } else {
       // Authenticated access: use Google Sheets API.
       const url =

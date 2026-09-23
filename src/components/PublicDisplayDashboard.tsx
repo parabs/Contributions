@@ -182,6 +182,26 @@ export function PublicDisplayDashboard({
     });
   }, [paidDonations, grandTotalAmount]);
 
+  // ---------------------------------------------------------------------------
+  // DASHBOARD CALCULATION - SEVA-WISE DATA
+  // ---------------------------------------------------------------------------
+  const sevaDashboardData = useMemo(() => {
+    if (!dashboardCalculation || dashboardCalculation.length < 16) {
+      return [];
+    }
+
+    return dashboardCalculation
+      .slice(10, 16)
+      .filter(row => row && row[1])
+      .map(row => ({
+        rank: Number(row[0]) || 0,
+        category: String(row[1] || ''),
+        count: Number(row[2]) || 0,
+        amount: Number(row[3]) || 0,
+        percent: Number(row[4]) || 0
+      }));
+  }, [dashboardCalculation]);
+
   // Target Seva Goal for Mandap / Hall display (e.g. 5,00,000)
   const targetGoal = 500000;
   const goalPercentage = Math.min(100, Math.round((grandTotalAmount / targetGoal) * 100));
@@ -484,54 +504,164 @@ export function PublicDisplayDashboard({
           )}
         </div>
 
+                {/* ========================================================================= */}
+        {/* ROW 3: SEVA-WISE TOP 5 + OTHERS                                          */}
         {/* ========================================================================= */}
-        {/* ROW 3: CUMULATIVE SEVA CATEGORIES ALLOCATION BREAKDOWN                     */}
-        {/* ========================================================================= */}
-        <div className="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-slate-200 space-y-5">
-          <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+        <div className="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-slate-200 space-y-6">
+
+          <div className="flex items-center justify-between pb-4 border-b border-slate-100">
             <div className="flex items-center gap-2">
               <Layers className="w-5 h-5 text-amber-800" />
+
               <div>
                 <h3 className="font-black text-slate-900 text-sm uppercase tracking-wider">
-                  Cumulative Seva Head Allocation Breakdown
+                  Seva-Wise Offerings
                 </h3>
-                <p className="text-xs text-slate-500">Transparent distribution across all Puja &amp; Seva categories</p>
+
+                <p className="text-xs text-slate-500">
+                  How devotees are contributing across Seva categories
+                </p>
               </div>
             </div>
+
             <span className="text-xs font-bold text-amber-900 bg-amber-100 px-2.5 py-1 rounded-full">
-              {categoryStats.length} Seva Categories
+              Top 5 + Others
             </span>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {categoryStats.map((item, idx) => (
-              <div key={idx} className="p-3.5 rounded-2xl bg-amber-50/40 border border-amber-200/60 space-y-2">
-                <div className="flex justify-between items-center text-xs">
-                  <span className="font-bold text-slate-900 text-sm">{item.category}</span>
-                  <div className="flex items-center gap-2">
-                    <span className="font-mono font-bold text-slate-950 text-sm">
-                      ₹{item.amount.toLocaleString('en-IN')}
+          {sevaDashboardData.length === 0 ? (
+            <div className="py-10 text-center bg-slate-50 rounded-2xl border border-dashed border-slate-200">
+              <Layers className="w-8 h-8 text-slate-400 mx-auto mb-2" />
+
+              <p className="text-sm font-bold text-slate-700">
+                No Seva collection data available
+              </p>
+
+              <p className="text-xs text-slate-500 mt-1">
+                Seva-wise offerings will appear here once verified collections are available.
+              </p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+
+              {/* Donut Chart */}
+              <div className="flex items-center justify-center">
+
+                <div
+                  className="relative w-56 h-56 rounded-full"
+                  style={{
+                    background: (() => {
+                      let start = 0;
+
+                      const segments = sevaDashboardData.map((item, index) => {
+                        const colors = [
+                          '#92400e',
+                          '#b45309',
+                          '#d97706',
+                          '#f59e0b',
+                          '#fbbf24',
+                          '#94a3b8'
+                        ];
+
+                        const end = start + item.percent;
+                        const segment = `${colors[index % colors.length]} ${start}% ${end}%`;
+
+                        start = end;
+
+                        return segment;
+                      });
+
+                      return `conic-gradient(${segments.join(', ')})`;
+                    })()
+                  }}
+                >
+                  <div className="absolute inset-8 rounded-full bg-white flex flex-col items-center justify-center shadow-inner">
+
+                    <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wide">
+                      Total Seva
                     </span>
-                    <span className="text-xs text-amber-900 font-bold bg-amber-100 px-1.5 py-0.5 rounded font-mono">
-                      {item.percent}%
+
+                    <span className="text-2xl font-black text-slate-900 font-mono">
+                      ₹{sevaDashboardData
+                        .reduce((sum, item) => sum + item.amount, 0)
+                        .toLocaleString('en-IN')}
                     </span>
+
+                    <span className="text-[10px] text-slate-400">
+                      Verified offerings
+                    </span>
+
                   </div>
                 </div>
-                <div className="w-full bg-slate-200/70 rounded-full h-2.5 overflow-hidden">
-                  <div 
-                    className="bg-amber-800 h-full rounded-full transition-all duration-500"
-                    style={{ width: `${Math.max(4, item.percent)}%` }}
-                  />
-                </div>
-                <div className="text-[11px] text-slate-500 font-mono flex justify-between">
-                  <span>{item.count} devotee offerings</span>
-                  <span>Category Target Allocation</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
 
+              </div>
+
+              {/* Seva Legend / Ranking */}
+              <div className="space-y-3">
+
+                {sevaDashboardData.map((item, index) => {
+                  const colors = [
+                    '#92400e',
+                    '#b45309',
+                    '#d97706',
+                    '#f59e0b',
+                    '#fbbf24',
+                    '#94a3b8'
+                  ];
+
+                  return (
+                    <div
+                      key={`${item.category}-${index}`}
+                      className="flex items-center justify-between gap-4 p-3 rounded-xl bg-amber-50/40 border border-amber-100"
+                    >
+
+                      <div className="flex items-center gap-3 min-w-0">
+
+                        <span
+                          className="w-3 h-3 rounded-full shrink-0"
+                          style={{
+                            backgroundColor:
+                              colors[index % colors.length]
+                          }}
+                        />
+
+                        <div className="min-w-0">
+                          <div className="font-bold text-sm text-slate-900 truncate">
+                            {item.category}
+                          </div>
+
+                          <div className="text-[11px] text-slate-500">
+                            {item.count}{' '}
+                            {item.count === 1
+                              ? 'offering'
+                              : 'offerings'}
+                          </div>
+                        </div>
+
+                      </div>
+
+                      <div className="text-right shrink-0">
+
+                        <div className="font-mono font-black text-sm text-slate-900">
+                          ₹{item.amount.toLocaleString('en-IN')}
+                        </div>
+
+                        <div className="text-[11px] font-bold text-amber-800">
+                          {item.percent.toFixed(1)}%
+                        </div>
+
+                      </div>
+
+                    </div>
+                  );
+                })}
+
+              </div>
+
+            </div>
+          )}
+        </div>
+        
         {/* Transparency & Bank Footnote */}
         <div className="bg-amber-50/80 rounded-2xl p-4 border border-amber-200 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-amber-950">
           <div className="flex items-center gap-2">
