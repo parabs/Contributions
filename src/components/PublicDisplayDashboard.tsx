@@ -431,7 +431,7 @@ export function PublicDisplayDashboard({
           {/* ========================================================================= */}
           {/* ROW 2: LAST 5 DAYS OFFERINGS                                             */}
           {/* ========================================================================= */}
-          <div className="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-slate-200 space-y-6">
+          <div className="order-2 lg:order-2 bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-slate-200 space-y-6">
 
             <div className="flex items-center justify-between pb-4 border-b border-slate-100">
               <div className="flex items-center gap-2">
@@ -595,10 +595,10 @@ export function PublicDisplayDashboard({
 
 
 
-                {/* ========================================================================= */}
+        {/* ========================================================================= */}
         {/* ROW 3: SEVA-WISE TOP 5 + OTHERS                                          */}
         {/* ========================================================================= */}
-        <div className="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-slate-200 space-y-6">
+        <div className="order-1 lg:order-1 bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-slate-200 space-y-6">
 
           <div className="flex items-center justify-between pb-4 border-b border-slate-100">
             <div className="flex items-center gap-2">
@@ -752,7 +752,8 @@ export function PublicDisplayDashboard({
             </div>
           )}
         </div>
-
+      </div>
+          
         {/* Transparency & Bank Footnote */}
         <div className="bg-amber-50/80 rounded-2xl p-4 border border-amber-200 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-amber-950">
           <div className="flex items-center gap-2">
