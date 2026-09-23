@@ -427,167 +427,168 @@ export function PublicDisplayDashboard({
           </div>
 
         </div>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-stretch">
+          {/* ========================================================================= */}
+          {/* ROW 2: LAST 5 DAYS OFFERINGS                                             */}
+          {/* ========================================================================= */}
+          <div className="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-slate-200 space-y-6">
 
-        {/* ========================================================================= */}
-        {/* ROW 2: LAST 5 DAYS OFFERINGS                                             */}
-        {/* ========================================================================= */}
-        <div className="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-slate-200 space-y-6">
+            <div className="flex items-center justify-between pb-4 border-b border-slate-100">
+              <div className="flex items-center gap-2">
+                <BarChart3 className="w-5 h-5 text-amber-800" />
 
-          <div className="flex items-center justify-between pb-4 border-b border-slate-100">
-            <div className="flex items-center gap-2">
-              <BarChart3 className="w-5 h-5 text-amber-800" />
+                <div>
+                  <h3 className="font-black text-slate-900 text-sm uppercase tracking-wider">
+                    Last 5 Days Offerings
+                  </h3>
 
-              <div>
-                <h3 className="font-black text-slate-900 text-sm uppercase tracking-wider">
-                  Last 5 Days Offerings
-                </h3>
+                  <p className="text-xs text-slate-500">
+                    Total collections on last 5 available donation dates
+                  </p>
+                </div>
+              </div>
 
-                <p className="text-xs text-slate-500">
-                  Total collections on last 5 available donation dates
+              <span className="text-xs font-bold text-amber-900 bg-amber-100 px-2.5 py-1 rounded-full">
+                Last 5 Available Dates
+              </span>
+            </div>
+
+            {dayDashboardData.length === 0 ? (
+              <div className="py-10 text-center bg-slate-50 rounded-2xl border border-dashed border-slate-200">
+                <BarChart3 className="w-8 h-8 text-slate-400 mx-auto mb-2" />
+
+                <p className="text-sm font-bold text-slate-700">
+                  No recent collection data available
+                </p>
+
+                <p className="text-xs text-slate-500 mt-1">
+                  Day-wise offerings will appear here once verified collections are available.
                 </p>
               </div>
-            </div>
+            ) : (
+              <div className="relative">
 
-            <span className="text-xs font-bold text-amber-900 bg-amber-100 px-2.5 py-1 rounded-full">
-              Last 5 Available Dates
-            </span>
-          </div>
+                {(() => {
+                  const chartData = [...dayDashboardData].reverse();
 
-          {dayDashboardData.length === 0 ? (
-            <div className="py-10 text-center bg-slate-50 rounded-2xl border border-dashed border-slate-200">
-              <BarChart3 className="w-8 h-8 text-slate-400 mx-auto mb-2" />
+                  const maxAmount = Math.max(
+                    ...chartData.map(item => item.amount),
+                    0
+                  );
 
-              <p className="text-sm font-bold text-slate-700">
-                No recent collection data available
-              </p>
+                  const chartMax =
+                    maxAmount > 0
+                      ? Math.ceil(maxAmount / 10000) * 10000
+                      : 10000;
 
-              <p className="text-xs text-slate-500 mt-1">
-                Day-wise offerings will appear here once verified collections are available.
-              </p>
-            </div>
-          ) : (
-            <div className="relative">
+                  const formatDate = (rawDate: string) => {
+                    const date = new Date(`${rawDate}T00:00:00`);
 
-              {(() => {
-                const chartData = [...dayDashboardData].reverse();
+                    if (Number.isNaN(date.getTime())) {
+                      return rawDate;
+                    }
 
-                const maxAmount = Math.max(
-                  ...chartData.map(item => item.amount),
-                  0
-                );
+                    return date.toLocaleDateString('en-IN', {
+                      day: '2-digit',
+                      month: 'short'
+                    });
+                  };
 
-                const chartMax =
-                  maxAmount > 0
-                    ? Math.ceil(maxAmount / 10000) * 10000
-                    : 10000;
+                  return (
+                    <div className="relative">
 
-                const formatDate = (rawDate: string) => {
-                  const date = new Date(`${rawDate}T00:00:00`);
+                      {/* Y-axis labels */}
+                      <div className="absolute left-0 top-0 bottom-10 w-16 flex flex-col justify-between text-[11px] text-slate-500 font-mono">
+                        <span>
+                          ₹{chartMax.toLocaleString('en-IN')}
+                        </span>
 
-                  if (Number.isNaN(date.getTime())) {
-                    return rawDate;
-                  }
+                        <span>
+                          ₹{Math.round(chartMax * 0.75).toLocaleString('en-IN')}
+                        </span>
 
-                  return date.toLocaleDateString('en-IN', {
-                    day: '2-digit',
-                    month: 'short'
-                  });
-                };
+                        <span>
+                          ₹{Math.round(chartMax * 0.5).toLocaleString('en-IN')}
+                        </span>
 
-                return (
-                  <div className="relative">
+                        <span>
+                          ₹{Math.round(chartMax * 0.25).toLocaleString('en-IN')}
+                        </span>
 
-                    {/* Y-axis labels */}
-                    <div className="absolute left-0 top-0 bottom-10 w-16 flex flex-col justify-between text-[11px] text-slate-500 font-mono">
-                      <span>
-                        ₹{chartMax.toLocaleString('en-IN')}
-                      </span>
+                        <span>
+                          ₹0
+                        </span>
+                      </div>
 
-                      <span>
-                        ₹{Math.round(chartMax * 0.75).toLocaleString('en-IN')}
-                      </span>
+                      {/* Chart area */}
+                      <div className="ml-16">
 
-                      <span>
-                        ₹{Math.round(chartMax * 0.5).toLocaleString('en-IN')}
-                      </span>
+                        <div className="relative h-72 border-l border-b border-slate-300">
 
-                      <span>
-                        ₹{Math.round(chartMax * 0.25).toLocaleString('en-IN')}
-                      </span>
+                          {/* Horizontal grid lines */}
+                          <div className="absolute inset-0 flex flex-col justify-between pointer-events-none">
 
-                      <span>
-                        ₹0
-                      </span>
-                    </div>
+                            <div className="border-t border-slate-100" />
+                            <div className="border-t border-slate-100" />
+                            <div className="border-t border-slate-100" />
+                            <div className="border-t border-slate-100" />
+                            <div className="border-t border-slate-200" />
 
-                    {/* Chart area */}
-                    <div className="ml-16">
+                          </div>
 
-                      <div className="relative h-72 border-l border-b border-slate-300">
+                          {/* Bars */}
+                          <div className="absolute inset-0 flex items-end justify-around gap-4 px-5">
 
-                        {/* Horizontal grid lines */}
-                        <div className="absolute inset-0 flex flex-col justify-between pointer-events-none">
+                            {chartData.map((item, index) => {
 
-                          <div className="border-t border-slate-100" />
-                          <div className="border-t border-slate-100" />
-                          <div className="border-t border-slate-100" />
-                          <div className="border-t border-slate-100" />
-                          <div className="border-t border-slate-200" />
+                              const height =
+                                chartMax > 0
+                                  ? Math.max(
+                                      4,
+                                      (item.amount / chartMax) * 100
+                                    )
+                                  : 0;
 
-                        </div>
-
-                        {/* Bars */}
-                        <div className="absolute inset-0 flex items-end justify-around gap-4 px-5">
-
-                          {chartData.map((item, index) => {
-
-                            const height =
-                              chartMax > 0
-                                ? Math.max(
-                                    4,
-                                    (item.amount / chartMax) * 100
-                                  )
-                                : 0;
-
-                            return (
-                              <div
-                                key={`${item.date}-${index}`}
-                                className="flex-1 h-full flex flex-col items-center justify-end min-w-0"
-                              >
-
-                                {/* Amount */}
-                                <div className="mb-2 text-sm font-black text-slate-900 font-mono whitespace-nowrap">
-                                  ₹{item.amount.toLocaleString('en-IN')}
-                                </div>
-
-                                {/* Bar */}
+                              return (
                                 <div
-                                  className="w-full max-w-20 bg-gradient-to-t from-amber-800 to-amber-600 rounded-t-lg shadow-sm transition-all duration-500"
-                                  style={{
-                                    height: `${height}%`
-                                  }}
-                                  title={`${formatDate(item.date)} — ₹${item.amount.toLocaleString('en-IN')}`}
-                                />
+                                  key={`${item.date}-${index}`}
+                                  className="flex-1 h-full flex flex-col items-center justify-end min-w-0"
+                                >
 
-                                {/* Date */}
-                                <div className="mt-2 text-xs font-medium text-slate-500 whitespace-nowrap">
-                                  {formatDate(item.date)}
+                                  {/* Amount */}
+                                  <div className="mb-2 text-sm font-black text-slate-900 font-mono whitespace-nowrap">
+                                    ₹{item.amount.toLocaleString('en-IN')}
+                                  </div>
+
+                                  {/* Bar */}
+                                  <div
+                                    className="w-full max-w-20 bg-gradient-to-t from-amber-800 to-amber-600 rounded-t-lg shadow-sm transition-all duration-500"
+                                    style={{
+                                      height: `${height}%`
+                                    }}
+                                    title={`${formatDate(item.date)} — ₹${item.amount.toLocaleString('en-IN')}`}
+                                  />
+
+                                  {/* Date */}
+                                  <div className="mt-2 text-xs font-medium text-slate-500 whitespace-nowrap">
+                                    {formatDate(item.date)}
+                                  </div>
+
                                 </div>
+                              );
+                            })}
 
-                              </div>
-                            );
-                          })}
+                          </div>
 
                         </div>
 
                       </div>
 
                     </div>
+                  );
+                })()}
 
-                  </div>
-                );
-              })()}
-
+              </div>
             </div>
           )}
         </div>
