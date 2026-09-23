@@ -233,9 +233,9 @@ export function PublicDisplayDashboard({
   const goalPercentage = Math.min(100, Math.round((grandTotalAmount / targetGoal) * 100));
 
   return (
-    <div className={`space-y-4 relative transition-all duration-300 ${isFullScreen ? 'fixed inset-0 z-50 bg-slate-950 text-white p-4 sm:p-6 overflow-y-auto' : ''}`}>
+    <div className={`space-y-2 relative transition-all duration-300 ${isFullScreen ? 'fixed inset-0 z-50 bg-slate-950 text-white p-4 sm:p-6 overflow-y-auto' : ''}`}>
 
-      <div className="relative z-10 space-y-4">
+      <div className="relative z-10 space-y-2">
 
         {/* ========================================================================= */}
         {/* TOP ROW: TOTAL DONATIONS + DIRECT MANDAP UPI QR                           */}
@@ -245,7 +245,7 @@ export function PublicDisplayDashboard({
           {/* ----------------------------------------------------------------------- */}
           {/* TOTAL DONATIONS                                                         */}
           {/* ----------------------------------------------------------------------- */}
-          <div className="md:col-span-7 bg-white rounded-3xl p-6 sm:p-7 shadow-sm border border-slate-200 relative overflow-hidden h-auto md:h-[380px]">
+          <div className="md:col-span-7 bg-white rounded-2xl p-4 sm:p-5 shadow-sm border border-slate-200 relative overflow-hidden h-auto md:h-[285px]">
 
             {/* Soft devotional glow */}
             <div className="absolute right-0 top-0 w-80 h-80 bg-amber-100/60 rounded-full blur-3xl -mr-24 -mt-24 pointer-events-none" />
@@ -278,17 +278,17 @@ export function PublicDisplayDashboard({
                 Total Donations
               </span>
 
-              <div className="mt-8">
-                <div className="text-5xl sm:text-6xl lg:text-7xl font-black text-slate-900 font-mono tracking-tight flex items-baseline gap-1">
+              <div className="mt-4">
+                <div className="text-4xl sm:text-5xl lg:text-6xl font-black text-slate-900 font-mono tracking-tight flex items-baseline gap-1">
                   <span className="text-amber-800 text-4xl sm:text-5xl font-serif">₹</span>
                   <span>{grandTotalAmount.toLocaleString('en-IN')}</span>
                 </div>
 
-                <p className="text-xl sm:text-2xl font-semibold text-slate-800 mt-1">
+                <p className="text-lg sm:text-xl font-semibold text-slate-800 mt-1">
                   {grandTotalCount} Donations
                 </p>
 
-                <p className="text-sm sm:text-base text-slate-500 font-medium mt-3 max-w-lg leading-relaxed">
+                <p className="text-xs sm:text-sm text-slate-500 font-medium mt-2 max-w-lg leading-relaxed">
                   Total collections across all Seva categories<br className="hidden sm:block" />
                   (verified UPI &amp; Cash offerings).
                 </p>
@@ -300,7 +300,7 @@ export function PublicDisplayDashboard({
           {/* ----------------------------------------------------------------------- */}
           {/* DIRECT MANDAP UPI QR                                                    */}
           {/* ----------------------------------------------------------------------- */}
-          <div className="md:col-span-5 bg-gradient-to-br from-amber-900 to-amber-950 text-white rounded-3xl p-5 sm:p-6 shadow-sm border border-amber-800 h-auto md:h-[380px]">
+          <div className="md:col-span-5 bg-gradient-to-br from-amber-900 to-amber-950 text-white rounded-2xl p-4 sm:p-5 shadow-sm border border-amber-800 h-auto md:h-[285px]">
 
             <div className="h-full grid grid-cols-1 sm:grid-cols-[1fr_0.72fr] gap-4 items-center">
 
@@ -319,8 +319,8 @@ export function PublicDisplayDashboard({
                   Scan with GPay, PhonePe, Paytm, BHIM
                 </p>
 
-                <div className="mt-4 p-3 bg-white rounded-2xl shadow-xl border-4 border-amber-200/40 text-slate-900 flex flex-col items-center justify-center">
-                  <div className="w-32 h-32 sm:w-36 sm:h-36 bg-slate-900 rounded-xl p-2.5 flex items-center justify-center shadow-inner relative">
+                <div className="mt-2 p-2 bg-white rounded-2xl shadow-xl border-2 border-amber-200/40 text-slate-900 flex flex-col items-center justify-center">
+                  <div className="w-28 h-28 sm:w-28 sm:h-28 bg-slate-900 rounded-xl p-2.5 flex items-center justify-center shadow-inner relative">
                     <svg viewBox="0 0 100 100" className="w-full h-full text-white fill-current" aria-label="SJST UPI QR">
                       <path d="M0 0h30v30H0zm5 5v20h20V5zm5 5h10v10H10zM70 0h30v30H70zm5 5v20h20V5zm5 5h10v10H80zM0 70h30v30H0zm5 5v20h20V5zm5 5h10v10H10zM40 10h10v10H40zm10 10h10v10H50zm-10 10h10v10H40zm30 10h10v10H70zm10 10h10v10H80zm-40 20h10v10H40zm10 10h10v10H50zm10-10h10v10H60zm10 10h10v10H70zm10 0h10v10H80zm0 10h10v10H80zm-10 10h10v10H70z" />
                     </svg>
@@ -345,29 +345,29 @@ export function PublicDisplayDashboard({
               </div>
 
               {/* Devotional message panel */}
-              <div className="hidden sm:flex h-full border-l border-amber-200/20 pl-5 flex-col justify-center gap-7">
+              <div className="hidden sm:flex h-full border-l border-amber-200/20 pl-3 flex-col justify-center gap-3">
                 <div className="flex items-center gap-3">
-                  <Sparkles className="w-9 h-9 text-amber-300 shrink-0" />
+                  <Sparkles className="w-7 h-7 text-amber-300 shrink-0" />
                   <span className="text-sm font-semibold text-amber-100 leading-tight">
                     Seva<br />Today
                   </span>
                 </div>
 
                 <div className="flex items-center gap-3">
-                  <HandHeart className="w-9 h-9 text-amber-300 shrink-0" />
+                  <HandHeart className="w-7 h-7 text-amber-300 shrink-0" />
                   <span className="text-sm font-semibold text-amber-100 leading-tight">
                     Blessings<br />Always
                   </span>
                 </div>
 
                 <div className="flex items-center gap-3">
-                  <Building2 className="w-9 h-9 text-amber-300 shrink-0" />
+                  <Building2 className="w-7 h-7 text-amber-300 shrink-0" />
                   <span className="text-sm font-semibold text-amber-100 leading-tight">
                     A Stronger<br />Community<br />Together
                   </span>
                 </div>
 
-                <div className="border border-amber-300/40 rounded-2xl px-4 py-3 text-center text-sm font-bold text-white">
+                <div className="border border-amber-300/40 rounded-2xl px-3 py-2 text-center text-xs font-bold text-white">
                   Every Offering<br />Matters 🙏
                 </div>
               </div>
@@ -380,12 +380,12 @@ export function PublicDisplayDashboard({
         {/* ========================================================================= */}
         {/* BOTTOM ROW: TOP 5 SEVA + LAST 5 DAYS                                      */}
         {/* ========================================================================= */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 items-stretch">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 items-stretch">
 
           {/* ----------------------------------------------------------------------- */}
           {/* TOP 5 SEVA CATEGORIES                                                   */}
           {/* ----------------------------------------------------------------------- */}
-          <div className="bg-white rounded-3xl p-5 sm:p-6 shadow-sm border border-slate-200 h-auto lg:h-[320px]">
+          <div className="bg-white rounded-2xl p-4 sm:p-5 shadow-sm border border-slate-200 h-auto lg:h-[245px]">
 
             <div className="flex items-center justify-between pb-3 border-b border-slate-100">
               <div>
@@ -406,16 +406,16 @@ export function PublicDisplayDashboard({
             </div>
 
             {sevaDashboardData.length === 0 ? (
-              <div className="h-[245px] flex items-center justify-center text-center text-slate-500">
+              <div className="h-[185px] flex items-center justify-center text-center text-slate-500">
                 No Seva collection data available
               </div>
             ) : (
-              <div className="grid grid-cols-[42%_58%] gap-3 items-center h-[245px]">
+              <div className="grid grid-cols-[40%_60%] gap-2 items-center h-[185px]">
 
                 {/* Donut */}
                 <div className="flex items-center justify-center">
                   <div
-                    className="relative w-52 h-52 rounded-full"
+                    className="relative w-40 h-40 rounded-full"
                     style={{
                       background: (() => {
                         let start = 0;
@@ -430,7 +430,7 @@ export function PublicDisplayDashboard({
                       })()
                     }}
                   >
-                    <div className="absolute inset-10 rounded-full bg-white flex flex-col items-center justify-center">
+                    <div className="absolute inset-8 rounded-full bg-white flex flex-col items-center justify-center">
                       <span className="text-xs font-bold text-slate-500">₹{grandTotalAmount.toLocaleString('en-IN')}</span>
                       <span className="text-sm text-slate-500">Total</span>
                     </div>
@@ -438,7 +438,7 @@ export function PublicDisplayDashboard({
                 </div>
 
                 {/* Ranking */}
-                <div className="space-y-1.5 pr-1">
+                <div className="space-y-1 pr-1">
                   {sevaDashboardData.map((item, index) => {
                     const rankColors = ['#8a4b20','#f2b72e','#4f8f4b','#4b72d6','#8b45c8','#9ca3af'];
                     const isOthers = item.category.toLowerCase() === 'others';
@@ -446,11 +446,11 @@ export function PublicDisplayDashboard({
                     return (
                       <div
                         key={`${item.category}-${index}`}
-                        className="flex items-center justify-between gap-2 px-2.5 py-1.5 rounded-xl bg-slate-50/70 border border-slate-100"
+                        className="flex items-center justify-between gap-2 px-2 py-1 rounded-lg bg-slate-50/70 border border-slate-100"
                       >
                         <div className="flex items-center gap-2 min-w-0">
                           <span
-                            className="w-5 h-5 rounded-full shrink-0 flex items-center justify-center text-[10px] font-black text-white"
+                            className="w-4 h-4 rounded-full shrink-0 flex items-center justify-center text-[9px] font-black text-white"
                             style={{ backgroundColor: rankColors[index % rankColors.length] }}
                           >
                             {isOthers ? '' : item.rank || index + 1}
@@ -461,11 +461,11 @@ export function PublicDisplayDashboard({
                           </span>
                         </div>
 
-                        <div className="flex items-center gap-4 shrink-0">
+                        <div className="flex items-center gap-2 shrink-0">
                           <span className="font-mono font-bold text-xs sm:text-sm text-slate-800">
                             ₹{item.amount.toLocaleString('en-IN')}
                           </span>
-                          <span className="font-bold text-xs sm:text-sm text-amber-800 w-12 text-right">
+                          <span className="font-bold text-xs sm:text-sm text-amber-800 w-10 text-right">
                             {item.percent.toFixed(1)}%
                           </span>
                         </div>
@@ -481,7 +481,7 @@ export function PublicDisplayDashboard({
           {/* ----------------------------------------------------------------------- */}
           {/* LAST 5 DAYS OFFERINGS                                                   */}
           {/* ----------------------------------------------------------------------- */}
-          <div className="bg-white rounded-3xl p-5 sm:p-6 shadow-sm border border-slate-200 h-auto lg:h-[320px]">
+          <div className="bg-white rounded-2xl p-4 sm:p-5 shadow-sm border border-slate-200 h-auto lg:h-[245px]">
 
             <div className="flex items-center justify-between pb-3 border-b border-slate-100">
               <div>
@@ -502,11 +502,11 @@ export function PublicDisplayDashboard({
             </div>
 
             {dayDashboardData.length === 0 ? (
-              <div className="h-[245px] flex items-center justify-center text-center text-slate-500">
+              <div className="h-[185px] flex items-center justify-center text-center text-slate-500">
                 No recent collection data available
               </div>
             ) : (
-              <div className="relative h-[245px] pt-4">
+              <div className="relative h-[185px] pt-2">
                 {(() => {
                   const chartData = [...dayDashboardData].reverse();
                   const maxAmount = Math.max(...chartData.map(item => item.amount), 0);
@@ -541,15 +541,15 @@ export function PublicDisplayDashboard({
 
                             return (
                               <div key={`${item.date}-${index}`} className="flex-1 h-full flex flex-col items-center justify-end min-w-0">
-                                <div className="mb-1.5 text-xs sm:text-sm font-black text-slate-900 font-mono whitespace-nowrap">
+                                <div className="mb-1.5 text-[10px] sm:text-xs font-black text-slate-900 font-mono whitespace-nowrap">
                                   ₹{item.amount.toLocaleString('en-IN')}
                                 </div>
                                 <div
-                                  className="w-full max-w-20 bg-gradient-to-t from-amber-800 to-amber-600 rounded-t-lg shadow-sm"
+                                  className="w-full max-w-16 bg-gradient-to-t from-amber-800 to-amber-600 rounded-t-lg shadow-sm"
                                   style={{ height: `${height}%` }}
                                   title={`${formatDate(item.date)} — ₹${item.amount.toLocaleString('en-IN')}`}
                                 />
-                                <div className="mt-1.5 text-[11px] sm:text-xs font-medium text-slate-500 whitespace-nowrap">
+                                <div className="mt-1.5 text-[10px] sm:text-xs font-medium text-slate-500 whitespace-nowrap">
                                   {formatDate(item.date)}
                                 </div>
                               </div>
