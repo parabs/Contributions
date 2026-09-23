@@ -44,7 +44,195 @@ export function PublicDisplayDashboard({
   // Clock ticker for live public display
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 1000);
-    return (
+    return () => clearInterval(timer);
+  }, []);
+
+  // Fullscreen toggle handler
+  const toggleFullScreen = () => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch(() => {});
+      setIsFullScreen(true);
+    } else {
+      if (document.exitFullscreen) {
+        document.exitFullscreen().catch(() => {});
+        setIsFullScreen(false);
+      }
+    }
+  };
+
+  // ---------------------------------------------------------------------------
+  // 1. OVERALL METRICS - FROM CALCULATION SHEET
+  // ---------------------------------------------------------------------------
+
+  // Calculation!B4 = Total Donations
+  // Calculation!B5 = Total Collection
+
+  const grandTotalCount =
+    Number(dashboardCalculation?.[3]?.[1]) || 0;
+
+  const grandTotalAmount =
+    Number(dashboardCalculation?.[4]?.[1]) || 0;
+
+  // Keep paid donations available for legacy sections
+  // until the remaining dashboard sections are migrated.
+  const paidDonations = useMemo(() => {
+    return donations.filter(d => d.paymentStatus === 'Paid');
+  }, [donations]);
+  
+  // Payment Type Breakdown (UPI vs Cash vs NEFT/Other)
+  const paymentTypeStats = useMemo(() => {
+    const upiDonations = paidDonations.filter(d => d.paymentMode?.toUpperCase() === 'UPI');
+    const cashDonations = paidDonations.filter(d => d.paymentMode?.toUpperCase() === 'CASH');
+    const otherDonations = paidDonations.filter(
+      d => d.paymentMode?.toUpperCase() !== 'UPI' && d.paymentMode?.toUpperCase() !== 'CASH'
+    );
+
+    const upiTotal = upiDonations.reduce((sum, d) => sum + d.amount, 0);
+    const cashTotal = cashDonations.reduce((sum, d) => sum + d.amount, 0);
+    const otherTotal = otherDonations.reduce((sum, d) => sum + d.amount, 0);
+
+    return [
+      {
+        type: 'UPI (Online / QR)',
+        amount: upiTotal,
+        count: upiDonations.length,
+        percent: grandTotalAmount > 0 ? Math.round((upiTotal / grandTotalAmount) * 100) : 0,
+        color: '#d97706', // amber
+        icon: CreditCard
+      },
+      {
+        type: 'Cash Counter',
+        amount: cashTotal,
+        count: cashDonations.length,
+        percent: grandTotalAmount > 0 ? Math.round((cashTotal / grandTotalAmount) * 100) : 0,
+        color: '#059669', // emerald
+        icon: Banknote
+      },
+      ...(otherTotal > 0 ? [{
+        type: 'Bank Transfer / NEFT',
+        amount: otherTotal,
+        count: otherDonations.length,
+        percent: grandTotalAmount > 0 ? Math.round((otherTotal / grandTotalAmount) * 100) : 0,
+        color: '#4f46e5', // indigo
+        icon: Building2
+      }] : [])
+    ];
+  }, [paidDonations, grandTotalAmount]);
+
+  // ---------------------------------------------------------------------------
+  // 2. DAY-WISE CONSOLIDATED COLLECTIONS SUMMARY (STRICTLY AGGREGATE - NO NAMES)
+  // ---------------------------------------------------------------------------
+  const dayWiseCollections = useMemo(() => {
+    // Map grouped by Date string YYYY-MM-DD
+    const dateMap = new Map<string, {
+      dateKey: string;
+      dateFormatted: string;
+      dayName: string;
+      count: number;
+      totalAmount: number;
+      upiAmount: number;
+      cashAmount: number;
+      otherAmount: number;
+    }>();
+
+    paidDonations.forEach(d => {
+      const rawDate = d.submittedAt || d.createdAt || new Date().toISOString();
+      const dateKey = rawDate.slice(0, 10);
+      const dateObj = new Date(rawDate);
+
+      if (!dateMap.has(dateKey)) {
+        dateMap.set(dateKey, {
+          dateKey,
+          dateFormatted: dateObj.toLocaleDateString('en-IN', {
+            day: '2-digit',
+            month: 'short',
+            year: 'numeric'
+          }),
+          dayName: dateObj.toLocaleDateString('en-IN', { weekday: 'short' }),
+          count: 0,
+          totalAmount: 0,
+          upiAmount: 0,
+          cashAmount: 0,
+          otherAmount: 0
+        });
+      }
+
+      const entry = dateMap.get(dateKey)!;
+      entry.count += 1;
+      entry.totalAmount += d.amount;
+
+      if (d.paymentMode?.toUpperCase() === 'UPI') {
+        entry.upiAmount += d.amount;
+      } else if (d.paymentMode?.toUpperCase() === 'CASH') {
+        entry.cashAmount += d.amount;
+      } else {
+        entry.otherAmount += d.amount;
+      }
+    });
+
+    // Sort descending by date
+    return Array.from(dateMap.values()).sort((a, b) => b.dateKey.localeCompare(a.dateKey));
+  }, [paidDonations]);
+
+  // Overall Seva Categories Distribution
+  const categoryStats = useMemo(() => {
+    return SEVA_CATEGORIES.map(cat => {
+      const matching = paidDonations.filter(
+        d => d.sevaCategory === cat.category || (d.sevaHead && d.sevaHead.includes(cat.category))
+      );
+      const amount = matching.reduce((sum, d) => sum + d.amount, 0);
+      const count = matching.length;
+      return {
+        category: cat.category,
+        amount,
+        count,
+        percent: grandTotalAmount > 0 ? Math.round((amount / grandTotalAmount) * 100) : 0
+      };
+    });
+  }, [paidDonations, grandTotalAmount]);
+
+  // ---------------------------------------------------------------------------
+  // DASHBOARD CALCULATION - SEVA-WISE DATA
+  // ---------------------------------------------------------------------------
+  const sevaDashboardData = useMemo(() => {
+    if (!dashboardCalculation || dashboardCalculation.length < 16) {
+      return [];
+    }
+
+    return dashboardCalculation
+      .slice(10, 16)
+      .filter(row => row && row[1])
+      .map(row => ({
+        rank: Number(row[0]) || 0,
+        category: String(row[1] || ''),
+        count: Number(row[2]) || 0,
+        amount: Number(row[3]) || 0,
+        percent: (Number(row[4]) || 0) * 100
+      }));
+  }, [dashboardCalculation]);
+
+  // ---------------------------------------------------------------------------
+  // DASHBOARD CALCULATION - LAST 5 AVAILABLE DONATION DATES
+  // ---------------------------------------------------------------------------
+  const dayDashboardData = useMemo(() => {
+    if (!dashboardCalculation || dashboardCalculation.length < 27) {
+      return [];
+    }
+
+    return dashboardCalculation
+      .slice(22, 27)
+      .filter(row => row && row[0])
+      .map(row => ({
+        date: String(row[0] || ''),
+        amount: Number(row[1]) || 0
+      }));
+  }, [dashboardCalculation]);
+
+  // Target Seva Goal for Mandap / Hall display (e.g. 5,00,000)
+  const targetGoal = 500000;
+  const goalPercentage = Math.min(100, Math.round((grandTotalAmount / targetGoal) * 100));
+
+  return (
     <div className={`space-y-4 relative transition-all duration-300 ${isFullScreen ? 'fixed inset-0 z-50 bg-slate-950 text-white p-4 sm:p-6 overflow-y-auto' : ''}`}>
 
       <div className="relative z-10 space-y-4">
