@@ -57,6 +57,7 @@ const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
 
   const [volunteers, setVolunteers] = useState<VolunteerRecord[]>([]);
 
+  const [dashboardCalculation, setDashboardCalculation] = useState<any[][]>([]);
   // Real Google & Gmail Auth Context
   const {
     isAuthenticated: isGmailAuthenticated,
@@ -83,6 +84,27 @@ const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
     .reduce((acc, curr) => acc + curr.amount, 0);
 
   const refreshRequestRef = React.useRef(0);
+
+    // ----------------------------------------------------
+  // FETCH DASHBOARD CALCULATION
+  // ----------------------------------------------------
+  async function handleRefreshDashboardCalculation() {
+    const result = await googleSheetsService.fetchDashboardCalculation(
+      googleAccessToken
+    );
+
+    if (!result.success) {
+      console.warn(
+        'Failed to fetch dashboard calculation:',
+        result.error
+      );
+      return;
+    }
+
+    setDashboardCalculation(result.values || []);
+  }
+
+
   // ----------------------------------------------------
   // REFRESH / SYNC FROM GOOGLE SHEET
   // ----------------------------------------------------
@@ -270,6 +292,9 @@ const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
   React.useEffect(() => {
     if (activeView === 'volunteer') {
       handleRefreshFromGoogleSheet();
+    }
+    if (activeView === 'publicDashboard') {
+      handleRefreshDashboardCalculation();
     }
   }, [activeView]);
   
@@ -846,6 +871,7 @@ const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
             <PublicDisplayDashboard
               donations={donations}
               trustConfig={trustConfig}
+              dashboardCalculation={dashboardCalculation}
               onOpenDonorForm={() => setActiveView('donor')}
               onOpenVolunteerLogin={() => setActiveView('volunteer')}
             />

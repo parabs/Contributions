@@ -860,6 +860,64 @@ export async function repairAndAlignGoogleSheetHeaders(
 }
 
 /**
+ * Fetch dashboard calculation values from the Calculation sheet.
+ *
+ * Reads the already-calculated dashboard data from Google Sheets.
+ * No calculation is performed in the application.
+ */
+export async function fetchDashboardCalculation(
+  accessToken: string | null | undefined,
+  spreadsheetId: string = TARGET_SPREADSHEET_ID
+): Promise<{
+  success: boolean;
+  values?: any[][];
+  error?: string;
+}> {
+  try {
+    const sheetName = 'Calculation';
+    const range = formatA1Range(sheetName, 'A1:E27');
+
+    const url =
+      `https://sheets.googleapis.com/v4/spreadsheets/` +
+      `${encodeURIComponent(spreadsheetId)}/values/` +
+      `${encodeURIComponent(range)}`;
+
+    const response = await fetch(url, {
+      headers: accessToken
+        ? {
+            Authorization: `Bearer ${accessToken}`
+          }
+        : {}
+    });
+
+    if (!response.ok) {
+      const err = await response.json().catch(() => ({}));
+
+      return {
+        success: false,
+        error:
+          err?.error?.message ||
+          `Failed to fetch dashboard calculation HTTP ${response.status}`
+      };
+    }
+
+    const data = await response.json();
+
+    return {
+      success: true,
+      values: data.values || []
+    };
+  } catch (e: any) {
+    return {
+      success: false,
+      error:
+        e.message ||
+        'Error fetching dashboard calculation from Google Sheet'
+    };
+  }
+}
+
+/**
  * Fetch live rows from Google Sheets (Header-Aware)
  */
 /**
