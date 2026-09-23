@@ -859,11 +859,12 @@ export async function repairAndAlignGoogleSheetHeaders(
   }
 }
 
+
 /**
  * Fetch dashboard calculation values from the Calculation sheet.
  *
- * Reads the already-calculated dashboard data from Google Sheets.
- * No calculation is performed in the application.
+ * Uses Google Apps Script Webhook when no OAuth token is available,
+ * otherwise uses the Google Sheets API.
  */
 export async function fetchDashboardCalculation(
   accessToken: string | null | undefined,
@@ -874,39 +875,66 @@ export async function fetchDashboardCalculation(
   error?: string;
 }> {
   try {
+    const webhookUrl =
+      localStorage.getItem('sjst_sheets_webhook_url') ||
+      DEFAULT_WEBHOOK_URL;
+
     const sheetName = 'Calculation';
     const range = formatA1Range(sheetName, 'A1:E27');
 
-    const url =
-      `https://sheets.googleapis.com/v4/spreadsheets/` +
-      `${encodeURIComponent(spreadsheetId)}/values/` +
-      `${encodeURIComponent(range)}`;
+    let values: any[][] = [];
 
-    const response = await fetch(url, {
-      headers: accessToken
-        ? {
-            Authorization: `Bearer ${accessToken}`
-          }
-        : {}
-    });
+    // Public dashboard: use Google Apps Script webhook
+    // when no Google OAuth access token is available.
+    if (!accessToken && webhookUrl) {
+      const response = await fetch(webhookUrl);
 
-    if (!response.ok) {
-      const err = await response.json().catch(() => ({}));
+      const data = await response.json();
 
-      return {
-        success: false,
-        error:
-          err?.error?.message ||
-          `Failed to fetch dashboard calculation HTTP ${response.status}`
-      };
+      if (!data.success || !data.values) {
+        return {
+          success: false,
+          error:
+            data.error ||
+            'Failed to fetch Calculation sheet via webhook.'
+        };
+      }
+
+      values = data.values;
+    } else {
+      // Authenticated access: use Google Sheets API.
+      const url =
+        `https://sheets.googleapis.com/v4/spreadsheets/` +
+        `${encodeURIComponent(spreadsheetId)}/values/` +
+        `${encodeURIComponent(range)}`;
+
+      const response = await fetch(url, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`
+        }
+      });
+
+      if (!response.ok) {
+        const err = await response.json().catch(() => ({}));
+
+        return {
+          success: false,
+          error:
+            err?.error?.message ||
+            `Failed to fetch Calculation sheet HTTP ${response.status}`
+        };
+      }
+
+      const data = await response.json();
+
+      values = data.values || [];
     }
-
-    const data = await response.json();
 
     return {
       success: true,
-      values: data.values || []
+      values
     };
+
   } catch (e: any) {
     return {
       success: false,
