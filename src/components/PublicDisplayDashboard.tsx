@@ -246,10 +246,10 @@ export function PublicDisplayDashboard({
         {/* ========================================================================= */}
         {/* ROW 1: GRAND TOTAL (7 COLS) + DIRECT MANDAP QR SCAN & PAY (5 COLS)         */}
         {/* ========================================================================= */}
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-stretch">
           
                     {/* Main Grand Total Card (7 Cols) */}
-          <div className="md:col-span-7 bg-white rounded-3xl p-4 sm:p-5 shadow-sm border border-slate-200 relative overflow-hidden self-start">
+          <div className="md:col-span-7 bg-white rounded-3xl p-4 sm:p-5 shadow-sm border border-slate-200 relative overflow-hidden h-[360px]">
 
             {/* Watermark */}
             <div className="absolute right-2 top-0 bottom-0 w-48 sm:w-56 pointer-events-none flex items-center justify-center opacity-25">
@@ -291,7 +291,7 @@ export function PublicDisplayDashboard({
           </div>
 
           {/* Scan & Pay Direct QR Card (5 Cols) */}
-          <div className="md:col-span-5 bg-gradient-to-br from-amber-900 to-amber-950 text-white rounded-3xl p-4 sm:p-5 shadow-sm border border-amber-800 flex flex-col items-center justify-between text-center space-y-4">
+          <div className="md:col-span-5 bg-gradient-to-br from-amber-900 to-amber-950 text-white rounded-3xl p-4 sm:p-5 shadow-sm border border-amber-800 flex flex-col items-center justify-between text-center space-y-4 h-[360px]">
             <div className="space-y-1">
               <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 text-amber-300 text-xs font-bold">
                 <QrCode className="w-3.5 h-3.5" />
