@@ -259,7 +259,7 @@ export function PublicDisplayDashboard({
             {/* Soft background glow */}
             <div className="absolute top-0 right-0 w-56 h-56 bg-amber-100/50 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none" />
 
-            <div className="relative z-10 max-w-[65%]">
+            <div className="relative z-10 max-w-[100%]">
 
               <span className="text-xs font-black uppercase tracking-wider text-amber-900 bg-amber-100 px-3 py-1.5 rounded-full inline-flex items-center gap-1.5">
                 <Flame className="w-3.5 h-3.5 text-amber-700" />
