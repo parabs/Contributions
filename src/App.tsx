@@ -90,7 +90,7 @@ const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
   // ----------------------------------------------------
   async function handleRefreshDashboardCalculation() {
     const result = await googleSheetsService.fetchDashboardCalculation(
-      googleAccessToken
+      null
     );
 
     if (!result.success) {
