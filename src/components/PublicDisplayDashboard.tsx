@@ -16,7 +16,8 @@ import {
   Activity, 
   Layers, 
   TrendingUp,
-  Table
+  Table,
+  BarChart3
 } from 'lucide-react';
 import { DonationRecord, TrustConfig } from '../types';
 import { SEVA_CATEGORIES } from '../data/mockData';
