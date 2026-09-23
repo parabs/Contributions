@@ -249,17 +249,17 @@ export function PublicDisplayDashboard({
         <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
           
                     {/* Main Grand Total Card (7 Cols) */}
-          <div className="md:col-span-7 bg-white rounded-3xl p-5 sm:p-6 shadow-sm border border-slate-200 relative overflow-hidden min-h-[280px]">
+          <div className="md:col-span-7 bg-white rounded-3xl p-4 sm:p-5 shadow-sm border border-slate-200 relative overflow-hidden self-start">
 
             {/* Watermark */}
-            <div className="absolute right-2 top-0 bottom-0 w-56 sm:w-64 pointer-events-none flex items-center justify-center opacity-25">
-              <MaaDurgaWatermark opacity={0.10} size="full" />
+            <div className="absolute right-2 top-0 bottom-0 w-48 sm:w-56 pointer-events-none flex items-center justify-center opacity-25">
+              <MaaDurgaWatermark opacity={0.80} size="full" />
             </div>
 
             {/* Soft background glow */}
             <div className="absolute top-0 right-0 w-56 h-56 bg-amber-100/50 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none" />
 
-            <div className="relative z-10 max-w-[100%]">
+            <div className="relative z-10 max-w-[65%]">
 
               <span className="text-xs font-black uppercase tracking-wider text-amber-900 bg-amber-100 px-3 py-1.5 rounded-full inline-flex items-center gap-1.5">
                 <Flame className="w-3.5 h-3.5 text-amber-700" />
