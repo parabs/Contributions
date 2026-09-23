@@ -887,7 +887,9 @@ export async function fetchDashboardCalculation(
     // Public dashboard: use Google Apps Script webhook
     // when no Google OAuth access token is available.
     if (!accessToken && webhookUrl) {
-      const response = await fetch(webhookUrl);
+      const response = await fetch(
+        `${webhookUrl}?action=get_dashboard_calculation`
+      );
 
       const data = await response.json();
 
