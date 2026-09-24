@@ -345,29 +345,29 @@ export function PublicDisplayDashboard({
               </div>
 
               {/* Devotional message panel */}
-              <div className="hidden sm:flex h-full border-l border-amber-200/20 pl-3 flex-col justify-start pt-2 gap-2">
+              <div className="hidden sm:flex h-full border-l border-amber-200/20 pl-3 flex-col justify-start pt-2 gap-3">
                 <div className="flex items-center gap-3">
                   <Sparkles className="w-6 h-6 text-amber-300 shrink-0" />
-                  <span className="text-xs font-semibold text-amber-100 leading-tight">
+                  <span className="text-sm font-semibold text-amber-100 leading-snug">
                     Seva<br />Today
                   </span>
                 </div>
 
                 <div className="flex items-center gap-3">
                   <HandHeart className="w-6 h-6 text-amber-300 shrink-0" />
-                  <span className="text-xs font-semibold text-amber-100 leading-tight">
+                  <span className="text-sm font-semibold text-amber-100 leading-snug">
                     Blessings<br />Always
                   </span>
                 </div>
 
                 <div className="flex items-center gap-3">
                   <Building2 className="w-6 h-6 text-amber-300 shrink-0" />
-                  <span className="text-xs font-semibold text-amber-100 leading-tight">
+                  <span className="text-sm font-semibold text-amber-100 leading-snug">
                     A Stronger<br />Community<br />Together
                   </span>
                 </div>
 
-                <div className="border border-amber-300/40 rounded-xl px-2.5 py-1.5 text-center text-[10px] font-bold text-white">
+                <div className="border border-amber-300/40 rounded-xl px-2.5 py-2.5 text-center text-xs font-bold text-white leading-relaxed">
                   Every Offering<br />Matters 🙏
                 </div>
               </div>
