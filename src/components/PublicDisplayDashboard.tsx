@@ -284,7 +284,7 @@ export function PublicDisplayDashboard({
                   <span>{grandTotalAmount.toLocaleString('en-IN')}</span>
                 </div>
 
-                <p className="text-base sm:text-xl font-semibold text-slate-800 mt-1">
+                <p className="text-base sm:text-xl font-bold text-slate-800 mt-1">
                   {grandTotalCount} Donations
                 </p>
 
