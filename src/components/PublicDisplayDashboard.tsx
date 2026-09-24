@@ -281,8 +281,8 @@ export function PublicDisplayDashboard({
               </div>
 
               <div className="mt-3 max-w-[62%]">
-                <div className="text-5xl sm:text-10xl lg:text-6xl font-black text-slate-900 font-mono tracking-tight flex items-baseline gap-1">
-                  <span className="text-5xl sm:text-8xl font-serif">₹</span>
+                <div className="text-5xl sm:text-6xl lg:text-6xl font-black text-slate-900 font-mono tracking-tight flex items-baseline gap-1">
+                  <span className="text-5xl sm:text-6xl font-serif">₹</span>
                   <span>{grandTotalAmount.toLocaleString('en-IN')}</span>
                 </div>
 
