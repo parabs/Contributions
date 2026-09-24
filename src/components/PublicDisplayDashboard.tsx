@@ -304,7 +304,7 @@ export function PublicDisplayDashboard({
           {/* ----------------------------------------------------------------------- */}
           <div className="md:col-span-6 bg-gradient-to-br from-amber-900 to-amber-950 text-white rounded-2xl p-4 sm:p-5 shadow-sm border border-amber-800 h-auto md:h-[285px]">
 
-            <div className="h-full grid grid-cols-1 sm:grid-cols-[1fr_0.72fr] gap-4 items-center">
+            <div className="h-full grid grid-cols-1 sm:grid-cols-[1.35fr_0.55fr] gap-3 items-center">
 
               {/* QR content */}
               <div className="flex flex-col items-center justify-center text-center min-w-0">
@@ -322,7 +322,7 @@ export function PublicDisplayDashboard({
                 </p>
 
                 <div className="mt-1.5 p-1.5 bg-white rounded-xl shadow-xl border-2 border-amber-200/40 text-slate-900 flex flex-col items-center justify-center">
-                  <div className="w-24 h-24 sm:w-24 sm:h-24 bg-slate-900 rounded-xl p-2.5 flex items-center justify-center shadow-inner relative">
+                  <div className="w-28 h-28 sm:w-28 sm:h-28 bg-slate-900 rounded-xl p-2.5 flex items-center justify-center shadow-inner relative">
                     <svg viewBox="0 0 100 100" className="w-full h-full text-white fill-current" aria-label="SJST UPI QR">
                       <path d="M0 0h30v30H0zm5 5v20h20V5zm5 5h10v10H10zM70 0h30v30H70zm5 5v20h20V5zm5 5h10v10H80zM0 70h30v30H0zm5 5v20h20V5zm5 5h10v10H10zM40 10h10v10H40zm10 10h10v10H50zm-10 10h10v10H40zm30 10h10v10H70zm10 10h10v10H80zm-40 20h10v10H40zm10 10h10v10H50zm10-10h10v10H60zm10 10h10v10H70zm10 0h10v10H80zm0 10h10v10H80zm-10 10h10v10H70z" />
                     </svg>
@@ -347,29 +347,29 @@ export function PublicDisplayDashboard({
               </div>
 
               {/* Devotional message panel */}
-              <div className="hidden sm:flex h-full border-l border-amber-200/20 pl-3 flex-col justify-start pt-2 gap-3">
-                <div className="flex items-center gap-3">
-                  <Sparkles className="w-6 h-6 text-amber-300 shrink-0" />
-                  <span className="text-sm font-semibold text-amber-100 leading-snug">
+              <div className="hidden sm:flex h-full border-l border-amber-200/20 pl-2 flex-col justify-start pt-1 gap-2">
+                <div className="flex items-center gap-2">
+                  <Sparkles className="w-5 h-5 text-amber-300 shrink-0" />
+                  <span className="text-xs font-semibold text-amber-100 leading-snug">
                     Seva<br />Today
                   </span>
                 </div>
 
-                <div className="flex items-center gap-3">
-                  <HandHeart className="w-6 h-6 text-amber-300 shrink-0" />
-                  <span className="text-sm font-semibold text-amber-100 leading-snug">
+                <div className="flex items-center gap-2">
+                  <HandHeart className="w-5 h-5 text-amber-300 shrink-0" />
+                  <span className="text-xs font-semibold text-amber-100 leading-snug">
                     Blessings<br />Always
                   </span>
                 </div>
 
-                <div className="flex items-center gap-3">
-                  <Building2 className="w-6 h-6 text-amber-300 shrink-0" />
-                  <span className="text-sm font-semibold text-amber-100 leading-snug">
+                <div className="flex items-center gap-2">
+                  <Building2 className="w-5 h-5 text-amber-300 shrink-0" />
+                  <span className="text-xs font-semibold text-amber-100 leading-snug">
                     A Stronger<br />Community<br />Together
                   </span>
                 </div>
 
-                <div className="border border-amber-300/40 rounded-xl px-2.5 py-2.5 text-center text-xs font-bold text-white leading-relaxed">
+                <div className="border border-amber-300/40 rounded-xl px-2 py-2 text-center text-[11px] font-bold text-white leading-snug">
                   Every Offering<br />Matters 🙏
                 </div>
               </div>
