@@ -328,13 +328,6 @@ export function PublicDisplayDashboard({
                   <span className="text-amber-700 text-xl" aria-hidden="true">↗</span>
                 </button>
 
-                <p className="mt-3 text-[11px] sm:text-xs text-amber-100/75">
-                  Select your Seva, enter your details and complete your offering securely.
-                </p>
-
-                <div className="mt-4 border border-amber-300/40 rounded-xl px-5 py-2.5 text-center text-sm sm:text-base font-bold text-white leading-snug min-w-[260px]">
-                  Every Offering Matters 🙏
-                </div>
               </div>
 
               <div className="hidden sm:flex h-full border-l border-amber-200/20 pl-5 pt-2 flex-col justify-start gap-5">
