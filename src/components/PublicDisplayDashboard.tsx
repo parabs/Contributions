@@ -337,7 +337,7 @@ export function PublicDisplayDashboard({
                 </div>
               </div>
 
-              <div className="hidden sm:flex h-full border-l border-amber-200/20 pl-4 flex-col justify-center gap-4">
+              <div className="hidden sm:flex h-full border-l border-amber-200/20 pl-5 pt-2 flex-col justify-start gap-5">
                 <div className="flex items-center gap-2.5">
                   <Sparkles className="w-5 h-5 text-amber-300 shrink-0" />
                   <span className="text-sm font-semibold text-amber-100 leading-snug">
