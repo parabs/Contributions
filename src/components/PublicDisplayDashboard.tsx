@@ -363,6 +363,8 @@ export function PublicDisplayDashboard({
             </div>
           </div>
 
+        </div>
+
         {/* BOTTOM ROW: TOP 5 SEVA + LAST 5 DAYS                                      */}
         {/* ========================================================================= */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 items-stretch">
