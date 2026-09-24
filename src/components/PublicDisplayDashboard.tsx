@@ -281,12 +281,12 @@ export function PublicDisplayDashboard({
               </div>
 
               <div className="mt-3 max-w-[62%]">
-                <div className="text-5xl sm:text-6xl lg:text-6xl font-black text-slate-900 font-mono tracking-tight flex items-baseline gap-1">
-                  <span className="text-5xl sm:text-6xl font-serif">₹</span>
+                <div className="text-6xl sm:text-7xl lg:text-7xl font-black text-slate-900 font-mono tracking-tight flex items-baseline gap-1">
+                  <span className="text-5xl sm:text-6xl lg:text-6xl font-serif text-[#7a431f]">₹</span>
                   <span>{grandTotalAmount.toLocaleString('en-IN')}</span>
                 </div>
 
-                <p className="text-lg sm:text-xl font-bold text-slate-800 mt-1.5">
+                <p className="text-xl sm:text-2xl font-bold text-slate-800 mt-2">
                   {grandTotalCount} Donations
                 </p>
 
