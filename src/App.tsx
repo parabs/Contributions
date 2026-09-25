@@ -72,6 +72,7 @@ const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
     const params = new URLSearchParams(window.location.search);
     return params.get('resetPinToken') ? 'volunteer' : 'donor';
   });
+  const [isVolunteerDashboard, setIsVolunteerDashboard] = useState(false);
   // Modals
   const [modalReceiptDonation, setModalReceiptDonation] = useState<DonationRecord | null>(null);
   const [isVolunteerManagementOpen, setIsVolunteerManagementOpen] = useState(false);
@@ -947,7 +948,7 @@ const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
           </div>
         </footer>
       )}
-      
+
       {modalReceiptDonation && (
         <ReceiptModal
           donation={modalReceiptDonation}
