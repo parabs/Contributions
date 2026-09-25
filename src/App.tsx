@@ -34,7 +34,80 @@ import { useGmailAuth } from './context/GmailAuthContext';
 import * as googleSheetsService from './services/googleSheetsService';
 
 import { uploadReceiptToGoogleDrive } from './services/googleDriveService';
-export default function App() {
+class AppErrorBoundary extends React.Component<
+  { children: React.ReactNode },
+  { hasError: boolean; errorMessage: string }
+> {
+  state = {
+    hasError: false,
+    errorMessage: ''
+  };
+
+  static getDerivedStateFromError(error: any) {
+    return {
+      hasError: true,
+      errorMessage:
+        error?.message ||
+        String(error) ||
+        'Unknown application error'
+    };
+  }
+
+  componentDidCatch(error: any, errorInfo: React.ErrorInfo) {
+    const message =
+      error?.message ||
+      String(error) ||
+      'Unknown application error';
+
+    console.error(
+      'SJST APPLICATION ERROR:',
+      error,
+      errorInfo
+    );
+
+    alert(
+      'SJST APPLICATION ERROR\n\n' +
+      message +
+      '\n\n' +
+      'Please send this exact error message to ChatGPT.'
+    );
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="min-h-screen bg-slate-50 flex items-center justify-center p-6">
+          <div className="max-w-xl w-full bg-white border border-red-200 rounded-2xl shadow-lg p-6">
+            <div className="text-lg font-black text-red-700 mb-2">
+              Application Error
+            </div>
+
+            <div className="text-sm text-slate-700 mb-4">
+              The application encountered an unexpected error.
+            </div>
+
+            <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+              <div className="text-xs font-mono text-red-800 whitespace-pre-wrap break-words">
+                {this.state.errorMessage}
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => window.location.reload()}
+              className="mt-5 px-4 py-2 rounded-lg bg-amber-700 hover:bg-amber-800 text-white text-sm font-bold"
+            >
+              Reload Application
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    return this.props.children;
+  }
+}
+function App() {
 const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
       const saved = localStorage.getItem('sjst_trust_config');
       return saved ? JSON.parse(saved) : {
@@ -964,5 +1037,13 @@ const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
         />
       )}
     </div>
+  );
+}
+
+export default function AppWithErrorBoundary() {
+  return (
+    <AppErrorBoundary>
+      <App />
+    </AppErrorBoundary>
   );
 }
