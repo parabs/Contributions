@@ -903,6 +903,12 @@ const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
 
       {/* Main Content Area */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className={
+          isVolunteerDashboard
+            ? "flex-1 w-full px-0 py-0"
+            : "flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8"
+        }
+      >
         {activeView === 'donor' && (
           <div className="space-y-6">
             <div className="p-4 bg-amber-50/90 border border-amber-200 rounded-2xl flex items-start justify-between gap-3 text-xs text-amber-950">
