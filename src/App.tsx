@@ -147,6 +147,8 @@ const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
   });
   // Modals
   const [modalReceiptDonation, setModalReceiptDonation] = useState<DonationRecord | null>(null);
+  const [isVolunteerManagementOpen, setIsVolunteerManagementOpen] = useState(false);
+  
 
   // Quick statistics
   const pendingUpiCount = donations.filter(d => d.paymentMode === 'UPI' && d.paymentStatus === 'Confirmation Pending').length;
