@@ -925,6 +925,9 @@ export function VolunteerPortal({
           </div>
 
           {/* Stand-alone Detailed Dashboard */}
+          <div className="mb-3 px-4 py-3 rounded-xl bg-red-50 border border-red-200 text-red-800 text-sm font-bold">
+            TEST: STAND-ALONE DASHBOARD
+          </div>
           <CollectionsDashboard
             donations={donations}
             volunteers={volunteers}
