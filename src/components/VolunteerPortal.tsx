@@ -899,9 +899,46 @@ export function VolunteerPortal({
     );
   }
 
+
   // ----------------------------------------------------
   // RENDER: AUTHENTICATED VOLUNTEER WORKBENCH WITH TABS
   // ----------------------------------------------------
+  // ----------------------------------------------------
+  // RENDER: STAND-ALONE DETAILED DASHBOARD
+  // ----------------------------------------------------
+  if (activeInternalTab === 'detailedDashboard' && currentVolunteer) {
+    return (
+      <div className="min-h-screen bg-slate-50">
+        
+        <div className="max-w-[1600px] mx-auto px-3 sm:px-5 lg:px-6 py-4">
+          
+          {/* Back to Volunteer Portal */}
+          <div className="mb-3">
+            <button
+              type="button"
+              onClick={() => setActiveInternalTab('verify')}
+              className="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 hover:text-slate-900 text-xs font-bold shadow-sm transition"
+            >
+              <span className="text-base leading-none">←</span>
+              <span>Back to Volunteer Portal</span>
+            </button>
+          </div>
+
+          {/* Stand-alone Detailed Dashboard */}
+          <CollectionsDashboard
+            donations={donations}
+            volunteers={volunteers}
+            trustConfig={trustConfig}
+            onViewReceipt={onViewReceipt}
+            onOpenVolunteerManagement={
+              onOpenVolunteerManagement || (() => {})
+            }
+          />
+
+        </div>
+      </div>
+    );
+  }
   return (
     <div className="max-w-7xl mx-auto space-y-6">
       
@@ -1632,23 +1669,7 @@ export function VolunteerPortal({
       {/* ------------------------------------------------------------- */}
       {activeInternalTab === 'detailedDashboard' && (
         <div className="space-y-4">
-          <div className="p-3.5 bg-amber-50/80 border border-amber-200 rounded-2xl flex items-center justify-between gap-3 text-xs text-amber-950">
-            <div className="flex items-center gap-2">
-              <BarChart3 className="w-4 h-4 text-amber-800 shrink-0" />
-              <span>
-                <strong>Detailed Collections &amp; Audit Analytics:</strong> Real-time breakdown by Cash vs UPI, volunteer collection performance, date intervals, and CSV exports.
-              </span>
-            </div>
-            {onOpenVolunteerManagement && (
-              <button
-                onClick={onOpenVolunteerManagement}
-                className="font-bold text-amber-900 hover:underline shrink-0 cursor-pointer"
-              >
-                Volunteer Roster →
-              </button>
-            )}
-          </div>
-
+          
           <CollectionsDashboard
             donations={donations}
             volunteers={volunteers}
