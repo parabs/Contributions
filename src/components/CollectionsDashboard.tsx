@@ -1,26 +1,35 @@
-import React, { useState } from 'react';
-import { 
-  TrendingUp, 
-  Banknote, 
-  QrCode, 
-  Receipt, 
-  Calendar, 
-  Filter, 
-  Download, 
-  Printer, 
-  Users, 
-  CheckCircle2, 
-  Clock, 
-  Sparkles, 
-  ChevronRight,
-  ShieldCheck,
-  Building2,
-  PieChart,
+import React, { useEffect, useMemo, useState } from 'react';
+import {
+  Activity,
+  AlertCircle,
+  ArrowRight,
   BarChart3,
-  ArrowUpRight
+  Banknote,
+  Ban,
+  CalendarDays,
+  CheckCircle2,
+  ChevronDown,
+  Clock3,
+  Download,
+  Eye,
+  FileText,
+  HandCoins,
+  Lock,
+  PieChart,
+  QrCode,
+  RefreshCw,
+  Receipt,
+  Repeat2,
+  ShieldAlert,
+  ShieldCheck,
+  Users,
+  WalletCards,
+  XCircle,
+  Zap
 } from 'lucide-react';
+
 import { DonationRecord, VolunteerRecord, TrustConfig } from '../types';
-import { SEVA_CATEGORIES } from '../data/mockData';
+import * as googleSheetsService from '../services/googleSheetsService';
 
 interface CollectionsDashboardProps {
   donations: DonationRecord[];
@@ -30,6 +39,283 @@ interface CollectionsDashboardProps {
   onOpenVolunteerManagement: () => void;
 }
 
+type CalcRow = any[];
+
+interface DashboardData {
+  paidAmount: number;
+  paidCount: number;
+  confirmationAmount: number;
+  confirmationCount: number;
+  recollectAmount: number;
+  recollectCount: number;
+  repaymentAmount: number;
+  repaymentCount: number;
+  disputeCount: number;
+  notInterestedCount: number;
+  activeVolunteers: number;
+  totalCollections: number;
+  workflow: {
+    confirmation: { amount: number; count: number };
+    recollect: { amount: number; count: number };
+    repayment: { amount: number; count: number };
+    paid: { amount: number; count: number };
+    dispute: { amount: number; count: number };
+    notInterested: { amount: number; count: number };
+  };
+  periods: {
+    tillDate: { amount: number; count: number };
+    thisYear: { amount: number; count: number };
+    thisQuarter: { amount: number; count: number };
+    thisMonth: { amount: number; count: number };
+    thisWeek: { amount: number; count: number };
+  };
+  payment: {
+    cash: { amount: number; count: number; share: number };
+    upi: { amount: number; count: number; share: number };
+  };
+  grievance: {
+    total: string | number;
+    resolved: string | number;
+    pending: string | number;
+  };
+}
+
+const money = (value: number) =>
+  `₹${Math.round(Number(value) || 0).toLocaleString('en-IN')}`;
+
+const numberValue = (value: any): number => {
+  const n = Number(value);
+  return Number.isFinite(n) ? n : 0;
+};
+
+const percent = (value: number) =>
+  `${Math.round((Number(value) || 0) * 100)}%`;
+
+const safeText = (value: any, fallback = '—') =>
+  value === undefined || value === null || value === '' ? fallback : String(value);
+
+function getCalcValue(rows: CalcRow[], sheetRow: number, columnIndex: number): any {
+  return rows[sheetRow - 1]?.[columnIndex];
+}
+
+function buildDashboardData(rows: CalcRow[]): DashboardData {
+  const paidAmount = numberValue(getCalcValue(rows, 33, 1));
+  const paidCount = numberValue(getCalcValue(rows, 33, 2));
+
+  const confirmationAmount = numberValue(getCalcValue(rows, 34, 1));
+  const confirmationCount = numberValue(getCalcValue(rows, 34, 2));
+
+  const recollectAmount = numberValue(getCalcValue(rows, 49, 1));
+  const recollectCount = numberValue(getCalcValue(rows, 49, 2));
+
+  const repaymentAmount = numberValue(getCalcValue(rows, 50, 1));
+  const repaymentCount = numberValue(getCalcValue(rows, 50, 2));
+
+  const disputeAmount = numberValue(getCalcValue(rows, 51, 1));
+  const disputeCount = numberValue(getCalcValue(rows, 51, 2));
+
+  const notInterestedAmount = numberValue(getCalcValue(rows, 52, 1));
+  const notInterestedCount = numberValue(getCalcValue(rows, 52, 2));
+
+  const activeVolunteers = numberValue(getCalcValue(rows, 40, 2));
+
+  const cashAmount = numberValue(getCalcValue(rows, 69, 2));
+  const cashCount = numberValue(getCalcValue(rows, 69, 1));
+  const upiAmount = numberValue(getCalcValue(rows, 70, 2));
+  const upiCount = numberValue(getCalcValue(rows, 70, 1));
+
+  const cashShare = numberValue(getCalcValue(rows, 69, 3));
+  const upiShare = numberValue(getCalcValue(rows, 70, 3));
+
+  return {
+    paidAmount,
+    paidCount,
+    confirmationAmount,
+    confirmationCount,
+    recollectAmount,
+    recollectCount,
+    repaymentAmount,
+    repaymentCount,
+    disputeCount,
+    notInterestedCount,
+    activeVolunteers,
+    totalCollections: paidAmount,
+    workflow: {
+      confirmation: {
+        amount: numberValue(getCalcValue(rows, 48, 1)),
+        count: numberValue(getCalcValue(rows, 48, 2))
+      },
+      recollect: {
+        amount: numberValue(getCalcValue(rows, 49, 1)),
+        count: numberValue(getCalcValue(rows, 49, 2))
+      },
+      repayment: {
+        amount: numberValue(getCalcValue(rows, 50, 1)),
+        count: numberValue(getCalcValue(rows, 50, 2))
+      },
+      paid: {
+        amount: numberValue(getCalcValue(rows, 53, 1)),
+        count: numberValue(getCalcValue(rows, 53, 2))
+      },
+      dispute: {
+        amount: numberValue(getCalcValue(rows, 51, 1)),
+        count: numberValue(getCalcValue(rows, 51, 2))
+      },
+      notInterested: {
+        amount: numberValue(getCalcValue(rows, 52, 1)),
+        count: numberValue(getCalcValue(rows, 52, 2))
+      }
+    },
+    periods: {
+      tillDate: {
+        amount: numberValue(getCalcValue(rows, 59, 1)),
+        count: numberValue(getCalcValue(rows, 59, 2))
+      },
+      thisYear: {
+        amount: numberValue(getCalcValue(rows, 60, 1)),
+        count: numberValue(getCalcValue(rows, 60, 2))
+      },
+      thisQuarter: {
+        amount: numberValue(getCalcValue(rows, 61, 1)),
+        count: numberValue(getCalcValue(rows, 61, 2))
+      },
+      thisMonth: {
+        amount: numberValue(getCalcValue(rows, 62, 1)),
+        count: numberValue(getCalcValue(rows, 62, 2))
+      },
+      thisWeek: {
+        amount: numberValue(getCalcValue(rows, 63, 1)),
+        count: numberValue(getCalcValue(rows, 63, 2))
+      }
+    },
+    payment: {
+      cash: { amount: cashAmount, count: cashCount, share: cashShare },
+      upi: { amount: upiAmount, count: upiCount, share: upiShare }
+    },
+    grievance: {
+      total: safeText(getCalcValue(rows, 75, 1)),
+      resolved: safeText(getCalcValue(rows, 76, 1)),
+      pending: safeText(getCalcValue(rows, 77, 1))
+    }
+  };
+}
+
+function SectionHeader({
+  number,
+  title,
+  subtitle,
+  restricted = false
+}: {
+  number: string;
+  title: string;
+  subtitle: string;
+  restricted?: boolean;
+}) {
+  return (
+    <div className="flex items-center justify-between gap-3 mb-2">
+      <div className="flex items-center gap-2">
+        <div className="w-8 h-8 rounded-full bg-emerald-600 text-white flex items-center justify-center font-black text-sm shrink-0">
+          {number}
+        </div>
+        <div>
+          <h2 className="text-[17px] leading-tight font-black text-slate-900">
+            {title}
+          </h2>
+          <p className="text-[10px] sm:text-[11px] text-slate-500">
+            {subtitle}
+          </p>
+        </div>
+      </div>
+
+      {restricted ? (
+        <div className="hidden sm:flex items-center gap-1.5 rounded-full bg-red-50 border border-red-100 px-3 py-1 text-[10px] font-bold text-red-700">
+          <Lock className="w-3 h-3" />
+          Visible only to Treasurer &amp; Trustees
+        </div>
+      ) : (
+        <div className="hidden sm:flex items-center gap-1.5 rounded-full bg-emerald-50 border border-emerald-100 px-3 py-1 text-[10px] font-bold text-emerald-700">
+          <Eye className="w-3 h-3" />
+          Visible to all roles
+        </div>
+      )}
+    </div>
+  );
+}
+
+function MetricCard({
+  icon,
+  title,
+  value,
+  subtitle,
+  tone = 'green'
+}: {
+  icon: React.ReactNode;
+  title: string;
+  value: string;
+  subtitle: string;
+  tone?: 'green' | 'orange' | 'blue' | 'purple' | 'red' | 'slate';
+}) {
+  const tones = {
+    green: 'bg-emerald-50 border-emerald-100 text-emerald-900',
+    orange: 'bg-orange-50 border-orange-100 text-orange-900',
+    blue: 'bg-blue-50 border-blue-100 text-blue-900',
+    purple: 'bg-violet-50 border-violet-100 text-violet-900',
+    red: 'bg-red-50 border-red-100 text-red-900',
+    slate: 'bg-slate-50 border-slate-200 text-slate-900'
+  };
+
+  return (
+    <div className={`rounded-xl border p-3.5 min-h-[94px] ${tones[tone]}`}>
+      <div className="flex items-center gap-2">
+        <div className="w-8 h-8 rounded-lg bg-white/80 flex items-center justify-center shrink-0">
+          {icon}
+        </div>
+        <div className="min-w-0">
+          <div className="text-[11px] font-black leading-tight">{title}</div>
+          <div className="text-[21px] leading-tight font-black font-mono mt-1">
+            {value}
+          </div>
+          <div className="text-[9px] font-semibold opacity-70 mt-0.5">
+            {subtitle}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function FilterSelect({
+  label,
+  value,
+  options,
+  onChange
+}: {
+  label: string;
+  value: string;
+  options: string[];
+  onChange: (value: string) => void;
+}) {
+  return (
+    <label className="relative block min-w-[130px] flex-1">
+      <span className="absolute left-3 top-1.5 text-[9px] font-semibold text-slate-500">
+        {label}
+      </span>
+      <select
+        value={value}
+        onChange={e => onChange(e.target.value)}
+        className="w-full appearance-none rounded-lg border border-slate-200 bg-white px-3 pt-4 pb-1.5 text-[11px] font-bold text-slate-800 outline-none focus:ring-2 focus:ring-amber-300"
+      >
+        {options.map(option => (
+          <option key={option} value={option}>
+            {option}
+          </option>
+        ))}
+      </select>
+      <ChevronDown className="pointer-events-none absolute right-2.5 bottom-2.5 w-3.5 h-3.5 text-slate-400" />
+    </label>
+  );
+}
+
 export function CollectionsDashboard({
   donations,
   volunteers,
@@ -37,595 +323,1039 @@ export function CollectionsDashboard({
   onViewReceipt,
   onOpenVolunteerManagement
 }: CollectionsDashboardProps) {
-  // Date & Filter states
-  const [timeRange, setTimeRange] = useState<'all' | 'today' | 'yesterday' | 'week'>('all');
-  const [selectedVolunteer, setSelectedVolunteer] = useState<string>('all');
-  const [selectedCategory, setSelectedCategory] = useState<string>('all');
-  const [selectedMode, setSelectedMode] = useState<'all' | 'Cash' | 'UPI'>('all');
+  const [calculation, setCalculation] = useState<CalcRow[]>([]);
+  const [loadingCalculation, setLoadingCalculation] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
 
-  // Filter donations based on selections
-  const filteredDonations = donations.filter(d => {
-    // Status: only count Paid for collections totals
-    const isPaid = d.paymentStatus === 'Paid';
-    
-    // Time filtering
-    if (timeRange !== 'all') {
-      const donationDate = new Date(d.submittedAt || d.createdAt);
-      const now = new Date();
-      
-      if (timeRange === 'today') {
-        const isToday = donationDate.toDateString() === now.toDateString();
-        if (!isToday) return false;
-      } else if (timeRange === 'yesterday') {
-        const yesterday = new Date(now);
-        yesterday.setDate(now.getDate() - 1);
-        const isYesterday = donationDate.toDateString() === yesterday.toDateString();
-        if (!isYesterday) return false;
-      } else if (timeRange === 'week') {
-        const weekAgo = new Date(now);
-        weekAgo.setDate(now.getDate() - 7);
-        if (donationDate < weekAgo) return false;
-      }
-    }
+  const [period, setPeriod] = useState('Till Date');
+  const [selectedCategory, setSelectedCategory] = useState('All');
+  const [selectedSeva, setSelectedSeva] = useState('All');
+  const [selectedVolunteer, setSelectedVolunteer] = useState('All');
+  const [selectedPaymentMode, setSelectedPaymentMode] = useState('All');
 
-    // Volunteer filter
-    if (selectedVolunteer !== 'all') {
-      if (selectedVolunteer === 'Cash Counter') {
-        if (d.paymentMode !== 'Cash') return false;
-      } else {
-        if (!d.confirmedBy.includes(selectedVolunteer)) return false;
-      }
-    }
+  useEffect(() => {
+    let mounted = true;
 
-    // Category filter
-    if (selectedCategory !== 'all') {
-      if (d.sevaCategory !== selectedCategory && !d.sevaHead?.includes(selectedCategory)) {
-        return false;
-      }
-    }
+    const load = async () => {
+      setLoadingCalculation(true);
 
-    // Mode filter
-    if (selectedMode !== 'all') {
-      if (d.paymentMode !== selectedMode) return false;
-    }
+      const result = await googleSheetsService.fetchDashboardCalculation(null);
 
-    return true;
-  });
-
-  // Calculate Metrics on Filtered Data
-  const paidDonations = filteredDonations.filter(d => d.paymentStatus === 'Paid');
-  const pendingDonations = filteredDonations.filter(d => d.paymentStatus === 'Confirmation Pending');
-
-  const totalCollected = paidDonations.reduce((sum, d) => sum + d.amount, 0);
-  const totalCount = paidDonations.length;
-  const avgAmount = totalCount > 0 ? Math.round(totalCollected / totalCount) : 0;
-
-  const cashDonations = paidDonations.filter(d => d.paymentMode === 'Cash');
-  const cashAmount = cashDonations.reduce((sum, d) => sum + d.amount, 0);
-  const cashPercent = totalCollected > 0 ? Math.round((cashAmount / totalCollected) * 100) : 0;
-
-  const upiDonations = paidDonations.filter(d => d.paymentMode === 'UPI');
-  const upiAmount = upiDonations.reduce((sum, d) => sum + d.amount, 0);
-  const upiPercent = totalCollected > 0 ? Math.round((upiAmount / totalCollected) * 100) : 0;
-
-  const pendingUpiAmount = pendingDonations.reduce((sum, d) => sum + d.amount, 0);
-
-  // Category Breakdown
-  const categoryStats: { [cat: string]: { amount: number; count: number } } = {};
-  
-  // Initialize with known categories
-  SEVA_CATEGORIES.forEach(c => {
-    categoryStats[c.category] = { amount: 0, count: 0 };
-  });
-  categoryStats['Custom / Other Seva'] = { amount: 0, count: 0 };
-
-  paidDonations.forEach(d => {
-    const cat = d.sevaCategory || 'General Seva';
-    if (!categoryStats[cat]) {
-      categoryStats[cat] = { amount: 0, count: 0 };
-    }
-    categoryStats[cat].amount += d.amount;
-    categoryStats[cat].count += 1;
-  });
-
-  // Volunteer Performance Breakdown
-  const volunteerStats: { [vol: string]: { name: string; amount: number; count: number } } = {
-    'Cash Counter': { name: 'Cash Counter Staff', amount: 0, count: 0 }
-  };
-
-  volunteers.forEach(v => {
-    volunteerStats[v.volunteerCode] = { name: v.volunteerName, amount: 0, count: 0 };
-  });
-
-  paidDonations.forEach(d => {
-    if (d.paymentMode === 'Cash') {
-      volunteerStats['Cash Counter'].amount += d.amount;
-      volunteerStats['Cash Counter'].count += 1;
-    } else {
-      const match = volunteers.find(v => d.confirmedBy.includes(v.volunteerCode));
-      if (match) {
-        volunteerStats[match.volunteerCode].amount += d.amount;
-        volunteerStats[match.volunteerCode].count += 1;
-      } else if (d.confirmedBy) {
-        if (!volunteerStats[d.confirmedBy]) {
-          volunteerStats[d.confirmedBy] = { name: d.confirmedBy, amount: 0, count: 0 };
+      if (mounted) {
+        if (result.success) {
+          setCalculation(result.values || []);
+        } else {
+          console.warn('Detailed Dashboard calculation fetch failed:', result.error);
         }
-        volunteerStats[d.confirmedBy].amount += d.amount;
-        volunteerStats[d.confirmedBy].count += 1;
+
+        setLoadingCalculation(false);
       }
+    };
+
+    load();
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  const refreshCalculation = async () => {
+    setRefreshing(true);
+
+    const result = await googleSheetsService.fetchDashboardCalculation(null);
+
+    if (result.success) {
+      setCalculation(result.values || []);
+    } else {
+      alert(
+        `Dashboard calculation could not be refreshed.\n\n${result.error || 'Unknown error'}`
+      );
     }
-  });
 
-  // Export Dashboard Summary CSV
-  const handleExportSummary = () => {
-    const headers = ['Category / Seva Head', 'Total Contributions Count', 'Total Collection (₹)', 'Share (%)'];
-    const rows = Object.entries(categoryStats).map(([cat, stats]) => [
-      `"${cat}"`,
-      stats.count,
-      stats.amount,
-      totalCollected > 0 ? `${((stats.amount / totalCollected) * 100).toFixed(1)}%` : '0%'
-    ]);
-
-    const csvContent = 'data:text/csv;charset=utf-8,' + [
-      `"SHREE JAGANNATH SEVA TRUST - COLLECTIONS SUMMARY REPORT"`,
-      `"Generated: ${new Date().toLocaleString()}"`,
-      `"Total Collection: ₹${totalCollected.toLocaleString('en-IN')}"`,
-      `"Cash: ₹${cashAmount.toLocaleString('en-IN')} (${cashPercent}%) | UPI: ₹${upiAmount.toLocaleString('en-IN')} (${upiPercent}%)"`,
-      '',
-      headers.join(','),
-      ...rows.map(e => e.join(','))
-    ].join('\n');
-
-    const encodedUri = encodeURI(csvContent);
-    const link = document.createElement('a');
-    link.setAttribute('href', encodedUri);
-    link.setAttribute('download', `SJST_Collections_Summary_${new Date().toISOString().slice(0, 10)}.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    setRefreshing(false);
   };
 
-  const handlePrint = () => {
-    window.print();
+  const dashboard = useMemo(
+    () => buildDashboardData(calculation),
+    [calculation]
+  );
+
+  const activeVolunteerRows = useMemo(
+    () =>
+      volunteers
+        .filter(v => v.status === 'Active')
+        .filter(v => (v.role || '').toLowerCase().includes('volunteer'))
+        .map(v => ({
+          id: v.volunteerCode,
+          name: v.volunteerName,
+          role: v.role || 'Volunteer',
+          amount: Number((v as any).amountCollected || 0),
+          verifiedSeva: Number(v.verifiedSeva || 0),
+          grievances: 0,
+          thisMonth: 0
+        })),
+    [volunteers]
+  );
+
+  /*
+   * The Volunteers sheet is now the source of truth for:
+   *   - Amount Collected
+   *   - Verified Seva
+   *
+   * Grievances / This Month are read from the live Donations data here
+   * until those values are exposed directly through the Volunteers sheet.
+   */
+  const volunteerRows = useMemo(() => {
+    return activeVolunteerRows.map(v => {
+      const related = donations.filter(
+        d =>
+          d.paymentStatus === 'Paid' &&
+          String(d.confirmedBy || '').trim() === v.id
+      );
+
+      const thisMonthStart = new Date();
+      thisMonthStart.setDate(1);
+      thisMonthStart.setHours(0, 0, 0, 0);
+
+      const thisMonth = related
+        .filter(d => {
+          const date = new Date(d.updatedAt || d.createdAt || d.submittedAt);
+          return date >= thisMonthStart;
+        })
+        .reduce((sum, d) => sum + Number(d.amount || 0), 0);
+
+      const grievances = donations.filter(
+        d =>
+          String(d.confirmedBy || '').trim() === v.id &&
+          String(d.paymentStatus || '').trim() === 'Repayment - Dispute'
+      ).length;
+
+      return {
+        ...v,
+        grievances,
+        thisMonth
+      };
+    });
+  }, [activeVolunteerRows, donations]);
+
+  const sevaRows = useMemo(() => {
+    const paid = donations.filter(d => d.paymentStatus === 'Paid');
+
+    const map = new Map<
+      string,
+      { seva: string; category: string; count: number; amount: number }
+    >();
+
+    paid.forEach(d => {
+      const seva = d.sevaHead || (d as any).sevaCategory || 'General Seva';
+      const category = d.sevaCategory || 'General Seva';
+      const key = `${category}||${seva}`;
+
+      const existing = map.get(key) || {
+        seva,
+        category,
+        count: 0,
+        amount: 0
+      };
+
+      existing.count += 1;
+      existing.amount += Number(d.amount || 0);
+      map.set(key, existing);
+    });
+
+    return Array.from(map.values())
+      .sort((a, b) => b.amount - a.amount)
+      .slice(0, 5);
+  }, [donations]);
+
+  const categoryRows = useMemo(() => {
+    const map = new Map<string, { amount: number; count: number }>();
+
+    donations
+      .filter(d => d.paymentStatus === 'Paid')
+      .forEach(d => {
+        const category = d.sevaCategory || 'General Seva';
+        const existing = map.get(category) || { amount: 0, count: 0 };
+        existing.amount += Number(d.amount || 0);
+        existing.count += 1;
+        map.set(category, existing);
+      });
+
+    return Array.from(map.entries())
+      .map(([category, stats]) => ({
+        category,
+        ...stats,
+        share:
+          dashboard.paidAmount > 0
+            ? stats.amount / dashboard.paidAmount
+            : 0
+      }))
+      .sort((a, b) => b.amount - a.amount);
+  }, [donations, dashboard.paidAmount]);
+
+  const recentActivity = useMemo(() => {
+    return [...donations]
+      .filter(d => d.paymentStatus !== 'Cancelled')
+      .sort((a, b) => {
+        const da = new Date(a.updatedAt || a.createdAt || a.submittedAt).getTime();
+        const db = new Date(b.updatedAt || b.createdAt || b.submittedAt).getTime();
+        return db - da;
+      })
+      .slice(0, 6);
+  }, [donations]);
+
+  const lastFiveDays = useMemo(() => {
+    const rows: { date: string; amount: number }[] = [];
+
+    for (let row = 23; row <= 27; row++) {
+      const date = getCalcValue(calculation, row, 0);
+      const amount = numberValue(getCalcValue(calculation, row, 1));
+
+      if (date !== undefined && date !== '') {
+        rows.push({
+          date: String(date),
+          amount
+        });
+      }
+    }
+
+    return rows;
+  }, [calculation]);
+
+  const maxDayAmount = Math.max(
+    1,
+    ...lastFiveDays.map(d => d.amount)
+  );
+
+  const workflowTotal =
+    dashboard.workflow.confirmation.amount +
+    dashboard.workflow.recollect.amount +
+    dashboard.workflow.repayment.amount +
+    dashboard.workflow.paid.amount;
+
+  const workflowShare = (amount: number) =>
+    workflowTotal > 0 ? Math.round((amount / workflowTotal) * 100) : 0;
+
+  const exportReport = () => {
+    const rows = [
+      ['Metric', 'Value'],
+      ['Paid Collection', dashboard.paidAmount],
+      ['Paid Contributions', dashboard.paidCount],
+      ['Confirmation Required', dashboard.confirmationAmount],
+      ['Confirmation Required Count', dashboard.confirmationCount],
+      ['Recollect', dashboard.recollectAmount],
+      ['Recollect Count', dashboard.recollectCount],
+      ['Repayment', dashboard.repaymentAmount],
+      ['Repayment Count', dashboard.repaymentCount],
+      ['Repayment - Dispute', dashboard.disputeCount],
+      ['Not Interested', dashboard.notInterestedCount],
+      ['Active Volunteers', dashboard.activeVolunteers]
+    ];
+
+    const csv = rows.map(row => row.join(',')).join('\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement('a');
+
+    anchor.href = url;
+    anchor.download = `SJST_Detailed_Dashboard_${new Date()
+      .toISOString()
+      .slice(0, 10)}.csv`;
+
+    anchor.click();
+    URL.revokeObjectURL(url);
   };
 
   return (
-    <div className="space-y-6">
-      
-      {/* Top Banner & Quick Actions */}
-      <div className="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-slate-200 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-        <div className="flex items-center gap-3.5">
-          <div className="w-12 h-12 rounded-2xl bg-amber-800 text-white flex items-center justify-center shadow-md shadow-amber-900/20">
-            <BarChart3 className="w-6 h-6" />
-          </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <h2 className="text-xl font-black text-slate-900 font-serif">Trust Collections Dashboard</h2>
-              <span className="text-[10px] font-bold bg-amber-100 text-amber-900 px-2.5 py-0.5 rounded-full">
-                Real-Time Audited
-              </span>
-            </div>
-            <p className="text-xs text-slate-500 mt-0.5">
-              Comprehensive Financial Analytics, Seva Head Breakdown, and Volunteer Audit for {trustConfig.name}.
-            </p>
-          </div>
-        </div>
+    <div className="space-y-3 pb-6">
 
-        <div className="flex flex-wrap items-center gap-2 w-full md:w-auto">
-          <button
-            onClick={onOpenVolunteerManagement}
-            className="px-3.5 py-2 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-950 border border-amber-200 text-xs font-bold transition flex items-center gap-1.5 cursor-pointer shadow-2xs"
-          >
-            <Users className="w-3.5 h-3.5 text-amber-800" />
-            <span>Manage Volunteers</span>
-          </button>
-
-          <button
-            onClick={handleExportSummary}
-            className="px-3.5 py-2 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold transition flex items-center gap-1.5 cursor-pointer shadow-2xs"
-          >
-            <Download className="w-3.5 h-3.5" />
-            <span>Export Report</span>
-          </button>
-
-          <button
-            onClick={handlePrint}
-            className="px-3.5 py-2 rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-50 text-xs font-bold transition flex items-center gap-1.5 cursor-pointer"
-          >
-            <Printer className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">Print</span>
-          </button>
-        </div>
-      </div>
-
-      {/* Filter Control Bar */}
-      <div className="bg-white rounded-3xl p-4 sm:p-5 shadow-sm border border-slate-200 space-y-3">
-        <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-slate-100">
-          
-          {/* Timeframe Chips */}
-          <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-xl text-xs">
-            <button
-              onClick={() => setTimeRange('all')}
-              className={`px-3 py-1.5 rounded-lg font-bold transition cursor-pointer ${
-                timeRange === 'all' ? 'bg-white text-slate-900 shadow-xs' : 'text-slate-600 hover:text-slate-900'
-              }`}
-            >
-              All Time
-            </button>
-            <button
-              onClick={() => setTimeRange('today')}
-              className={`px-3 py-1.5 rounded-lg font-bold transition cursor-pointer ${
-                timeRange === 'today' ? 'bg-white text-slate-900 shadow-xs' : 'text-slate-600 hover:text-slate-900'
-              }`}
-            >
-              Today
-            </button>
-            <button
-              onClick={() => setTimeRange('yesterday')}
-              className={`px-3 py-1.5 rounded-lg font-bold transition cursor-pointer ${
-                timeRange === 'yesterday' ? 'bg-white text-slate-900 shadow-xs' : 'text-slate-600 hover:text-slate-900'
-              }`}
-            >
-              Yesterday
-            </button>
-            <button
-              onClick={() => setTimeRange('week')}
-              className={`px-3 py-1.5 rounded-lg font-bold transition cursor-pointer ${
-                timeRange === 'week' ? 'bg-white text-slate-900 shadow-xs' : 'text-slate-600 hover:text-slate-900'
-              }`}
-            >
-              Last 7 Days
-            </button>
-          </div>
-
-          <div className="text-xs text-slate-500 font-medium">
-            Showing <strong className="text-slate-900 font-mono">{paidDonations.length}</strong> verified receipts
-          </div>
-        </div>
-
-        {/* Dropdown Filters (Volunteer, Category, Mode) */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
-          <div>
-            <label className="block text-[10px] font-bold uppercase text-slate-400 mb-1">
-              Filter by Volunteer / Verifier
-            </label>
-            <select
-              value={selectedVolunteer}
-              onChange={e => setSelectedVolunteer(e.target.value)}
-              className="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 bg-slate-50 font-medium text-slate-800 focus:outline-hidden focus:ring-2 focus:ring-amber-700"
-            >
-              <option value="all">All Volunteers &amp; Counters</option>
-              <option value="Cash Counter">Cash Counter Staff</option>
-              {volunteers.map(v => (
-                <option key={v.volunteerCode} value={v.volunteerCode}>
-                  {v.volunteerName} ({v.volunteerCode})
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div>
-            <label className="block text-[10px] font-bold uppercase text-slate-400 mb-1">
-              Filter by Seva Category
-            </label>
-            <select
-              value={selectedCategory}
-              onChange={e => setSelectedCategory(e.target.value)}
-              className="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 bg-slate-50 font-medium text-slate-800 focus:outline-hidden focus:ring-2 focus:ring-amber-700"
-            >
-              <option value="all">All Puja &amp; Seva Categories</option>
-              {SEVA_CATEGORIES.map(c => (
-                <option key={c.category} value={c.category}>{c.category}</option>
-              ))}
-              <option value="Custom / Other Seva">Custom / Other Seva</option>
-            </select>
-          </div>
-
-          <div>
-            <label className="block text-[10px] font-bold uppercase text-slate-400 mb-1">
-              Filter by Payment Mode
-            </label>
-            <select
-              value={selectedMode}
-              onChange={e => setSelectedMode(e.target.value as any)}
-              className="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 bg-slate-50 font-medium text-slate-800 focus:outline-hidden focus:ring-2 focus:ring-amber-700"
-            >
-              <option value="all">All Modes (Cash + UPI)</option>
-              <option value="Cash">Cash at Counter Only</option>
-              <option value="UPI">Direct UPI Only</option>
-            </select>
-          </div>
-        </div>
-      </div>
-
-      {/* Key Metric Highlight Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        
-        {/* Card 1: Total Collections */}
-        <div className="bg-gradient-to-br from-amber-900 to-amber-950 text-white rounded-3xl p-6 shadow-md shadow-amber-950/15 space-y-3 relative overflow-hidden">
-          <div className="absolute right-0 top-0 w-32 h-32 bg-amber-600/20 rounded-full blur-2xl pointer-events-none"></div>
-          <div className="flex items-center justify-between text-amber-200 text-xs font-bold uppercase tracking-wider">
-            <span>Total Collections</span>
-            <TrendingUp className="w-4 h-4 text-amber-300" />
-          </div>
-          <div className="text-3xl font-black font-mono tracking-tight text-white">
-            ₹{totalCollected.toLocaleString('en-IN')}
-          </div>
-          <div className="text-xs text-amber-200/80 flex items-center justify-between pt-1 border-t border-white/10">
-            <span>{totalCount} Verified Contributions</span>
-            <span>Avg: ₹{avgAmount.toLocaleString('en-IN')}</span>
-          </div>
-        </div>
-
-        {/* Card 2: Cash at Counter */}
-        <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-200 space-y-3">
-          <div className="flex items-center justify-between text-slate-400 text-xs font-bold uppercase tracking-wider">
-            <span className="text-emerald-700 flex items-center gap-1.5">
-              <Banknote className="w-4 h-4" />
-              <span>Cash at Counter</span>
-            </span>
-            <span className="bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full text-[10px] font-black">
-              {cashPercent}% Share
-            </span>
-          </div>
-          <div className="text-3xl font-black font-mono tracking-tight text-emerald-950">
-            ₹{cashAmount.toLocaleString('en-IN')}
-          </div>
-          <div className="text-xs text-slate-500 flex items-center justify-between pt-1 border-t border-slate-100">
-            <span>{cashDonations.length} Cash Receipts Issued</span>
-            <span className="font-semibold text-emerald-800">Instant Verification</span>
-          </div>
-        </div>
-
-        {/* Card 3: Direct UPI */}
-        <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-200 space-y-3">
-          <div className="flex items-center justify-between text-slate-400 text-xs font-bold uppercase tracking-wider">
-            <span className="text-amber-800 flex items-center gap-1.5">
-              <QrCode className="w-4 h-4" />
-              <span>Direct UPI (SBI)</span>
-            </span>
-            <span className="bg-amber-100 text-amber-900 px-2 py-0.5 rounded-full text-[10px] font-black">
-              {upiPercent}% Share
-            </span>
-          </div>
-          <div className="text-3xl font-black font-mono tracking-tight text-amber-950">
-            ₹{upiAmount.toLocaleString('en-IN')}
-          </div>
-          <div className="text-xs text-slate-500 flex items-center justify-between pt-1 border-t border-slate-100">
-            <span>{upiDonations.length} UPI Receipts Verified</span>
-            <span className="font-mono text-amber-900">{trustConfig.upiId}</span>
-          </div>
-        </div>
-
-        {/* Card 4: Pending Approvals */}
-        <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-200 space-y-3">
-          <div className="flex items-center justify-between text-slate-400 text-xs font-bold uppercase tracking-wider">
-            <span className="text-amber-600 flex items-center gap-1.5">
-              <Clock className="w-4 h-4" />
-              <span>Pending Verifications</span>
-            </span>
-            <span className="bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full text-[10px] font-black">
-              {pendingDonations.length} Pending
-            </span>
-          </div>
-          <div className="text-3xl font-black font-mono tracking-tight text-amber-700">
-            ₹{pendingUpiAmount.toLocaleString('en-IN')}
-          </div>
-          <div className="text-xs text-slate-500 flex items-center justify-between pt-1 border-t border-slate-100">
-            <span>Awaiting Volunteer PIN</span>
-            <span className="text-amber-800 font-semibold">6-Digit Code</span>
-          </div>
-        </div>
-
-      </div>
-
-      {/* Main Grid: Category Breakdown (7 cols) + Volunteer Matrix & Payment Split (5 cols) */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        
-        {/* Left Column: Puja & Seva Category Breakdown */}
-        <div className="lg:col-span-7 bg-white rounded-3xl p-6 shadow-sm border border-slate-200 space-y-5">
-          <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-            <div className="flex items-center gap-2">
-              <PieChart className="w-4 h-4 text-amber-800" />
-              <h3 className="font-bold text-sm text-slate-900">Puja &amp; Seva Head Collection Breakdown</h3>
-            </div>
-            <span className="text-xs text-slate-400 font-medium">By Category Total</span>
-          </div>
-
-          <div className="space-y-4">
-            {Object.entries(categoryStats).map(([category, stats]) => {
-              const share = totalCollected > 0 ? (stats.amount / totalCollected) * 100 : 0;
-              return (
-                <div key={category} className="space-y-1.5">
-                  <div className="flex justify-between items-center text-xs">
-                    <span className="font-bold text-slate-800">{category}</span>
-                    <div className="flex items-center gap-3">
-                      <span className="text-slate-400">{stats.count} seva contributions</span>
-                      <span className="font-mono font-bold text-slate-900">
-                        ₹{stats.amount.toLocaleString('en-IN')}
-                      </span>
-                      <span className="text-[11px] font-semibold text-amber-900 bg-amber-50 px-2 py-0.5 rounded border border-amber-200/60 min-w-[45px] text-right">
-                        {share.toFixed(1)}%
-                      </span>
-                    </div>
-                  </div>
-                  {/* Progress Bar */}
-                  <div className="w-full h-2 rounded-full bg-slate-100 overflow-hidden">
-                    <div
-                      className="h-full bg-gradient-to-r from-amber-700 to-amber-900 rounded-full transition-all duration-500"
-                      style={{ width: `${Math.min(100, Math.max(share > 0 ? 3 : 0, share))}%` }}
-                    ></div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Right Column: Volunteer Leaderboard & Payment Mode Distribution */}
-        <div className="lg:col-span-5 space-y-6">
-          
-          {/* Payment Mode Distribution Bar */}
-          <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-200 space-y-4">
-            <h3 className="font-bold text-sm text-slate-900 flex items-center gap-2">
-              <Banknote className="w-4 h-4 text-amber-800" />
-              <span>Payment Mode Split</span>
-            </h3>
-
-            {/* Split Bar */}
-            <div className="w-full h-4 rounded-full bg-slate-100 overflow-hidden flex">
-              <div
-                className="bg-emerald-600 h-full transition-all duration-500"
-                style={{ width: `${cashPercent}%` }}
-                title={`Cash: ${cashPercent}%`}
-              ></div>
-              <div
-                className="bg-amber-800 h-full transition-all duration-500"
-                style={{ width: `${upiPercent}%` }}
-                title={`UPI: ${upiPercent}%`}
-              ></div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-3 pt-1 text-xs">
-              <div className="p-3 bg-emerald-50 rounded-2xl border border-emerald-200/80 space-y-1">
-                <div className="text-emerald-800 font-bold flex items-center justify-between">
-                  <span>Cash at Counter</span>
-                  <span>{cashPercent}%</span>
-                </div>
-                <div className="font-mono text-base font-black text-emerald-950">
-                  ₹{cashAmount.toLocaleString('en-IN')}
-                </div>
-                <div className="text-[11px] text-emerald-700">{cashDonations.length} contributions</div>
+      {/* ------------------------------------------------------------- */}
+      {/* HEADER + FILTERS                                               */}
+      {/* ------------------------------------------------------------- */}
+      <div className="rounded-xl overflow-hidden border border-slate-200 shadow-sm bg-white">
+        <div className="bg-slate-950 text-white px-4 py-3">
+          <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-amber-500/20 flex items-center justify-center">
+                <BarChart3 className="w-6 h-6 text-amber-300" />
               </div>
 
-              <div className="p-3 bg-amber-50 rounded-2xl border border-amber-200/80 space-y-1">
-                <div className="text-amber-900 font-bold flex items-center justify-between">
-                  <span>Direct UPI (SBI)</span>
-                  <span>{upiPercent}%</span>
-                </div>
-                <div className="font-mono text-base font-black text-amber-950">
-                  ₹{upiAmount.toLocaleString('en-IN')}
-                </div>
-                <div className="text-[11px] text-amber-800">{upiDonations.length} contributions</div>
+              <div>
+                <h1 className="text-xl sm:text-2xl font-black tracking-tight">
+                  SJST Collection Dashboard
+                </h1>
+                <p className="text-[10px] sm:text-xs text-slate-300">
+                  Collection • Verification • Payment Resolution • Volunteer Operations
+                </p>
               </div>
             </div>
-          </div>
 
-          {/* Volunteer Audit / Leaderboard */}
-          <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-200 space-y-4">
-            <div className="flex items-center justify-between">
-              <h3 className="font-bold text-sm text-slate-900 flex items-center gap-2">
-                <ShieldCheck className="w-4 h-4 text-amber-800" />
-                <span>Volunteer Collections Audit</span>
-              </h3>
+            <div className="flex flex-wrap gap-2 xl:max-w-[850px]">
+              <FilterSelect
+                label="Period"
+                value={period}
+                options={['Till Date', 'This Year', 'This Quarter', 'This Month', 'This Week']}
+                onChange={setPeriod}
+              />
+
+              <FilterSelect
+                label="Seva Category"
+                value={selectedCategory}
+                options={['All', ...categoryRows.map(r => r.category)]}
+                onChange={setSelectedCategory}
+              />
+
+              <FilterSelect
+                label="Seva"
+                value={selectedSeva}
+                options={['All', ...sevaRows.map(r => r.seva)]}
+                onChange={setSelectedSeva}
+              />
+
+              <FilterSelect
+                label="Volunteer"
+                value={selectedVolunteer}
+                options={['All', ...volunteerRows.map(r => r.name)]}
+                onChange={setSelectedVolunteer}
+              />
+
+              <FilterSelect
+                label="Payment Mode"
+                value={selectedPaymentMode}
+                options={['All', 'Cash', 'UPI']}
+                onChange={setSelectedPaymentMode}
+              />
+
               <button
-                onClick={onOpenVolunteerManagement}
-                className="text-[11px] font-bold text-amber-800 hover:text-amber-950 underline cursor-pointer"
+                type="button"
+                onClick={refreshCalculation}
+                className="px-3 rounded-lg bg-white/10 hover:bg-white/15 border border-white/10 text-[10px] font-bold inline-flex items-center gap-1.5"
+                title="Refresh dashboard calculation"
               >
-                Manage
+                <RefreshCw className={`w-3.5 h-3.5 ${refreshing ? 'animate-spin' : ''}`} />
+                Refresh
+              </button>
+
+              <button
+                type="button"
+                onClick={exportReport}
+                className="px-3 rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-950 text-[10px] font-black inline-flex items-center gap-1.5"
+              >
+                <Download className="w-3.5 h-3.5" />
+                Export
               </button>
             </div>
+          </div>
+        </div>
+      </div>
 
-            <div className="space-y-2.5">
-              {Object.entries(volunteerStats).map(([code, stat]) => (
-                <div
-                  key={code}
-                  className="p-3 rounded-2xl bg-slate-50/70 border border-slate-200/70 flex items-center justify-between text-xs hover:bg-amber-50/40 transition"
-                >
-                  <div>
-                    <div className="font-bold text-slate-900">{stat.name}</div>
-                    <div className="text-[10px] text-slate-500 font-mono">
-                      {code} • {stat.count} verified receipts
-                    </div>
+      {/* ------------------------------------------------------------- */}
+      {/* 1. KEY METRICS                                                 */}
+      {/* ------------------------------------------------------------- */}
+      <section className="rounded-xl border border-emerald-200 bg-white p-3">
+        <SectionHeader
+          number="1"
+          title="Key Metrics"
+          subtitle="Overall collection status and key operational numbers."
+        />
+
+        <div className="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-7 gap-2">
+          <MetricCard
+            icon={<HandCoins className="w-5 h-5 text-emerald-600" />}
+            title="Paid (Collection)"
+            value={money(dashboard.paidAmount)}
+            subtitle={`${dashboard.paidCount} Contributions`}
+            tone="green"
+          />
+
+          <MetricCard
+            icon={<Clock3 className="w-5 h-5 text-orange-500" />}
+            title="Confirmation Required"
+            value={money(dashboard.confirmationAmount)}
+            subtitle={`${dashboard.confirmationCount} Donations`}
+            tone="orange"
+          />
+
+          <MetricCard
+            icon={<Repeat2 className="w-5 h-5 text-blue-600" />}
+            title="Recollect"
+            value={money(dashboard.recollectAmount)}
+            subtitle={`${dashboard.recollectCount} Donations`}
+            tone="blue"
+          />
+
+          <MetricCard
+            icon={<WalletCards className="w-5 h-5 text-violet-600" />}
+            title="Repayment"
+            value={money(dashboard.repaymentAmount)}
+            subtitle={`${dashboard.repaymentCount} Donations`}
+            tone="purple"
+          />
+
+          <MetricCard
+            icon={<ShieldAlert className="w-5 h-5 text-red-600" />}
+            title="Repayment – Dispute"
+            value={`${dashboard.disputeCount} Case${dashboard.disputeCount === 1 ? '' : 's'}`}
+            subtitle="Payment dispute"
+            tone="red"
+          />
+
+          <MetricCard
+            icon={<Ban className="w-5 h-5 text-slate-500" />}
+            title="Not Interested"
+            value={`${dashboard.notInterestedCount}`}
+            subtitle="Donations"
+            tone="slate"
+          />
+
+          <MetricCard
+            icon={<Users className="w-5 h-5 text-blue-600" />}
+            title="Active Volunteers"
+            value={`${dashboard.activeVolunteers}`}
+            subtitle="Active volunteer accounts"
+            tone="blue"
+          />
+        </div>
+      </section>
+
+      {/* ------------------------------------------------------------- */}
+      {/* 2. COLLECTION WORKFLOW                                         */}
+      {/* ------------------------------------------------------------- */}
+      <section className="rounded-xl border border-emerald-200 bg-white p-3">
+        <SectionHeader
+          number="2"
+          title="Collection Workflow"
+          subtitle="Track the flow of donations from confirmation to collection and see where action is needed."
+        />
+
+        <div className="grid grid-cols-1 xl:grid-cols-[1fr_1fr_1fr_1fr_0.9fr] gap-2">
+          {[
+            {
+              number: '1',
+              title: 'Confirmation Required',
+              amount: dashboard.workflow.confirmation.amount,
+              count: dashboard.workflow.confirmation.count,
+              tone: 'orange',
+              icon: <Clock3 className="w-6 h-6 text-orange-500" />
+            },
+            {
+              number: '2',
+              title: 'Recollect',
+              amount: dashboard.workflow.recollect.amount,
+              count: dashboard.workflow.recollect.count,
+              tone: 'blue',
+              icon: <Repeat2 className="w-6 h-6 text-blue-600" />
+            },
+            {
+              number: '3',
+              title: 'Reconfirmation',
+              amount: dashboard.workflow.repayment.amount,
+              count: dashboard.workflow.repayment.count,
+              tone: 'purple',
+              icon: <CheckCircle2 className="w-6 h-6 text-violet-600" />
+            },
+            {
+              number: '4',
+              title: 'Collection (Paid)',
+              amount: dashboard.workflow.paid.amount,
+              count: dashboard.workflow.paid.count,
+              tone: 'green',
+              icon: <HandCoins className="w-6 h-6 text-emerald-600" />
+            }
+          ].map(stage => (
+            <div
+              key={stage.number}
+              className={`rounded-xl border p-3 ${
+                stage.tone === 'green'
+                  ? 'bg-emerald-50 border-emerald-100'
+                  : stage.tone === 'orange'
+                  ? 'bg-orange-50 border-orange-100'
+                  : stage.tone === 'blue'
+                  ? 'bg-blue-50 border-blue-100'
+                  : 'bg-violet-50 border-violet-100'
+              }`}
+            >
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center">
+                  {stage.icon}
+                </div>
+
+                <div>
+                  <div className="text-[10px] font-black uppercase tracking-wide opacity-70">
+                    {stage.number}
                   </div>
-                  <div className="text-right">
-                    <div className="font-mono font-bold text-amber-950">
-                      ₹{stat.amount.toLocaleString('en-IN')}
-                    </div>
-                    <div className="text-[10px] text-slate-400">
-                      {totalCollected > 0 ? `${((stat.amount / totalCollected) * 100).toFixed(1)}%` : '0%'}
-                    </div>
+                  <div className="text-xs font-black text-slate-900">
+                    {stage.title}
                   </div>
                 </div>
-              ))}
+              </div>
+
+              <div className="mt-3 flex items-end justify-between">
+                <div>
+                  <div className="text-[10px] text-slate-500">
+                    {stage.count} Donations
+                  </div>
+                  <div className="text-lg font-black font-mono">
+                    {money(stage.amount)}
+                  </div>
+                </div>
+
+                <div className="text-[10px] font-bold text-slate-500">
+                  {workflowShare(stage.amount)}%
+                </div>
+              </div>
+
+              <div className="mt-2 h-2 rounded-full bg-white/70 overflow-hidden">
+                <div
+                  className="h-full rounded-full bg-current opacity-70"
+                  style={{
+                    width: `${Math.min(100, workflowShare(stage.amount))}%`
+                  }}
+                />
+              </div>
+            </div>
+          ))}
+
+          <div className="space-y-2">
+            <div className="rounded-xl border border-red-100 bg-red-50 p-3">
+              <div className="flex items-center gap-2">
+                <ShieldAlert className="w-6 h-6 text-red-500" />
+                <div>
+                  <div className="text-[10px] font-black text-red-600">5</div>
+                  <div className="text-xs font-black text-slate-900">
+                    Repayment – Dispute
+                  </div>
+                  <div className="text-[10px] text-slate-500">
+                    {dashboard.workflow.dispute.count} Case
+                    {dashboard.workflow.dispute.count === 1 ? '' : 's'}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
+              <div className="flex items-center gap-2">
+                <Ban className="w-6 h-6 text-slate-500" />
+                <div>
+                  <div className="text-[10px] font-black text-slate-500">6</div>
+                  <div className="text-xs font-black text-slate-900">
+                    Not Interested
+                  </div>
+                  <div className="text-[10px] text-slate-500">
+                    {dashboard.workflow.notInterested.count} Donations
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ------------------------------------------------------------- */}
+      {/* 3. ACTION REQUIRED                                             */}
+      {/* ------------------------------------------------------------- */}
+      <section className="rounded-xl border border-emerald-200 bg-white p-3">
+        <SectionHeader
+          number="3"
+          title="Action Required"
+          subtitle="Key items that need attention. Click to view and take action."
+        />
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
+          <div className="rounded-xl border border-orange-100 bg-orange-50 p-3 flex items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <Clock3 className="w-8 h-8 text-orange-500" />
+              <div>
+                <div className="text-xl font-black">{dashboard.confirmationCount}</div>
+                <div className="text-xs font-black">Confirmation Required</div>
+                <div className="text-[10px] text-slate-500">
+                  {money(dashboard.confirmationAmount)} • {dashboard.confirmationCount} Donations
+                </div>
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={() => window.dispatchEvent(new CustomEvent('sjst-open-live-sheet', { detail: 'Confirmation Pending' }))}
+              className="px-3 py-2 rounded-lg bg-orange-500 hover:bg-orange-600 text-white text-[10px] font-black inline-flex items-center gap-1"
+            >
+              View Details <ArrowRight className="w-3 h-3" />
+            </button>
+          </div>
+
+          <div className="rounded-xl border border-blue-100 bg-blue-50 p-3 flex items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <Repeat2 className="w-8 h-8 text-blue-500" />
+              <div>
+                <div className="text-xl font-black">{dashboard.recollectCount}</div>
+                <div className="text-xs font-black">Recollect Donations</div>
+                <div className="text-[10px] text-slate-500">
+                  Initiated for collection • {money(dashboard.recollectAmount)}
+                </div>
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={() => window.dispatchEvent(new CustomEvent('sjst-open-live-sheet', { detail: 'Recollect' }))}
+              className="px-3 py-2 rounded-lg bg-blue-500 hover:bg-blue-600 text-white text-[10px] font-black inline-flex items-center gap-1"
+            >
+              View Details <ArrowRight className="w-3 h-3" />
+            </button>
+          </div>
+
+          <div className="rounded-xl border border-red-100 bg-red-50 p-3 flex items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <ShieldAlert className="w-8 h-8 text-red-500" />
+              <div>
+                <div className="text-xl font-black">{dashboard.disputeCount}</div>
+                <div className="text-xs font-black">Repayment Dispute</div>
+                <div className="text-[10px] text-slate-500">
+                  Needs investigation
+                </div>
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={() => window.dispatchEvent(new CustomEvent('sjst-open-live-sheet', { detail: 'Repayment - Dispute' }))}
+              className="px-3 py-2 rounded-lg bg-red-500 hover:bg-red-600 text-white text-[10px] font-black inline-flex items-center gap-1"
+            >
+              View Details <ArrowRight className="w-3 h-3" />
+            </button>
+          </div>
+        </div>
+      </section>
+
+      {/* ------------------------------------------------------------- */}
+      {/* 4. COLLECTION OVERVIEW                                         */}
+      {/* ------------------------------------------------------------- */}
+      <section className="rounded-xl border border-emerald-200 bg-white p-3">
+        <SectionHeader
+          number="4"
+          title="Collection Overview"
+          subtitle="Collection performance over different periods and recent trends."
+        />
+
+        <div className="grid grid-cols-1 lg:grid-cols-[1.05fr_1.5fr] gap-2">
+          <div className="grid grid-cols-2 gap-2">
+            {[
+              ['Till Date', dashboard.periods.tillDate, 'emerald'],
+              ['This Year', dashboard.periods.thisYear, 'blue'],
+              ['This Month', dashboard.periods.thisMonth, 'violet'],
+              ['This Week', dashboard.periods.thisWeek, 'orange']
+            ].map(([label, data, tone]) => (
+              <div
+                key={String(label)}
+                className={`rounded-xl p-3 border ${
+                  tone === 'emerald'
+                    ? 'bg-emerald-50 border-emerald-100'
+                    : tone === 'blue'
+                    ? 'bg-blue-50 border-blue-100'
+                    : tone === 'violet'
+                    ? 'bg-violet-50 border-violet-100'
+                    : 'bg-orange-50 border-orange-100'
+                }`}
+              >
+                <div className="flex items-center gap-1.5 text-[10px] font-black">
+                  <CalendarDays className="w-3.5 h-3.5" />
+                  {label}
+                </div>
+                <div className="text-xl font-black font-mono mt-2">
+                  {money((data as any).amount)}
+                </div>
+                <div className="text-[10px] font-semibold text-slate-500">
+                  {(data as any).count} Contributions
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="rounded-xl border border-slate-200 bg-white p-3">
+            <div className="flex items-center justify-between mb-2">
+              <div>
+                <div className="text-sm font-black text-slate-900">
+                  Last 5 Available Collection Days
+                </div>
+                <div className="text-[10px] text-slate-500">
+                  Based on Paid collection days
+                </div>
+              </div>
+              <BarChart3 className="w-4 h-4 text-blue-600" />
+            </div>
+
+            <div className="h-[150px] flex items-end gap-2 border-b border-slate-200 px-1">
+              {lastFiveDays.map(day => {
+                const height = Math.max(
+                  8,
+                  Math.round((day.amount / maxDayAmount) * 120)
+                );
+
+                return (
+                  <div
+                    key={day.date}
+                    className="flex-1 h-full flex flex-col justify-end items-center gap-1"
+                  >
+                    <div className="text-[9px] font-black text-slate-700">
+                      {money(day.amount)}
+                    </div>
+                    <div
+                      className="w-full max-w-[46px] rounded-t-md bg-blue-500"
+                      style={{ height }}
+                      title={`${day.date}: ${money(day.amount)}`}
+                    />
+                    <div className="text-[9px] text-slate-500 truncate max-w-full">
+                      {day.date}
+                    </div>
+                  </div>
+                );
+              })}
+
+              {lastFiveDays.length === 0 && (
+                <div className="w-full h-full flex items-center justify-center text-xs text-slate-400">
+                  No collection-day data available.
+                </div>
+              )}
             </div>
           </div>
 
-        </div>
+          {/* Payment Mode — restricted section within Collection Overview */}
+          <div className="rounded-xl border border-red-100 bg-white p-3">
+            <div className="flex items-center justify-between mb-2 gap-2">
+              <div className="flex items-center gap-2">
+                <Lock className="w-4 h-4 text-red-600" />
+                <div>
+                  <div className="text-sm font-black text-slate-900">Payment Mode</div>
+                  <div className="text-[10px] text-slate-500">Cash vs Direct UPI</div>
+                </div>
+              </div>
 
+              <div className="rounded-full bg-red-50 border border-red-100 px-2 py-1 text-[9px] font-black text-red-700 whitespace-nowrap">
+                Treasurer &amp; Trustees
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-2">
+              <div className="rounded-lg border border-emerald-100 bg-emerald-50 p-2.5">
+                <div className="flex items-center gap-1.5">
+                  <Banknote className="w-5 h-5 text-emerald-600" />
+                  <span className="text-[10px] font-black">Cash at Counter</span>
+                </div>
+                <div className="text-lg font-black font-mono mt-1">
+                  {money(dashboard.payment.cash.amount)}
+                </div>
+                <div className="text-[9px] text-emerald-800 font-semibold">
+                  {dashboard.payment.cash.count} Contributions • {percent(dashboard.payment.cash.share)}
+                </div>
+              </div>
+
+              <div className="rounded-lg border border-blue-100 bg-blue-50 p-2.5">
+                <div className="flex items-center gap-1.5">
+                  <QrCode className="w-5 h-5 text-blue-600" />
+                  <span className="text-[10px] font-black">Direct UPI</span>
+                </div>
+                <div className="text-lg font-black font-mono mt-1">
+                  {money(dashboard.payment.upi.amount)}
+                </div>
+                <div className="text-[9px] text-blue-800 font-semibold">
+                  {dashboard.payment.upi.count} Contributions • {percent(dashboard.payment.upi.share)}
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-2 h-3 rounded-full overflow-hidden flex bg-slate-100">
+              <div
+                className="bg-emerald-500 transition-all"
+                style={{ width: `${Math.max(0, Math.min(100, dashboard.payment.cash.share * 100))}%` }}
+              />
+              <div
+                className="bg-blue-500 transition-all"
+                style={{ width: `${Math.max(0, Math.min(100, dashboard.payment.upi.share * 100))}%` }}
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ------------------------------------------------------------- */}
+      {/* 5 + 6 + 7 + 8                                                  */}
+      {/* ------------------------------------------------------------- */}
+      <div className="grid grid-cols-1 xl:grid-cols-12 gap-2">
+
+        {/* 5. Seva */}
+        <section className="xl:col-span-4 rounded-xl border border-red-100 bg-white p-3">
+          <SectionHeader
+            number="5"
+            title="Seva-wise Collection"
+            subtitle="Category and detailed Seva collection."
+            restricted
+          />
+
+          <div className="grid grid-cols-2 gap-2">
+            {categoryRows.slice(0, 4).map((row, index) => (
+              <div
+                key={row.category}
+                className="rounded-xl border border-slate-100 bg-slate-50 p-3"
+              >
+                <div className="text-[10px] font-black text-amber-700">
+                  {index + 1}. {row.category}
+                </div>
+                <div className="text-lg font-black font-mono mt-1">
+                  {money(row.amount)}
+                </div>
+                <div className="text-[9px] text-slate-500">
+                  {row.count} Contributions • {Math.round(row.share * 100)}%
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-3">
+            <div className="text-xs font-black mb-2">Seva Collection Details</div>
+            <div className="overflow-x-auto rounded-lg border border-slate-200">
+              <table className="w-full text-[9px]">
+                <thead className="bg-slate-100">
+                  <tr>
+                    <th className="p-2 text-left">Seva</th>
+                    <th className="p-2 text-left">Category</th>
+                    <th className="p-2 text-right">Contributions</th>
+                    <th className="p-2 text-right">Collection</th>
+                    <th className="p-2 text-right">Share</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {sevaRows.map(row => (
+                    <tr key={`${row.category}-${row.seva}`} className="border-t border-slate-100">
+                      <td className="p-2 font-semibold">{row.seva}</td>
+                      <td className="p-2 text-slate-500">{row.category}</td>
+                      <td className="p-2 text-right">{row.count}</td>
+                      <td className="p-2 text-right font-mono font-bold">{money(row.amount)}</td>
+                      <td className="p-2 text-right">
+                        {dashboard.paidAmount
+                          ? `${Math.round((row.amount / dashboard.paidAmount) * 100)}%`
+                          : '0%'}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        {/* 6. Volunteer */}
+        <section className="xl:col-span-4 rounded-xl border border-red-100 bg-white p-3">
+          <SectionHeader
+            number="6"
+            title="Volunteer-wise Collection"
+            subtitle="Volunteer collection and operational view."
+            restricted
+          />
+
+          <div className="overflow-x-auto rounded-lg border border-slate-200">
+            <table className="w-full text-[9px]">
+              <thead className="bg-slate-100">
+                <tr>
+                  <th className="p-2 text-left">Volunteer</th>
+                  <th className="p-2 text-left">Role</th>
+                  <th className="p-2 text-right">Amount Collected</th>
+                  <th className="p-2 text-right">Verified Seva</th>
+                  <th className="p-2 text-right">This Month</th>
+                  <th className="p-2 text-right">Grievances</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                {volunteerRows.map(row => (
+                  <tr key={row.id} className="border-t border-slate-100">
+                    <td className="p-2 font-bold">{row.name}</td>
+                    <td className="p-2 text-slate-500">{row.role}</td>
+                    <td className="p-2 text-right font-mono font-bold">
+                      {money(row.amount)}
+                    </td>
+                    <td className="p-2 text-right">{row.verifiedSeva}</td>
+                    <td className="p-2 text-right font-mono font-bold text-blue-700">
+                      {money(row.thisMonth)}
+                    </td>
+                    <td className="p-2 text-right">{row.grievances}</td>
+                  </tr>
+                ))}
+
+                {volunteerRows.length === 0 && (
+                  <tr>
+                    <td colSpan={6} className="p-4 text-center text-slate-400">
+                      No active volunteers available.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+
+          <button
+            type="button"
+            onClick={onOpenVolunteerManagement}
+            className="mt-2 text-[10px] font-bold text-amber-800 hover:underline inline-flex items-center gap-1"
+          >
+            <Users className="w-3 h-3" />
+            Manage Volunteers
+          </button>
+        </section>
+
+        {/* 7. Grievance */}
+        <section className="xl:col-span-4 rounded-xl border border-red-100 bg-white p-3">
+          <SectionHeader
+            number="7"
+            title="Grievance Management"
+            subtitle="Grievance KPIs are reserved for the future resolution workflow."
+            restricted
+          />
+
+          <div className="grid grid-cols-3 gap-2">
+            <div className="rounded-xl bg-red-50 border border-red-100 p-3 text-center">
+              <ShieldAlert className="w-6 h-6 mx-auto text-red-500" />
+              <div className="text-[10px] font-bold mt-1">Total Raised</div>
+              <div className="text-xl font-black mt-1">
+                {dashboard.grievance.total}
+              </div>
+            </div>
+
+            <div className="rounded-xl bg-emerald-50 border border-emerald-100 p-3 text-center">
+              <CheckCircle2 className="w-6 h-6 mx-auto text-emerald-600" />
+              <div className="text-[10px] font-bold mt-1">Resolved</div>
+              <div className="text-xl font-black mt-1">
+                {dashboard.grievance.resolved}
+              </div>
+            </div>
+
+            <div className="rounded-xl bg-orange-50 border border-orange-100 p-3 text-center">
+              <Clock3 className="w-6 h-6 mx-auto text-orange-500" />
+              <div className="text-[10px] font-bold mt-1">Pending</div>
+              <div className="text-xl font-black mt-1">
+                {dashboard.grievance.pending}
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-3 rounded-lg border border-dashed border-slate-200 bg-slate-50 p-3 text-[10px] text-slate-500">
+            Grievance resolution workflow is currently a placeholder. No resolution status is inferred from the existing donation workflow.
+          </div>
+        </section>
       </div>
 
-      {/* Recent Collections Table */}
-      <div className="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden">
-        <div className="p-5 sm:p-6 border-b border-slate-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-slate-50/50">
-          <div>
-            <h3 className="font-bold text-sm text-slate-900">Recent Audited Collections Feed</h3>
-            <p className="text-xs text-slate-500 mt-0.5">
-              Latest contributions with verified receipt access and volunteer confirmation details.
-            </p>
-          </div>
-          <span className="text-xs text-slate-500">
-            Showing top {Math.min(10, paidDonations.length)} of {paidDonations.length} records
-          </span>
-        </div>
+      {/* ------------------------------------------------------------- */}
+      {/* 8. RECENT COLLECTION ACTIVITY                                  */}
+      {/* ------------------------------------------------------------- */}
+      <section className="rounded-xl border border-red-100 bg-white p-3">
+        <SectionHeader
+          number="8"
+          title="Recent Collection Activity"
+          subtitle="Latest donation activity from the live Donations sheet."
+          restricted
+        />
 
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs">
-            <thead className="bg-slate-100 text-slate-600 font-bold uppercase text-[10px] tracking-wider border-b border-slate-200">
+        <div className="overflow-x-auto rounded-lg border border-slate-200">
+          <table className="w-full text-[9px]">
+            <thead className="bg-slate-100">
               <tr>
-                <th className="py-3 px-4">Receipt ID</th>
-                <th className="py-3 px-4">Devotee / Contributor</th>
-                <th className="py-3 px-4">Seva Head</th>
-                <th className="py-3 px-4 text-right">Amount (₹)</th>
-                <th className="py-3 px-4">Payment Mode</th>
-                <th className="py-3 px-4">Confirmed By</th>
-                <th className="py-3 px-4 text-center">Receipt</th>
+                <th className="p-2 text-left">Donation ID</th>
+                <th className="p-2 text-left">Date</th>
+                <th className="p-2 text-left">Donor Name</th>
+                <th className="p-2 text-left">Seva</th>
+                <th className="p-2 text-right">Amount</th>
+                <th className="p-2 text-left">Mode</th>
+                <th className="p-2 text-left">Status</th>
+                <th className="p-2 text-left">Volunteer</th>
+                <th className="p-2 text-center">Receipt</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
-              {paidDonations.slice(0, 10).map(row => (
-                <tr key={row.donationId} className="hover:bg-amber-50/30 transition">
-                  <td className="py-3.5 px-4 font-mono font-bold text-slate-900">
-                    {row.donationId}
-                  </td>
-                  <td className="py-3.5 px-4">
-                    <div className="font-bold text-slate-800">{row.donorName}</div>
-                    <div className="text-[10px] text-slate-500 font-mono">{row.email}</div>
-                  </td>
-                  <td className="py-3.5 px-4">
-                    <span className="bg-amber-50 text-amber-900 px-2 py-0.5 rounded border border-amber-200 font-medium">
-                      {row.sevaHead || 'General Seva'}
-                    </span>
-                  </td>
-                  <td className="py-3.5 px-4 text-right font-black font-mono text-slate-900">
-                    ₹{row.amount.toLocaleString('en-IN')}
-                  </td>
-                  <td className="py-3.5 px-4">
-                    <span className={`px-2 py-0.5 rounded font-bold uppercase text-[10px] ${
-                      row.paymentMode === 'UPI' ? 'bg-amber-100 text-amber-900' : 'bg-emerald-100 text-emerald-800'
-                    }`}>
-                      {row.paymentMode}
-                    </span>
-                  </td>
-                  <td className="py-3.5 px-4 text-slate-600 font-medium">
-                    {row.confirmedBy || 'Cash Counter'}
-                  </td>
-                  <td className="py-3.5 px-4 text-center">
-                    <button
-                      onClick={() => onViewReceipt(row)}
-                      className="px-2.5 py-1 bg-amber-800 hover:bg-amber-900 text-white rounded-lg text-[10px] font-bold inline-flex items-center gap-1 transition shadow-2xs cursor-pointer"
-                    >
-                      <Receipt className="w-3 h-3" />
-                      <span>View</span>
-                    </button>
+
+            <tbody>
+              {recentActivity.map(row => {
+                const status = String(row.paymentStatus || '');
+                const statusClass =
+                  status === 'Paid'
+                    ? 'bg-emerald-100 text-emerald-700'
+                    : status === 'Confirmation Pending'
+                    ? 'bg-orange-100 text-orange-700'
+                    : status === 'Repayment - Dispute'
+                    ? 'bg-red-100 text-red-700'
+                    : status === 'Repayment'
+                    ? 'bg-violet-100 text-violet-700'
+                    : status === 'Not Interested'
+                    ? 'bg-slate-100 text-slate-600'
+                    : 'bg-blue-100 text-blue-700';
+
+                return (
+                  <tr key={row.donationId} className="border-t border-slate-100 hover:bg-slate-50">
+                    <td className="p-2 font-mono font-bold whitespace-nowrap">
+                      {row.donationId}
+                    </td>
+                    <td className="p-2 whitespace-nowrap">
+                      {new Date(
+                        row.updatedAt || row.createdAt || row.submittedAt
+                      ).toLocaleDateString('en-IN', {
+                        day: '2-digit',
+                        month: 'short'
+                      })}
+                    </td>
+                    <td className="p-2 font-semibold">{row.donorName}</td>
+                    <td className="p-2">{row.sevaHead || (row as any).sevaCategory || '—'}</td>
+                    <td className="p-2 text-right font-mono font-bold">
+                      {money(row.amount)}
+                    </td>
+                    <td className="p-2">{row.paymentMode}</td>
+                    <td className="p-2">
+                      <span className={`px-2 py-0.5 rounded-full font-bold whitespace-nowrap ${statusClass}`}>
+                        {status}
+                      </span>
+                    </td>
+                    <td className="p-2 whitespace-nowrap">
+                      {row.volunteerName || row.confirmedBy || '—'}
+                    </td>
+                    <td className="p-2 text-center">
+                      {row.paymentStatus === 'Paid' && row.receiptUrl ? (
+                        <button
+                          type="button"
+                          onClick={() => onViewReceipt(row)}
+                          className="px-2 py-1 rounded-md bg-amber-700 hover:bg-amber-800 text-white font-bold inline-flex items-center gap-1"
+                        >
+                          <Receipt className="w-3 h-3" />
+                          View
+                        </button>
+                      ) : (
+                        <span className="text-slate-300">—</span>
+                      )}
+                    </td>
+                  </tr>
+                );
+              })}
+
+              {recentActivity.length === 0 && (
+                <tr>
+                  <td colSpan={9} className="p-6 text-center text-slate-400">
+                    No recent collection activity available.
                   </td>
                 </tr>
-              ))}
+              )}
             </tbody>
           </table>
         </div>
-      </div>
 
+        <div className="mt-2 flex items-center justify-between text-[9px] text-slate-400">
+          <span>
+            Showing latest {recentActivity.length} non-cancelled records.
+          </span>
+          {loadingCalculation && (
+            <span className="inline-flex items-center gap-1">
+              <RefreshCw className="w-3 h-3 animate-spin" />
+              Loading dashboard calculation…
+            </span>
+          )}
+        </div>
+      </section>
+
+      {/* Mobile role visibility note */}
+      <div className="sm:hidden rounded-lg bg-emerald-50 border border-emerald-100 p-2 text-[9px] text-emerald-700 font-semibold">
+        Dashboard visibility is currently common to authenticated roles. Actual role-based access control will be implemented separately.
+      </div>
     </div>
   );
 }
