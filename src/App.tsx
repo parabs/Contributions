@@ -748,154 +748,158 @@ const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
       </div>
       
           {/* Top Navbar */}
-          <header className="bg-white border-b border-amber-200/60 sticky top-0 z-30 shadow-xs">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-2">
-              <div className="flex items-center gap-3">
-                <TrustLogo className="w-11 h-11" />
-                <div>
-                  <div className="flex items-center gap-2">
-                    <span className="font-black text-slate-900 text-sm sm:text-base leading-none font-serif">
-                      {trustConfig.name}
-                    </span>
-                    <span className="text-[10px] font-bold uppercase bg-amber-100 text-amber-900 px-2 py-0.5 rounded-full">
-                      Regd: {trustConfig.trustRegNo}
-                    </span>
+            {!isVolunteerDashboard && (
+            <header className="bg-white border-b border-amber-200/60 sticky top-0 z-30 shadow-xs">
+              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-2">
+                <div className="flex items-center gap-3">
+                  <TrustLogo className="w-11 h-11" />
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="font-black text-slate-900 text-sm sm:text-base leading-none font-serif">
+                        {trustConfig.name}
+                      </span>
+                      <span className="text-[10px] font-bold uppercase bg-amber-100 text-amber-900 px-2 py-0.5 rounded-full">
+                        Regd: {trustConfig.trustRegNo}
+                      </span>
+                    </div>
+                    <p className="text-xs text-slate-500 mt-0.5 flex items-center gap-2">
+                      <span>Direct UPI &amp; Cash Seva Collection</span>
+                      <span className="hidden sm:inline">•</span>
+                      <span className="hidden sm:inline font-mono font-semibold text-amber-900">UPI: {trustConfig.upiId}</span>
+                    </p>
                   </div>
-                  <p className="text-xs text-slate-500 mt-0.5 flex items-center gap-2">
-                    <span>Direct UPI &amp; Cash Seva Collection</span>
-                    <span className="hidden sm:inline">•</span>
-                    <span className="hidden sm:inline font-mono font-semibold text-amber-900">UPI: {trustConfig.upiId}</span>
-                  </p>
                 </div>
+
+                <nav className="flex items-center gap-1 bg-slate-100 p-1 rounded-xl border border-slate-200 text-xs overflow-x-auto max-w-full">
+                  <button
+                    onClick={() => setActiveView('donor')}
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-bold transition shrink-0 cursor-pointer ${
+                      activeView === 'donor'
+                        ? 'bg-amber-800 text-white shadow-xs'
+                        : 'text-slate-600 hover:text-slate-900'
+                    }`}
+                  >
+                    <HandHeart className="w-4 h-4" />
+                    <span className="hidden sm:inline">Devotee Form</span>
+                    <span className="sm:hidden">Devotee</span>
+                  </button>
+
+                  <button
+                    onClick={() => setActiveView('publicDashboard')}
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-bold transition shrink-0 cursor-pointer ${
+                      activeView === 'publicDashboard'
+                        ? 'bg-amber-800 text-white shadow-xs'
+                        : 'text-amber-900 bg-amber-100/70 hover:bg-amber-100 border border-amber-300/60'
+                    }`}
+                  >
+                    <Sparkles className="w-4 h-4 text-amber-500" />
+                    <span className="hidden sm:inline">Public Display Dashboard</span>
+                    <span className="sm:hidden">Public Display</span>
+                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                  </button>
+
+                  <button
+                    onClick={() => setActiveView('volunteer')}
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-bold transition relative shrink-0 cursor-pointer ${
+                      activeView === 'volunteer'
+                        ? 'bg-amber-800 text-white shadow-xs'
+                        : 'text-slate-600 hover:text-slate-900'
+                    }`}
+                  >
+                    <ShieldCheck className="w-4 h-4" />
+                    <span className="hidden sm:inline">Volunteer &amp; Management Portal</span>
+                    <span className="sm:hidden">Volunteer Portal</span>
+                    {pendingUpiCount > 0 && (
+                      <span className="w-4 h-4 rounded-full bg-amber-500 text-white text-[9px] font-black flex items-center justify-center animate-pulse">
+                        {pendingUpiCount}
+                      </span>
+                    )}
+                  </button>
+
+                  <button
+                    onClick={() => setActiveView('emailConfig')}
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-bold transition shrink-0 cursor-pointer ${
+                      activeView === 'emailConfig'
+                        ? 'bg-amber-800 text-white shadow-xs'
+                        : 'text-slate-600 hover:text-slate-900'
+                    }`}
+                  >
+                    <Mail className="w-4 h-4" />
+                    <span className="hidden sm:inline">Email &amp; Receipts</span>
+                    <span className="sm:hidden">Email</span>
+                    <span className="w-2 h-2 rounded-full bg-emerald-500" />
+                  </button>
+
+                  <button
+                    onClick={() => setActiveView('code')}
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-bold transition shrink-0 cursor-pointer ${
+                      activeView === 'code'
+                        ? 'bg-amber-800 text-white shadow-xs'
+                        : 'text-slate-600 hover:text-slate-900'
+                    }`}
+                  >
+                    <Code2 className="w-4 h-4" />
+                    <span className="hidden sm:inline">Code &amp; Setup</span>
+                    <span className="sm:hidden">Code</span>
+                  </button>
+                </nav>
               </div>
-
-              <nav className="flex items-center gap-1 bg-slate-100 p-1 rounded-xl border border-slate-200 text-xs overflow-x-auto max-w-full">
-                <button
-                  onClick={() => setActiveView('donor')}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-bold transition shrink-0 cursor-pointer ${
-                    activeView === 'donor'
-                      ? 'bg-amber-800 text-white shadow-xs'
-                      : 'text-slate-600 hover:text-slate-900'
-                  }`}
-                >
-                  <HandHeart className="w-4 h-4" />
-                  <span className="hidden sm:inline">Devotee Form</span>
-                  <span className="sm:hidden">Devotee</span>
-                </button>
-
-                <button
-                  onClick={() => setActiveView('publicDashboard')}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-bold transition shrink-0 cursor-pointer ${
-                    activeView === 'publicDashboard'
-                      ? 'bg-amber-800 text-white shadow-xs'
-                      : 'text-amber-900 bg-amber-100/70 hover:bg-amber-100 border border-amber-300/60'
-                  }`}
-                >
-                  <Sparkles className="w-4 h-4 text-amber-500" />
-                  <span className="hidden sm:inline">Public Display Dashboard</span>
-                  <span className="sm:hidden">Public Display</span>
-                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                </button>
-
-                <button
-                  onClick={() => setActiveView('volunteer')}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-bold transition relative shrink-0 cursor-pointer ${
-                    activeView === 'volunteer'
-                      ? 'bg-amber-800 text-white shadow-xs'
-                      : 'text-slate-600 hover:text-slate-900'
-                  }`}
-                >
-                  <ShieldCheck className="w-4 h-4" />
-                  <span className="hidden sm:inline">Volunteer &amp; Management Portal</span>
-                  <span className="sm:hidden">Volunteer Portal</span>
-                  {pendingUpiCount > 0 && (
-                    <span className="w-4 h-4 rounded-full bg-amber-500 text-white text-[9px] font-black flex items-center justify-center animate-pulse">
-                      {pendingUpiCount}
-                    </span>
-                  )}
-                </button>
-
-                <button
-                  onClick={() => setActiveView('emailConfig')}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-bold transition shrink-0 cursor-pointer ${
-                    activeView === 'emailConfig'
-                      ? 'bg-amber-800 text-white shadow-xs'
-                      : 'text-slate-600 hover:text-slate-900'
-                  }`}
-                >
-                  <Mail className="w-4 h-4" />
-                  <span className="hidden sm:inline">Email &amp; Receipts</span>
-                  <span className="sm:hidden">Email</span>
-                  <span className="w-2 h-2 rounded-full bg-emerald-500" />
-                </button>
-
-                <button
-                  onClick={() => setActiveView('code')}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-bold transition shrink-0 cursor-pointer ${
-                    activeView === 'code'
-                      ? 'bg-amber-800 text-white shadow-xs'
-                      : 'text-slate-600 hover:text-slate-900'
-                  }`}
-                >
-                  <Code2 className="w-4 h-4" />
-                  <span className="hidden sm:inline">Code &amp; Setup</span>
-                  <span className="sm:hidden">Code</span>
-                </button>
-              </nav>
-            </div>
-          </header>
+            </header>
+          )}
         
       {/* Real-time metrics strip */}
-      <div className="bg-slate-900 text-slate-200 text-xs py-2 px-4 border-b border-slate-800">
-        <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2">
-          <div className="flex items-center gap-4 flex-wrap">
-            <button
-              onClick={() => setActiveView('publicDashboard')}
-              className="hover:text-amber-300 transition cursor-pointer text-left"
-            >
-              💰 Total Seva Collection: <strong className="text-amber-400 font-mono">₹{totalCollection.toLocaleString('en-IN')}</strong>
-            </button>
-            <span className="text-slate-600">|</span>
-            <span>
-              🧾 Receipts Issued: <strong className="text-white font-mono">{totalPaidCount}</strong>
-            </span>
-            <span className="text-slate-600">|</span>
-            <button
-              onClick={() => setActiveView('volunteer')}
-              className="hover:text-amber-300 transition cursor-pointer flex items-center gap-1"
-            >
-              <span>⏳ Pending UPI:</span>
-              <strong className="text-amber-400 font-mono">{pendingUpiCount}</strong>
-            </button>
-          </div>
-
-          <div className="flex items-center gap-3 text-slate-400 text-[11px] flex-wrap">
-            {isGmailAuthenticated ? (
-              <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-emerald-950/80 border border-emerald-600/60 text-emerald-300 font-mono text-[11px]">
-                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                <span>Google Sheet: <strong>Connected</strong></span>
-              </div>
-            ) : (
+      {!isVolunteerDashboard && (
+        <div className="bg-slate-900 text-slate-200 text-xs py-2 px-4 border-b border-slate-800">
+          <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2">
+            <div className="flex items-center gap-4 flex-wrap">
               <button
-                onClick={() => setActiveView('emailConfig')}
-                className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-amber-950/80 hover:bg-amber-900 border border-amber-500/60 text-amber-300 font-mono text-[11px] transition cursor-pointer"
+                onClick={() => setActiveView('publicDashboard')}
+                className="hover:text-amber-300 transition cursor-pointer text-left"
               >
-                <span className="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
-                <span>Google Sheet: <strong>Connect Account</strong></span>
+                💰 Total Seva Collection: <strong className="text-amber-400 font-mono">₹{totalCollection.toLocaleString('en-IN')}</strong>
               </button>
-            )}
+              <span className="text-slate-600">|</span>
+              <span>
+                🧾 Receipts Issued: <strong className="text-white font-mono">{totalPaidCount}</strong>
+              </span>
+              <span className="text-slate-600">|</span>
+              <button
+                onClick={() => setActiveView('volunteer')}
+                className="hover:text-amber-300 transition cursor-pointer flex items-center gap-1"
+              >
+                <span>⏳ Pending UPI:</span>
+                <strong className="text-amber-400 font-mono">{pendingUpiCount}</strong>
+              </button>
+            </div>
 
-            <button
-              onClick={() => setActiveView('volunteer')}
-              className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-slate-800 hover:bg-slate-700 text-amber-300 font-mono text-[11px] border border-slate-700 transition cursor-pointer"
-            >
-              <Mail className="w-3 h-3 text-amber-400" />
-              <span>Sender: <strong>{trustConfig.email}</strong></span>
-              <span className="text-[10px] text-emerald-400 font-sans font-bold uppercase underline ml-1">Config</span>
-            </button>
+            <div className="flex items-center gap-3 text-slate-400 text-[11px] flex-wrap">
+              {isGmailAuthenticated ? (
+                <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-emerald-950/80 border border-emerald-600/60 text-emerald-300 font-mono text-[11px]">
+                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                  <span>Google Sheet: <strong>Connected</strong></span>
+                </div>
+              ) : (
+                <button
+                  onClick={() => setActiveView('emailConfig')}
+                  className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-amber-950/80 hover:bg-amber-900 border border-amber-500/60 text-amber-300 font-mono text-[11px] transition cursor-pointer"
+                >
+                  <span className="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
+                  <span>Google Sheet: <strong>Connect Account</strong></span>
+                </button>
+              )}
+
+              <button
+                onClick={() => setActiveView('volunteer')}
+                className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-slate-800 hover:bg-slate-700 text-amber-300 font-mono text-[11px] border border-slate-700 transition cursor-pointer"
+              >
+                <Mail className="w-3 h-3 text-amber-400" />
+                <span>Sender: <strong>{trustConfig.email}</strong></span>
+                <span className="text-[10px] text-emerald-400 font-sans font-bold uppercase underline ml-1">Config</span>
+              </button>
+            </div>
           </div>
         </div>
-      </div>
+      )}
 
       {/* Main Content Area */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
