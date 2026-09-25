@@ -23,6 +23,7 @@ import {
   ShieldAlert,
   ShieldCheck,
   Users,
+  UserCircle,
   WalletCards,
   XCircle,
   Zap
@@ -333,6 +334,8 @@ export function CollectionsDashboard({
   const [selectedVolunteer, setSelectedVolunteer] = useState('All');
   const [selectedPaymentMode, setSelectedPaymentMode] = useState('All');
 
+  const [showUserMenu, setShowUserMenu] = useState(false);
+
   useEffect(() => {
     let mounted = true;
 
@@ -572,7 +575,7 @@ export function CollectionsDashboard({
       {/* ------------------------------------------------------------- */}
       {/* HEADER + FILTERS                                               */}
       {/* ------------------------------------------------------------- */}
-      <div className="rounded-xl overflow-hidden border border-slate-200 shadow-sm bg-white">
+      <div className="rounded-xl overflow-visible border border-slate-200 shadow-sm bg-white">
         <div className="bg-slate-950 text-white px-4 py-3">
           <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-3">
             <div className="flex items-center gap-3">
@@ -618,6 +621,84 @@ export function CollectionsDashboard({
                 options={['All', ...volunteerRows.map(r => r.name)]}
                 onChange={setSelectedVolunteer}
               />
+
+              <div className="relative">
+                <button
+                  type="button"
+                  onClick={() => setShowUserMenu(prev => !prev)}
+                  className="px-2.5 py-1.5 rounded-lg bg-white/10 hover:bg-white/15 border border-white/10 text-white inline-flex items-center gap-2 transition"
+                >
+                  <UserCircle className="w-4 h-4 text-amber-300" />
+
+                  <span className="text-[10px] font-bold max-w-[110px] truncate">
+                    {(() => {
+                      try {
+                        const saved = sessionStorage.getItem('sjst_active_volunteer');
+                        const parsed = saved ? JSON.parse(saved) : null;
+                        return parsed?.volunteerName || 'Volunteer';
+                      } catch {
+                        return 'Volunteer';
+                      }
+                    })()}
+                  </span>
+
+                  <ChevronDown
+                    className={`w-3 h-3 transition-transform ${
+                      showUserMenu ? 'rotate-180' : ''
+                    }`}
+                  />
+                </button>
+
+                {showUserMenu && (
+                  <div className="absolute right-0 top-full mt-2 z-50 w-56 rounded-xl bg-white border border-slate-200 shadow-xl overflow-hidden text-slate-800">
+                    <div className="px-4 py-3 border-b border-slate-100">
+                      <div className="text-[9px] uppercase tracking-wide text-slate-400 font-bold">
+                        Logged in as
+                      </div>
+
+                      <div className="mt-1 text-sm font-black text-slate-900">
+                        {(() => {
+                          try {
+                            const saved = sessionStorage.getItem('sjst_active_volunteer');
+                            const parsed = saved ? JSON.parse(saved) : null;
+                            return parsed?.volunteerName || 'Volunteer';
+                          } catch {
+                            return 'Volunteer';
+                          }
+                        })()}
+                      </div>
+
+                      <div className="mt-0.5 text-[10px] text-slate-500">
+                        {(() => {
+                          try {
+                            const saved = sessionStorage.getItem('sjst_active_volunteer');
+                            const parsed = saved ? JSON.parse(saved) : null;
+                            return parsed?.role || parsed?.roles || 'Volunteer';
+                          } catch {
+                            return 'Volunteer';
+                          }
+                        })()}
+                      </div>
+                    </div>
+
+                    <div className="px-4 py-3">
+                      <div className="text-[9px] uppercase tracking-wide text-slate-400 font-bold">
+                        Last Updated
+                      </div>
+
+                      <div className="mt-1 text-[10px] font-bold text-slate-700">
+                        {new Date().toLocaleString('en-IN', {
+                          day: '2-digit',
+                          month: 'short',
+                          year: 'numeric',
+                          hour: '2-digit',
+                          minute: '2-digit'
+                        })}
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
 
               <FilterSelect
                 label="Payment Mode"
