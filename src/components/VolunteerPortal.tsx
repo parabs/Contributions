@@ -132,6 +132,18 @@ const [activeInternalTab, setActiveInternalTab] = useState<
   'verify' | 'directEntry' | 'detailedDashboard' | 'liveSheet' | 'emailConfig' | 'profile'
 >('verify');
 
+React.useEffect(() => {
+  const isDashboard =
+    activeInternalTab === 'detailedDashboard' &&
+    !!currentVolunteer;
+
+  onDashboardModeChange?.(isDashboard);
+}, [
+  activeInternalTab,
+  currentVolunteer,
+  onDashboardModeChange
+]);
+
   const [profileEmail, setProfileEmail] = useState(
     currentVolunteer?.email || ''
   );
