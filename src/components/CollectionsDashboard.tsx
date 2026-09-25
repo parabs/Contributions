@@ -38,6 +38,7 @@ interface CollectionsDashboardProps {
   trustConfig: TrustConfig;
   onViewReceipt: (donation: DonationRecord) => void;
   onOpenVolunteerManagement: () => void;
+  onBackToPortal?: () => void;
 }
 
 type CalcRow = any[];
@@ -322,7 +323,8 @@ export function CollectionsDashboard({
   volunteers,
   trustConfig,
   onViewReceipt,
-  onOpenVolunteerManagement
+  onOpenVolunteerManagement,
+  onBackToPortal
 }: CollectionsDashboardProps) {
   const [calculation, setCalculation] = useState<CalcRow[]>([]);
   const [loadingCalculation, setLoadingCalculation] = useState(true);
