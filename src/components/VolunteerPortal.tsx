@@ -61,6 +61,7 @@ interface VolunteerPortalProps {
   onConfirmRepayment?: (donation: DonationRecord) => Promise<void>;
   onCancelDonationFromSheet?: (donationId: string, volunteerName: string) => Promise<void>;
   onRefreshFromGoogleSheet?: () => Promise<{ count: number; error?: string }>;
+  onDashboardModeChange?: (isDashboard: boolean) => void;
   onRefreshPendingQueue?: () => Promise<{
     success: boolean;
     pendingQueue: PendingQueueItem[];
@@ -85,6 +86,7 @@ export function VolunteerPortal({
   volunteers,
   donations,
   trustConfig,
+  onDashboardModeChange,
   onVerifyDonation,
   onDirectDonationSubmit,
   onViewReceipt,

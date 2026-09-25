@@ -959,6 +959,7 @@ const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
               volunteers={volunteers}
               donations={donations}
               trustConfig={trustConfig}
+              onDashboardModeChange={setIsVolunteerDashboard}
               onVerifyDonation={handleVolunteerVerify}
               onDirectDonationSubmit={handleVolunteerDirectDonation}
               onViewReceipt={d => setModalReceiptDonation(d)}
