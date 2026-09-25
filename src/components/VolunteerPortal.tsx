@@ -69,7 +69,6 @@ interface VolunteerPortalProps {
   }>;
   onUpdateTrustConfig?: (updated: Partial<TrustConfig>) => void;
   onOpenVolunteerManagement?: () => void;
-  onDashboardModeChange?: (isDashboard: boolean) => void;
 }
 
 interface PendingQueueItem {
@@ -97,8 +96,7 @@ export function VolunteerPortal({
   onRefreshFromGoogleSheet,
   onRefreshPendingQueue,
   onUpdateTrustConfig,
-  onOpenVolunteerManagement,
-  onDashboardModeChange
+  onOpenVolunteerManagement
 }: VolunteerPortalProps) {
   // Authentication state with session persistence
   const [currentVolunteer, setCurrentVolunteer] = useState<VolunteerRecord | null>(() => {
@@ -127,30 +125,6 @@ export function VolunteerPortal({
   const [resetConfirmPin, setResetConfirmPin] = useState('');
   const [resetPinError, setResetPinError] = useState('');
 
-React.useEffect(() => {
-  const isDashboard =
-    activeInternalTab === 'detailedDashboard' &&
-    !!currentVolunteer;
-
-  onDashboardModeChange?.(isDashboard);
-
-  return () => {
-      onDashboardModeChange?.(false);
-    };
-  }, [
-    activeInternalTab,
-    currentVolunteer,
-    onDashboardModeChange
-  ]);
-
-  // Internal Authenticated Sub-view
-  const [activeInternalTab, setActiveInternalTab] = useState<
-    'verify' | 'directEntry' | 'detailedDashboard' | 'liveSheet' | 'emailConfig' | 'profile'
-  >('verify');
-
-  const [profileMobile, setProfileMobile] = useState(
-  currentVolunteer?.phone || ''
-);
 
   const [profileEmail, setProfileEmail] = useState(
     currentVolunteer?.email || ''

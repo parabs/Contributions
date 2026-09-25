@@ -72,10 +72,8 @@ const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
     const params = new URLSearchParams(window.location.search);
     return params.get('resetPinToken') ? 'volunteer' : 'donor';
   });
-  const [isVolunteerDashboard, setIsVolunteerDashboard] = useState(false);
   // Modals
   const [modalReceiptDonation, setModalReceiptDonation] = useState<DonationRecord | null>(null);
-  const [isVolunteerManagementOpen, setIsVolunteerManagementOpen] = useState(false);
 
   // Quick statistics
   const pendingUpiCount = donations.filter(d => d.paymentMode === 'UPI' && d.paymentStatus === 'Confirmation Pending').length;
@@ -673,8 +671,6 @@ const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
         <MaaDurgaWatermark opacity={0.06} size="full" />
       </div>
       
-      {!isVolunteerDashboard && (
-        <>
           {/* Top Navbar */}
           <header className="bg-white border-b border-amber-200/60 sticky top-0 z-30 shadow-xs">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-2">
@@ -772,8 +768,7 @@ const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
               </nav>
             </div>
           </header>
-        </>
-      )}
+        
       {/* Real-time metrics strip */}
       <div className="bg-slate-900 text-slate-200 text-xs py-2 px-4 border-b border-slate-800">
         <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2">
@@ -827,13 +822,7 @@ const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
       </div>
 
       {/* Main Content Area */}
-      <main
-          className={
-            isVolunteerDashboard
-              ? "flex-1 w-full px-0 py-0"
-              : "flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8"
-          }
-        >
+      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {activeView === 'donor' && (
           <div className="space-y-6">
             <div className="p-4 bg-amber-50/90 border border-amber-200 rounded-2xl flex items-start justify-between gap-3 text-xs text-amber-950">
@@ -908,7 +897,6 @@ const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
               onOpenVolunteerManagement={() => {
                 setIsVolunteerManagementOpen(true);
               }}
-              onDashboardModeChange={setIsVolunteerDashboard}
             />
           </div>
         )}
@@ -929,7 +917,7 @@ const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
         )}
       </main>
 
-      {!isVolunteerDashboard && (  
+
         <footer className="mt-auto bg-slate-900 text-slate-300 border-t border-slate-800 py-8 px-4 sm:px-6 lg:px-8">
           <div className="max-w-4xl mx-auto text-center space-y-3">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-950/80 border border-amber-800/60 text-amber-300 text-xs font-bold tracking-wide uppercase">
@@ -947,8 +935,7 @@ const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
             </div>
           </div>
         </footer>
-      )}
-
+      
       {modalReceiptDonation && (
         <ReceiptModal
           donation={modalReceiptDonation}
