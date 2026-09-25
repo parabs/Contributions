@@ -880,7 +880,7 @@ export async function fetchDashboardCalculation(
       DEFAULT_WEBHOOK_URL;
 
     const sheetName = 'Calculation';
-    const range = formatA1Range(sheetName, 'A1:E27');
+    const range = formatA1Range(sheetName, 'A1:E77');
 
     let values: any[][] = [];
 
