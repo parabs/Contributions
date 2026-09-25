@@ -672,104 +672,107 @@ const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
         <MaaDurgaWatermark opacity={0.06} size="full" />
       </div>
       
-      {/* Top Navbar */}
-      <header className="bg-white border-b border-amber-200/60 sticky top-0 z-30 shadow-xs">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-2">
-          <div className="flex items-center gap-3">
-            <TrustLogo className="w-11 h-11" />
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="font-black text-slate-900 text-sm sm:text-base leading-none font-serif">
-                  {trustConfig.name}
-                </span>
-                <span className="text-[10px] font-bold uppercase bg-amber-100 text-amber-900 px-2 py-0.5 rounded-full">
-                  Regd: {trustConfig.trustRegNo}
-                </span>
+      {!isVolunteerDashboard && (
+        <>
+          {/* Top Navbar */}
+          <header className="bg-white border-b border-amber-200/60 sticky top-0 z-30 shadow-xs">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-2">
+              <div className="flex items-center gap-3">
+                <TrustLogo className="w-11 h-11" />
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="font-black text-slate-900 text-sm sm:text-base leading-none font-serif">
+                      {trustConfig.name}
+                    </span>
+                    <span className="text-[10px] font-bold uppercase bg-amber-100 text-amber-900 px-2 py-0.5 rounded-full">
+                      Regd: {trustConfig.trustRegNo}
+                    </span>
+                  </div>
+                  <p className="text-xs text-slate-500 mt-0.5 flex items-center gap-2">
+                    <span>Direct UPI &amp; Cash Seva Collection</span>
+                    <span className="hidden sm:inline">•</span>
+                    <span className="hidden sm:inline font-mono font-semibold text-amber-900">UPI: {trustConfig.upiId}</span>
+                  </p>
+                </div>
               </div>
-              <p className="text-xs text-slate-500 mt-0.5 flex items-center gap-2">
-                <span>Direct UPI &amp; Cash Seva Collection</span>
-                <span className="hidden sm:inline">•</span>
-                <span className="hidden sm:inline font-mono font-semibold text-amber-900">UPI: {trustConfig.upiId}</span>
-              </p>
+
+              <nav className="flex items-center gap-1 bg-slate-100 p-1 rounded-xl border border-slate-200 text-xs overflow-x-auto max-w-full">
+                <button
+                  onClick={() => setActiveView('donor')}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-bold transition shrink-0 cursor-pointer ${
+                    activeView === 'donor'
+                      ? 'bg-amber-800 text-white shadow-xs'
+                      : 'text-slate-600 hover:text-slate-900'
+                  }`}
+                >
+                  <HandHeart className="w-4 h-4" />
+                  <span className="hidden sm:inline">Devotee Form</span>
+                  <span className="sm:hidden">Devotee</span>
+                </button>
+
+                <button
+                  onClick={() => setActiveView('publicDashboard')}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-bold transition shrink-0 cursor-pointer ${
+                    activeView === 'publicDashboard'
+                      ? 'bg-amber-800 text-white shadow-xs'
+                      : 'text-amber-900 bg-amber-100/70 hover:bg-amber-100 border border-amber-300/60'
+                  }`}
+                >
+                  <Sparkles className="w-4 h-4 text-amber-500" />
+                  <span className="hidden sm:inline">Public Display Dashboard</span>
+                  <span className="sm:hidden">Public Display</span>
+                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                </button>
+
+                <button
+                  onClick={() => setActiveView('volunteer')}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-bold transition relative shrink-0 cursor-pointer ${
+                    activeView === 'volunteer'
+                      ? 'bg-amber-800 text-white shadow-xs'
+                      : 'text-slate-600 hover:text-slate-900'
+                  }`}
+                >
+                  <ShieldCheck className="w-4 h-4" />
+                  <span className="hidden sm:inline">Volunteer &amp; Management Portal</span>
+                  <span className="sm:hidden">Volunteer Portal</span>
+                  {pendingUpiCount > 0 && (
+                    <span className="w-4 h-4 rounded-full bg-amber-500 text-white text-[9px] font-black flex items-center justify-center animate-pulse">
+                      {pendingUpiCount}
+                    </span>
+                  )}
+                </button>
+
+                <button
+                  onClick={() => setActiveView('emailConfig')}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-bold transition shrink-0 cursor-pointer ${
+                    activeView === 'emailConfig'
+                      ? 'bg-amber-800 text-white shadow-xs'
+                      : 'text-slate-600 hover:text-slate-900'
+                  }`}
+                >
+                  <Mail className="w-4 h-4" />
+                  <span className="hidden sm:inline">Email &amp; Receipts</span>
+                  <span className="sm:hidden">Email</span>
+                  <span className="w-2 h-2 rounded-full bg-emerald-500" />
+                </button>
+
+                <button
+                  onClick={() => setActiveView('code')}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-bold transition shrink-0 cursor-pointer ${
+                    activeView === 'code'
+                      ? 'bg-amber-800 text-white shadow-xs'
+                      : 'text-slate-600 hover:text-slate-900'
+                  }`}
+                >
+                  <Code2 className="w-4 h-4" />
+                  <span className="hidden sm:inline">Code &amp; Setup</span>
+                  <span className="sm:hidden">Code</span>
+                </button>
+              </nav>
             </div>
-          </div>
-
-          <nav className="flex items-center gap-1 bg-slate-100 p-1 rounded-xl border border-slate-200 text-xs overflow-x-auto max-w-full">
-            <button
-              onClick={() => setActiveView('donor')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-bold transition shrink-0 cursor-pointer ${
-                activeView === 'donor'
-                  ? 'bg-amber-800 text-white shadow-xs'
-                  : 'text-slate-600 hover:text-slate-900'
-              }`}
-            >
-              <HandHeart className="w-4 h-4" />
-              <span className="hidden sm:inline">Devotee Form</span>
-              <span className="sm:hidden">Devotee</span>
-            </button>
-
-            <button
-              onClick={() => setActiveView('publicDashboard')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-bold transition shrink-0 cursor-pointer ${
-                activeView === 'publicDashboard'
-                  ? 'bg-amber-800 text-white shadow-xs'
-                  : 'text-amber-900 bg-amber-100/70 hover:bg-amber-100 border border-amber-300/60'
-              }`}
-            >
-              <Sparkles className="w-4 h-4 text-amber-500" />
-              <span className="hidden sm:inline">Public Display Dashboard</span>
-              <span className="sm:hidden">Public Display</span>
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-            </button>
-
-            <button
-              onClick={() => setActiveView('volunteer')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-bold transition relative shrink-0 cursor-pointer ${
-                activeView === 'volunteer'
-                  ? 'bg-amber-800 text-white shadow-xs'
-                  : 'text-slate-600 hover:text-slate-900'
-              }`}
-            >
-              <ShieldCheck className="w-4 h-4" />
-              <span className="hidden sm:inline">Volunteer &amp; Management Portal</span>
-              <span className="sm:hidden">Volunteer Portal</span>
-              {pendingUpiCount > 0 && (
-                <span className="w-4 h-4 rounded-full bg-amber-500 text-white text-[9px] font-black flex items-center justify-center animate-pulse">
-                  {pendingUpiCount}
-                </span>
-              )}
-            </button>
-
-            <button
-              onClick={() => setActiveView('emailConfig')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-bold transition shrink-0 cursor-pointer ${
-                activeView === 'emailConfig'
-                  ? 'bg-amber-800 text-white shadow-xs'
-                  : 'text-slate-600 hover:text-slate-900'
-              }`}
-            >
-              <Mail className="w-4 h-4" />
-              <span className="hidden sm:inline">Email &amp; Receipts</span>
-              <span className="sm:hidden">Email</span>
-              <span className="w-2 h-2 rounded-full bg-emerald-500" />
-            </button>
-
-            <button
-              onClick={() => setActiveView('code')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-bold transition shrink-0 cursor-pointer ${
-                activeView === 'code'
-                  ? 'bg-amber-800 text-white shadow-xs'
-                  : 'text-slate-600 hover:text-slate-900'
-              }`}
-            >
-              <Code2 className="w-4 h-4" />
-              <span className="hidden sm:inline">Code &amp; Setup</span>
-              <span className="sm:hidden">Code</span>
-            </button>
-          </nav>
-        </div>
-      </header>
-
+          </header>
+        </>
+      )}
       {/* Real-time metrics strip */}
       <div className="bg-slate-900 text-slate-200 text-xs py-2 px-4 border-b border-slate-800">
         <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2">
@@ -823,7 +826,13 @@ const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
       </div>
 
       {/* Main Content Area */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main
+          className={
+            isVolunteerDashboard
+              ? "flex-1 w-full px-0 py-0"
+              : "flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8"
+          }
+        >
         {activeView === 'donor' && (
           <div className="space-y-6">
             <div className="p-4 bg-amber-50/90 border border-amber-200 rounded-2xl flex items-start justify-between gap-3 text-xs text-amber-950">
@@ -898,6 +907,7 @@ const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
               onOpenVolunteerManagement={() => {
                 setIsVolunteerManagementOpen(true);
               }}
+              onDashboardModeChange={setIsVolunteerDashboard}
             />
           </div>
         )}
@@ -918,24 +928,26 @@ const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
         )}
       </main>
 
-      <footer className="mt-auto bg-slate-900 text-slate-300 border-t border-slate-800 py-8 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-4xl mx-auto text-center space-y-3">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-950/80 border border-amber-800/60 text-amber-300 text-xs font-bold tracking-wide uppercase">
-            <Sparkles className="w-3.5 h-3.5" />
-            <span>Digital Donation Solution</span>
+      {!isVolunteerDashboard && (  
+        <footer className="mt-auto bg-slate-900 text-slate-300 border-t border-slate-800 py-8 px-4 sm:px-6 lg:px-8">
+          <div className="max-w-4xl mx-auto text-center space-y-3">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-950/80 border border-amber-800/60 text-amber-300 text-xs font-bold tracking-wide uppercase">
+              <Sparkles className="w-3.5 h-3.5" />
+              <span>Digital Donation Solution</span>
+            </div>
+            <div className="text-sm sm:text-base font-semibold text-slate-100 font-serif">
+              Designed &amp; developed by <strong className="text-amber-400">Sachin Parab</strong>
+            </div>
+            <div className="text-sm sm:text-base font-bold text-amber-300 font-serif">
+              Your Challenge. My Solution.
+            </div>
+            <div className="pt-4 text-[11px] text-slate-500">
+              © {new Date().getFullYear()} Shree Jagannath Seva Trust, Thane • Autonomous Live Integration
+            </div>
           </div>
-          <div className="text-sm sm:text-base font-semibold text-slate-100 font-serif">
-            Designed &amp; developed by <strong className="text-amber-400">Sachin Parab</strong>
-          </div>
-          <div className="text-sm sm:text-base font-bold text-amber-300 font-serif">
-            Your Challenge. My Solution.
-          </div>
-          <div className="pt-4 text-[11px] text-slate-500">
-            © {new Date().getFullYear()} Shree Jagannath Seva Trust, Thane • Autonomous Live Integration
-          </div>
-        </div>
-      </footer>
-
+        </footer>
+      )}
+      
       {modalReceiptDonation && (
         <ReceiptModal
           donation={modalReceiptDonation}
