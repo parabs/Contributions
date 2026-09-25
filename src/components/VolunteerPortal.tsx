@@ -126,6 +126,10 @@ export function VolunteerPortal({
   const [resetPinError, setResetPinError] = useState('');
 
 
+const [activeInternalTab, setActiveInternalTab] = useState<
+  'verify' | 'directEntry' | 'detailedDashboard' | 'liveSheet' | 'emailConfig' | 'profile'
+>('verify');
+
   const [profileEmail, setProfileEmail] = useState(
     currentVolunteer?.email || ''
   );
