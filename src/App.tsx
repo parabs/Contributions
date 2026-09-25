@@ -69,7 +69,7 @@ class AppErrorBoundary extends React.Component<
       'SJST APPLICATION ERROR\n\n' +
       message +
       '\n\n' +
-      'Please send this exact error message to ChatGPT.'
+      'Please send this exact error message to Admin.'
     );
   }
 
@@ -148,7 +148,8 @@ const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
   // Modals
   const [modalReceiptDonation, setModalReceiptDonation] = useState<DonationRecord | null>(null);
   const [isVolunteerManagementOpen, setIsVolunteerManagementOpen] = useState(false);
-  
+
+  const [isVolunteerDashboard, setIsVolunteerDashboard] = useState(false);
 
   // Quick statistics
   const pendingUpiCount = donations.filter(d => d.paymentMode === 'UPI' && d.paymentStatus === 'Confirmation Pending').length;
