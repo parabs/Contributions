@@ -942,6 +942,7 @@ React.useEffect(() => {
             onOpenVolunteerManagement={
               onOpenVolunteerManagement || (() => {})
             }
+            onBackToPortal={() => setActiveInternalTab('verify')}
           />
 
         </div>
