@@ -221,10 +221,10 @@ function SectionHeader({
           {number}
         </div>
         <div>
-          <h2 className="text-[17px] leading-tight font-black text-slate-900">
+          <h2 className="text-sm leading-tight font-black text-slate-900">
             {title}
           </h2>
-          <p className="text-[10px] sm:text-[11px] text-slate-500">
+          <p className="text-[8px] text-slate-500">
             {subtitle}
           </p>
         </div>
