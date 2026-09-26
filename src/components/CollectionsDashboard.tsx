@@ -268,7 +268,7 @@ function MetricCard({
   };
 
   return (
-    <div className={`rounded-xl border p-3.5 min-h-[94px] ${tones[tone]}`}>
+    <div className={`rounded-xl border p-2.5 min-h-[78px] ${tones[tone]}`}>
       <div className="flex items-center gap-2">
         <div className="w-8 h-8 rounded-lg bg-white/80 flex items-center justify-center shrink-0">
           {icon}
