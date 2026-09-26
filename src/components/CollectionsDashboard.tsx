@@ -974,73 +974,136 @@ export function CollectionsDashboard({
       {/* ------------------------------------------------------------- */}
       {/* 3. ACTION REQUIRED                                             */}
       {/* ------------------------------------------------------------- */}
-      <section className="rounded-xl border border-emerald-200 bg-white px-2 py-1.5">
+      <section className="rounded-xl border border-emerald-200 bg-white px-2 py-1">
         <SectionHeader
           number="3"
           title="Action Required"
           subtitle="Key items that need attention. Click to view and take action."
         />
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
-          <div className="rounded-xl border border-orange-100 bg-orange-50 p-3 flex items-center justify-between gap-3">
-            <div className="flex items-center gap-1.5">
-              <Clock3 className="w-8 h-8 text-orange-700" />
-              <div>
-                <div className="text-xl font-black">{dashboard.confirmationCount}</div>
-                <div className="text-xs font-black">Confirmation Required</div>
-                <div className="text-[10px] text-slate-500">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-1.5">
+
+          {/* Confirmation Required */}
+          <div className="rounded-lg border border-orange-100 bg-orange-50 px-2 py-1.5 flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2 min-w-0">
+
+              <Clock3 className="w-7 h-7 text-orange-700 shrink-0" />
+
+              <div className="min-w-0">
+                <div className="flex items-baseline gap-2">
+                  <div className="text-lg leading-none font-black">
+                    {dashboard.confirmationCount}
+                  </div>
+
+                  <div className="text-[10px] font-black leading-tight whitespace-nowrap">
+                    Confirmation Required
+                  </div>
+                </div>
+
+                <div className="text-[9px] text-slate-500 leading-none mt-1 whitespace-nowrap">
                   {money(dashboard.confirmationAmount)} • {dashboard.confirmationCount} Donations
                 </div>
               </div>
             </div>
+
             <button
               type="button"
-              onClick={() => window.dispatchEvent(new CustomEvent('sjst-open-live-sheet', { detail: 'Confirmation Pending' }))}
-              className="px-3 py-2 rounded-lg bg-orange-500 hover:bg-orange-600 text-white text-[10px] font-black inline-flex items-center gap-1"
+              onClick={() =>
+                window.dispatchEvent(
+                  new CustomEvent(
+                    'sjst-open-live-sheet',
+                    { detail: 'Confirmation Pending' }
+                  )
+                )
+              }
+              className="shrink-0 px-2.5 py-1.5 rounded-md bg-orange-500 hover:bg-orange-600 text-white text-[9px] font-black inline-flex items-center gap-1"
             >
-              View Details <ArrowRight className="w-3 h-3" />
+              View Details
+              <ArrowRight className="w-3 h-3" />
             </button>
           </div>
 
-          <div className="rounded-xl border border-blue-100 bg-blue-50 p-3 flex items-center justify-between gap-3">
-            <div className="flex items-center gap-3">
-              <Repeat2 className="w-8 h-8 text-blue-500" />
-              <div>
-                <div className="text-xl font-black">{dashboard.recollectCount}</div>
-                <div className="text-xs font-black">Recollect Donations</div>
-                <div className="text-[10px] text-slate-500">
-                  Initiated for collection • {money(dashboard.recollectAmount)}
+          {/* Recollect */}
+          <div className="rounded-lg border border-blue-100 bg-blue-50 px-2 py-1.5 flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2 min-w-0">
+
+              <Repeat2 className="w-7 h-7 text-blue-700 shrink-0" />
+
+              <div className="min-w-0">
+                <div className="flex items-baseline gap-2">
+                  <div className="text-lg leading-none font-black">
+                    {dashboard.recollectCount}
+                  </div>
+
+                  <div className="text-[10px] font-black leading-tight whitespace-nowrap">
+                    Recollect Donations
+                  </div>
+                </div>
+
+                <div className="text-[9px] text-slate-500 leading-none mt-1 whitespace-nowrap">
+                  {money(dashboard.recollectAmount)} • {dashboard.recollectCount} Donations
                 </div>
               </div>
             </div>
+
             <button
               type="button"
-              onClick={() => window.dispatchEvent(new CustomEvent('sjst-open-live-sheet', { detail: 'Recollect' }))}
-              className="px-3 py-2 rounded-lg bg-blue-500 hover:bg-blue-600 text-white text-[10px] font-black inline-flex items-center gap-1"
+              onClick={() =>
+                window.dispatchEvent(
+                  new CustomEvent(
+                    'sjst-open-live-sheet',
+                    { detail: 'Recollect' }
+                  )
+                )
+              }
+              className="shrink-0 px-2.5 py-1.5 rounded-md bg-blue-500 hover:bg-blue-600 text-white text-[9px] font-black inline-flex items-center gap-1"
             >
-              View Details <ArrowRight className="w-3 h-3" />
+              View Details
+              <ArrowRight className="w-3 h-3" />
             </button>
           </div>
 
-          <div className="rounded-xl border border-red-100 bg-red-50 p-3 flex items-center justify-between gap-3">
-            <div className="flex items-center gap-3">
-              <ShieldAlert className="w-8 h-8 text-red-500" />
-              <div>
-                <div className="text-xl font-black">{dashboard.disputeCount}</div>
-                <div className="text-xs font-black">Repayment Dispute</div>
-                <div className="text-[10px] text-slate-500">
-                  Needs investigation
+          {/* Repayment Dispute */}
+          <div className="rounded-lg border border-red-100 bg-red-50 px-2 py-1.5 flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2 min-w-0">
+
+              <ShieldAlert className="w-7 h-7 text-red-700 shrink-0" />
+
+              <div className="min-w-0">
+                <div className="flex items-baseline gap-2">
+                  <div className="text-lg leading-none font-black">
+                    {dashboard.disputeCount}
+                  </div>
+
+                  <div className="text-[10px] font-black leading-tight whitespace-nowrap">
+                    Repayment Dispute
+                  </div>
+                </div>
+
+                <div className="text-[9px] text-slate-500 leading-none mt-1 whitespace-nowrap">
+                  {dashboard.disputeCount} Case
+                  {dashboard.disputeCount === 1 ? '' : 's'}
                 </div>
               </div>
             </div>
+
             <button
               type="button"
-              onClick={() => window.dispatchEvent(new CustomEvent('sjst-open-live-sheet', { detail: 'Repayment - Dispute' }))}
-              className="px-3 py-2 rounded-lg bg-red-500 hover:bg-red-600 text-white text-[10px] font-black inline-flex items-center gap-1"
+              onClick={() =>
+                window.dispatchEvent(
+                  new CustomEvent(
+                    'sjst-open-live-sheet',
+                    { detail: 'Repayment - Dispute' }
+                  )
+                )
+              }
+              className="shrink-0 px-2.5 py-1.5 rounded-md bg-red-500 hover:bg-red-600 text-white text-[9px] font-black inline-flex items-center gap-1"
             >
-              View Details <ArrowRight className="w-3 h-3" />
+              View Details
+              <ArrowRight className="w-3 h-3" />
             </button>
           </div>
+
         </div>
       </section>
 
