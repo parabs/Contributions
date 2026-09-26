@@ -993,7 +993,7 @@ export function CollectionsDashboard({
 
               {/* Number + content */}
               <div className="flex items-center gap-2 min-w-0">
-                <div className="text-3xl leading-none font-black text-orange-800">
+                <div className="text-3xl leading-none font-black text-orange-600">
                   {dashboard.confirmationCount}
                 </div>
 
@@ -1028,23 +1028,27 @@ export function CollectionsDashboard({
 
           {/* Recollect */}
           <div className="rounded-lg border border-blue-100 bg-blue-50 px-2 py-1.5 flex items-center justify-between gap-2">
+            
             <div className="flex items-center gap-2 min-w-0">
+              {/* Icon */}
+              <div className="shrink-0">
+                <Repeat2 className="w-8 h-8 text-blue-600" />
+              </div>
 
-              <Repeat2 className="w-7 h-7 text-blue-700 shrink-0" />
-
-              <div className="min-w-0">
-                <div className="flex items-baseline gap-2">
-                  <div className="text-lg leading-none font-black">
-                    {dashboard.recollectCount}
-                  </div>
-
-                  <div className="text-[10px] font-black leading-tight whitespace-nowrap">
-                    Recollect Donations
-                  </div>
+              {/* Number + content */}
+              <div className="flex items-center gap-2 min-w-0">
+                <div className="text-3xl leading-none font-black text-blue-800">
+                  {dashboard.recollectCount}
                 </div>
 
-                <div className="text-[9px] text-slate-500 leading-none mt-1 whitespace-nowrap">
-                  {money(dashboard.recollectAmount)} • {dashboard.recollectCount} Donations
+                <div className="min-w-0">
+                  <div className="text-[10px] font-black leading-tight whitespace-nowrap text-blue-800">
+                    Recollect Donations
+                  </div>
+
+                  <div className="text-[9px] leading-tight mt-0.5 whitespace-nowrap text-blue-600">
+                    {money(dashboard.recollectAmount)} • {dashboard.recollectCount} Donations
+                  </div>
                 </div>
               </div>
             </div>
