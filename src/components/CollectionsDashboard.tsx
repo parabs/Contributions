@@ -216,7 +216,7 @@ function SectionHeader({
 }) {
   return (
     <div className="flex items-center justify-between gap-3 mb-1">
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-1.5">
         <div className="w-8 h-8 rounded-full bg-emerald-600 text-white flex items-center justify-center font-black text-sm shrink-0">
           {number}
         </div>
@@ -268,17 +268,17 @@ function MetricCard({
   };
 
   return (
-    <div className={`rounded-xl border p-2 min-h-[70px] ${tones[tone]}`}>
-      <div className="flex items-center gap-2">
-        <div className="w-7 h-7 rounded-lg bg-white/80 flex items-center justify-center shrink-0">
+    <div className={`rounded-lg border px-2 py-1.5 ${tones[tone]}`}>
+      <div className="flex items-center gap-1.5">
+        <div className="w-6 h-6 rounded-md bg-white/80 flex items-center justify-center shrink-0">
           {icon}
         </div>
         <div className="min-w-0">
           <div className="text-[11px] font-black leading-tight">{title}</div>
-          <div className="text-[21px] leading-tight font-black font-mono mt-0.5">
+          <div className="text-[19px] leading-none font-black font-mono">
             {value}
           </div>
-          <div className="text-[9px] font-semibold opacity-70 mt-0.5">
+          <div className="text-[8px] leading-none font-semibold opacity-70 mt-0.5">
             {subtitle}
           </div>
         </div>
@@ -582,7 +582,7 @@ export function CollectionsDashboard({
         <div className="bg-slate-950 text-white px-3 py-1.5">
           <div className="flex flex-col xl:flex-row xl:items-center gap-1.5">
             <div className="flex items-center gap-3">
-              <div className="w-7 h-7 rounded-lg bg-amber-500/20 flex items-center justify-center shrink-0">
+              <div className="w-6 h-6 rounded-md bg-white/80 flex items-center justify-center shrink-0">
                 <BarChart3 className="w-4 h-4 text-amber-300" />
               </div>
 
@@ -745,7 +745,7 @@ export function CollectionsDashboard({
       {/* ------------------------------------------------------------- */}
       {/* 1. KEY METRICS                                                 */}
       {/* ------------------------------------------------------------- */}
-      <section className="rounded-xl border border-emerald-200 bg-white p-2">
+      <section className="rounded-xl border border-emerald-200 bg-white px-2 py-1.5">
         <SectionHeader
           number="1"
           title="Key Metrics"
@@ -814,7 +814,7 @@ export function CollectionsDashboard({
       {/* ------------------------------------------------------------- */}
       {/* 2. COLLECTION WORKFLOW                                         */}
       {/* ------------------------------------------------------------- */}
-      <section className="rounded-xl border border-emerald-200 bg-white p-2">
+      <section className="rounded-xl border border-emerald-200 bg-white px-2 py-1.5">
         <SectionHeader
           number="2"
           title="Collection Workflow"
@@ -868,7 +868,7 @@ export function CollectionsDashboard({
                   : 'bg-violet-50 border-violet-100'
               }`}
             >
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1.5">
                 <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center">
                   {stage.icon}
                 </div>
@@ -911,7 +911,7 @@ export function CollectionsDashboard({
 
           <div className="space-y-2">
             <div className="rounded-xl border border-red-100 bg-red-50 p-3">
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1.5">
                 <ShieldAlert className="w-6 h-6 text-red-500" />
                 <div>
                   <div className="text-[10px] font-black text-red-700">5</div>
@@ -927,7 +927,7 @@ export function CollectionsDashboard({
             </div>
 
             <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1.5">
                 <Ban className="w-6 h-6 text-slate-500" />
                 <div>
                   <div className="text-[10px] font-black text-slate-500">6</div>
@@ -947,7 +947,7 @@ export function CollectionsDashboard({
       {/* ------------------------------------------------------------- */}
       {/* 3. ACTION REQUIRED                                             */}
       {/* ------------------------------------------------------------- */}
-      <section className="rounded-xl border border-emerald-200 bg-white p-2">
+      <section className="rounded-xl border border-emerald-200 bg-white px-2 py-1.5">
         <SectionHeader
           number="3"
           title="Action Required"
@@ -956,7 +956,7 @@ export function CollectionsDashboard({
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
           <div className="rounded-xl border border-orange-100 bg-orange-50 p-3 flex items-center justify-between gap-3">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5">
               <Clock3 className="w-8 h-8 text-orange-700" />
               <div>
                 <div className="text-xl font-black">{dashboard.confirmationCount}</div>
@@ -1020,7 +1020,7 @@ export function CollectionsDashboard({
       {/* ------------------------------------------------------------- */}
       {/* 4. COLLECTION OVERVIEW                                         */}
       {/* ------------------------------------------------------------- */}
-      <section className="rounded-xl border border-emerald-200 bg-white p-2">
+      <section className="rounded-xl border border-emerald-200 bg-white px-2 py-1.5">
         <SectionHeader
           number="4"
           title="Collection Overview"
@@ -1112,7 +1112,7 @@ export function CollectionsDashboard({
           {/* Payment Mode — restricted section within Collection Overview */}
           <div className="rounded-xl border border-red-100 bg-white p-3">
             <div className="flex items-center justify-between mb-2 gap-2">
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1.5">
                 <Lock className="w-4 h-4 text-red-700" />
                 <div>
                   <div className="text-sm font-black text-slate-900">Payment Mode</div>
