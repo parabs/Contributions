@@ -905,16 +905,6 @@ export function CollectionsDashboard({
                 </div>
               </div>
 
-              <div className="mt-1.5">
-                <div className="text-[17px] leading-none font-black font-mono">
-                  {money(stage.amount)}
-                </div>
-
-                <div className="text-[9px] text-slate-500 leading-none mt-0.5">
-                  {stage.count} Donations
-                </div>
-              </div>
-
               <div className="mt-1 flex items-center gap-1">
                 <div className="flex-1 h-1.5 rounded-full bg-white/70 overflow-hidden">
                   <div
