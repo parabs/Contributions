@@ -993,7 +993,7 @@ export function CollectionsDashboard({
 
               {/* Number + content */}
               <div className="flex items-center gap-2 min-w-0">
-                <div className="text-2xl leading-none font-black">
+                <div className="text-3xl leading-none font-black text-orange-800">
                   {dashboard.confirmationCount}
                 </div>
 
@@ -1003,7 +1003,7 @@ export function CollectionsDashboard({
                   </div>
 
                   <div className="text-[9px] text-slate-500 leading-tight mt-0.5 whitespace-nowrap">
-                    {money(dashboard.confirmationAmount)} • {dashboard.confirmationCount} Donations
+                    {money(dashboard.confirmationAmount)} 
                   </div>
                 </div>
               </div>
