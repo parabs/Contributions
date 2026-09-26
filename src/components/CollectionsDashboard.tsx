@@ -893,29 +893,29 @@ export function CollectionsDashboard({
                 </div>
               </div>
 
-              <div className="mt-1.5 flex items-end justify-between">
-                <div>
-                  <div className="text-[17px] leading-none font-black font-mono">
-                    {money(stage.amount)}
-                  </div>
-
-                  <div className="text-[9px] text-slate-500 leading-none mt-0.5">
-                    {stage.count} Donations
-                  </div>
+              <div className="mt-1.5">
+                <div className="text-[17px] leading-none font-black font-mono">
+                  {money(stage.amount)}
                 </div>
 
-                <div className="text-[9px] font-bold text-slate-500">
-                  {workflowShare(stage.amount)}%
+                <div className="text-[9px] text-slate-500 leading-none mt-0.5">
+                  {stage.count} Donations
                 </div>
               </div>
 
-              <div className="mt-1 h-1.5 rounded-full bg-white/70 overflow-hidden">
-                <div
-                  className="h-full rounded-full bg-current opacity-70"
-                  style={{
-                    width: `${Math.min(100, workflowShare(stage.amount))}%`
-                  }}
-                />
+              <div className="mt-1 flex items-center gap-1">
+                <div className="flex-1 h-1.5 rounded-full bg-white/70 overflow-hidden">
+                  <div
+                    className="h-full rounded-full bg-current opacity-70"
+                    style={{
+                      width: `${Math.min(100, workflowShare(stage.amount))}%`
+                    }}
+                  />
+                </div>
+
+                <div className="text-[9px] font-bold text-slate-500 w-7 text-right">
+                  {workflowShare(stage.amount)}%
+                </div>
               </div>
 
               {stage.number !== '4' && (
