@@ -1081,7 +1081,7 @@ export function CollectionsDashboard({
 
               {/* Number + content */}
               <div className="flex items-center gap-2 min-w-0">
-                <div className="text-3xl leading-none font-black text-red-800">
+                <div className="text-3xl leading-none font-black text-red-600">
                   {dashboard.disputeCount}
                 </div>
 
@@ -1128,8 +1128,8 @@ export function CollectionsDashboard({
           subtitle="Collection performance over different periods and recent trends."
         />
 
-        <div className="grid grid-cols-1 lg:grid-cols-[1.05fr_1.5fr] gap-2">
-          <div className="grid grid-cols-2 gap-2">
+        <div className="grid grid-cols-1 lg:grid-cols-[1.05fr_1.5fr_1.05fr] gap-1.5">
+          <div className="grid grid-cols-4 gap-1.5">
             {[
               ['Till Date', dashboard.periods.tillDate, 'emerald'],
               ['This Year', dashboard.periods.thisYear, 'blue'],
@@ -1138,7 +1138,7 @@ export function CollectionsDashboard({
             ].map(([label, data, tone]) => (
               <div
                 key={String(label)}
-                className={`rounded-xl p-3 border ${
+                className={`rounded-lg px-2 py-1.5 border ${
                   tone === 'emerald'
                     ? 'bg-emerald-50 border-emerald-100'
                     : tone === 'blue'
@@ -1152,18 +1152,18 @@ export function CollectionsDashboard({
                   <CalendarDays className="w-3.5 h-3.5" />
                   {label}
                 </div>
-                <div className="text-xl font-black font-mono mt-2">
+                <div className="text-lg font-black font-mono mt-1">
                   {money((data as any).amount)}
                 </div>
-                <div className="text-[10px] font-semibold text-slate-500">
+                <div className="text-[9px] font-semibold text-slate-500">
                   {(data as any).count} Contributions
                 </div>
               </div>
             ))}
           </div>
 
-          <div className="rounded-xl border border-slate-200 bg-white p-3">
-            <div className="flex items-center justify-between mb-2">
+          <div className="rounded-lg border border-slate-200 bg-white px-2 py-1.5">
+            <div className="flex items-center justify-between mb-1">
               <div>
                 <div className="text-sm font-black text-slate-900">
                   Last 5 Available Collection Days
@@ -1211,7 +1211,7 @@ export function CollectionsDashboard({
           </div>
 
           {/* Payment Mode — restricted section within Collection Overview */}
-          <div className="rounded-xl border border-red-100 bg-white p-3">
+          <div className="rounded-lg border border-red-100 bg-white px-2 py-1.5">
             <div className="flex items-center justify-between mb-2 gap-2">
               <div className="flex items-center gap-1.5">
                 <Lock className="w-4 h-4 text-red-700" />
@@ -1226,7 +1226,7 @@ export function CollectionsDashboard({
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-4 gap-1.5">
               <div className="rounded-lg border border-emerald-100 bg-emerald-50 p-2.5">
                 <div className="flex items-center gap-1.5">
                   <Banknote className="w-5 h-5 text-emerald-700" />
@@ -1282,7 +1282,7 @@ export function CollectionsDashboard({
             restricted
           />
 
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-4 gap-1.5">
             {categoryRows.slice(0, 4).map((row, index) => (
               <div
                 key={row.category}
