@@ -877,18 +877,30 @@ export function CollectionsDashboard({
                   : 'bg-violet-50 border-violet-100'
               }`}
             >
-              <div className="flex items-center gap-1.5">
-                <div className="w-6 h-6 rounded-full bg-white/80 flex items-center justify-center shrink-0 text-[10px] font-black text-slate-700">
-                  {stage.number}
+              <div className="flex items-center gap-2">
+                {/* Stage number + icon */}
+                <div className="flex flex-col items-center justify-center shrink-0 w-9">
+                  <div className="w-6 h-6 rounded-full bg-white/80 flex items-center justify-center text-[9px] font-black text-slate-700">
+                    {stage.number}
+                  </div>
+
+                  <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center mt-0.5">
+                    {stage.icon}
+                  </div>
                 </div>
 
-                <div className="w-7 h-7 rounded-full bg-white flex items-center justify-center shrink-0">
-                  {stage.icon}
-                </div>
-
-                <div className="min-w-0">
-                  <div className="text-[11px] font-black text-slate-900 leading-tight">
+                {/* Content */}
+                <div className="min-w-0 flex-1">
+                  <div className="text-[10px] font-black text-slate-900 leading-tight whitespace-nowrap">
                     {stage.title}
+                  </div>
+
+                  <div className="text-[8px] text-slate-500 leading-none mt-0.5">
+                    {stage.count} Donations
+                  </div>
+
+                  <div className="text-[16px] leading-none font-black font-mono mt-1">
+                    {money(stage.amount)}
                   </div>
                 </div>
               </div>
