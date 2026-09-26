@@ -579,18 +579,18 @@ export function CollectionsDashboard({
       {/* HEADER + FILTERS                                               */}
       {/* ------------------------------------------------------------- */}
       <div className="rounded-xl overflow-visible border border-slate-200 shadow-sm bg-white">
-        <div className="bg-slate-950 text-white px-4 py-3">
-          <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-3">
+        <div className="bg-slate-950 text-white px-4 py-2">
+          <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-2">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-amber-500/20 flex items-center justify-center">
                 <BarChart3 className="w-6 h-6 text-amber-300" />
               </div>
 
               <div>
-                <h1 className="text-xl sm:text-2xl font-black tracking-tight">
+                <h1 className="text-lg sm:text-xl font-black tracking-tight">
                   SJST Collection Dashboard
                 </h1>
-                <p className="text-[10px] sm:text-xs text-slate-300">
+                <p className="text-[9px] sm:text-[10px] text-slate-300">
                   Collection • Verification • Payment Resolution • Volunteer Operations
                 </p>
               </div>

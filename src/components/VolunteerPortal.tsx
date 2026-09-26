@@ -921,18 +921,7 @@ React.useEffect(() => {
         
         <div className="max-w-[1600px] mx-auto px-3 sm:px-5 lg:px-6 py-4">
           
-          {/* Back to Volunteer Portal */}
-          <div className="mb-3">
-            <button
-              type="button"
-              onClick={() => setActiveInternalTab('verify')}
-              className="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 hover:text-slate-900 text-xs font-bold shadow-sm transition"
-            >
-              <span className="text-base leading-none">←</span>
-              <span>Back to Volunteer Portal</span>
-            </button>
-          </div>
-
+          
           {/* Stand-alone Detailed Dashboard */}
           <CollectionsDashboard
             donations={donations}
