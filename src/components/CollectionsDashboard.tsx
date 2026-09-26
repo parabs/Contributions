@@ -1037,7 +1037,7 @@ export function CollectionsDashboard({
 
               {/* Number + content */}
               <div className="flex items-center gap-2 min-w-0">
-                <div className="text-3xl leading-none font-black text-blue-800">
+                <div className="text-3xl leading-none font-black text-blue-600">
                   {dashboard.recollectCount}
                 </div>
 
@@ -1072,24 +1072,28 @@ export function CollectionsDashboard({
 
           {/* Repayment Dispute */}
           <div className="rounded-lg border border-red-100 bg-red-50 px-2 py-1.5 flex items-center justify-between gap-2">
+            
             <div className="flex items-center gap-2 min-w-0">
+              {/* Icon */}
+              <div className="shrink-0">
+                <ShieldAlert className="w-8 h-8 text-red-600" />
+              </div>
 
-              <ShieldAlert className="w-7 h-7 text-red-700 shrink-0" />
-
-              <div className="min-w-0">
-                <div className="flex items-baseline gap-2">
-                  <div className="text-lg leading-none font-black">
-                    {dashboard.disputeCount}
-                  </div>
-
-                  <div className="text-[10px] font-black leading-tight whitespace-nowrap">
-                    Repayment Dispute
-                  </div>
+              {/* Number + content */}
+              <div className="flex items-center gap-2 min-w-0">
+                <div className="text-3xl leading-none font-black text-red-800">
+                  {dashboard.disputeCount}
                 </div>
 
-                <div className="text-[9px] text-slate-500 leading-none mt-1 whitespace-nowrap">
-                  {dashboard.disputeCount} Case
-                  {dashboard.disputeCount === 1 ? '' : 's'}
+                <div className="min-w-0">
+                  <div className="text-[10px] font-black leading-tight whitespace-nowrap text-red-800">
+                    Repayment Dispute
+                  </div>
+
+                  <div className="text-[9px] leading-tight mt-0.5 whitespace-nowrap text-red-600">
+                    {dashboard.disputeCount} Case
+                    {dashboard.disputeCount === 1 ? '' : 's'}
+                  </div>
                 </div>
               </div>
             </div>
