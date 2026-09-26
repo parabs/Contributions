@@ -26,7 +26,8 @@ import {
   UserCircle,
   WalletCards,
   XCircle,
-  Zap
+  Zap,
+  ChevronLeft
 } from 'lucide-react';
 
 import { DonationRecord, VolunteerRecord, TrustConfig } from '../types';
