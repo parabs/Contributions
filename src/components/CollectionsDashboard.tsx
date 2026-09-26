@@ -986,22 +986,25 @@ export function CollectionsDashboard({
           {/* Confirmation Required */}
           <div className="rounded-lg border border-orange-100 bg-orange-50 px-2 py-1.5 flex items-center justify-between gap-2">
             <div className="flex items-center gap-2 min-w-0">
+              {/* Icon */}
+              <div className="shrink-0">
+                <Clock3 className="w-8 h-8 text-orange-700" />
+              </div>
 
-              <Clock3 className="w-7 h-7 text-orange-700 shrink-0" />
+              {/* Number + content */}
+              <div className="flex items-center gap-2 min-w-0">
+                <div className="text-2xl leading-none font-black">
+                  {dashboard.confirmationCount}
+                </div>
 
-              <div className="min-w-0">
-                <div className="flex items-baseline gap-2">
-                  <div className="text-lg leading-none font-black">
-                    {dashboard.confirmationCount}
-                  </div>
-
+                <div className="min-w-0">
                   <div className="text-[10px] font-black leading-tight whitespace-nowrap">
                     Confirmation Required
                   </div>
-                </div>
 
-                <div className="text-[9px] text-slate-500 leading-none mt-1 whitespace-nowrap">
-                  {money(dashboard.confirmationAmount)} • {dashboard.confirmationCount} Donations
+                  <div className="text-[9px] text-slate-500 leading-tight mt-0.5 whitespace-nowrap">
+                    {money(dashboard.confirmationAmount)} • {dashboard.confirmationCount} Donations
+                  </div>
                 </div>
               </div>
             </div>
