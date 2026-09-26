@@ -215,7 +215,7 @@ function SectionHeader({
   restricted?: boolean;
 }) {
   return (
-    <div className="flex items-center justify-between gap-3 mb-2">
+    <div className="flex items-center justify-between gap-3 mb-1">
       <div className="flex items-center gap-2">
         <div className="w-8 h-8 rounded-full bg-emerald-600 text-white flex items-center justify-center font-black text-sm shrink-0">
           {number}
@@ -268,14 +268,14 @@ function MetricCard({
   };
 
   return (
-    <div className={`rounded-xl border p-2.5 min-h-[78px] ${tones[tone]}`}>
+    <div className={`rounded-xl border p-2 min-h-[70px] ${tones[tone]}`}>
       <div className="flex items-center gap-2">
-        <div className="w-8 h-8 rounded-lg bg-white/80 flex items-center justify-center shrink-0">
+        <div className="w-7 h-7 rounded-lg bg-white/80 flex items-center justify-center shrink-0">
           {icon}
         </div>
         <div className="min-w-0">
           <div className="text-[11px] font-black leading-tight">{title}</div>
-          <div className="text-[21px] leading-tight font-black font-mono mt-1">
+          <div className="text-[21px] leading-tight font-black font-mono mt-0.5">
             {value}
           </div>
           <div className="text-[9px] font-semibold opacity-70 mt-0.5">
@@ -573,7 +573,7 @@ export function CollectionsDashboard({
   };
 
   return (
-    <div className="space-y-3 pb-6">
+    <div className="space-y-1 pb-4">
 
       {/* ------------------------------------------------------------- */}
       {/* HEADER + FILTERS                                               */}
@@ -745,7 +745,7 @@ export function CollectionsDashboard({
       {/* ------------------------------------------------------------- */}
       {/* 1. KEY METRICS                                                 */}
       {/* ------------------------------------------------------------- */}
-      <section className="rounded-xl border border-emerald-200 bg-white p-3">
+      <section className="rounded-xl border border-emerald-200 bg-white p-2">
         <SectionHeader
           number="1"
           title="Key Metrics"
@@ -754,7 +754,7 @@ export function CollectionsDashboard({
 
         <div className="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-7 gap-2">
           <MetricCard
-            icon={<HandCoins className="w-5 h-5 text-emerald-600" />}
+            icon={<HandCoins className="w-5 h-5 text-emerald-700" />}
             title="Paid (Collection)"
             value={money(dashboard.paidAmount)}
             subtitle={`${dashboard.paidCount} Contributions`}
@@ -762,7 +762,7 @@ export function CollectionsDashboard({
           />
 
           <MetricCard
-            icon={<Clock3 className="w-5 h-5 text-orange-500" />}
+            icon={<Clock3 className="w-5 h-5 text-orange-700" />}
             title="Confirmation Required"
             value={money(dashboard.confirmationAmount)}
             subtitle={`${dashboard.confirmationCount} Donations`}
@@ -770,7 +770,7 @@ export function CollectionsDashboard({
           />
 
           <MetricCard
-            icon={<Repeat2 className="w-5 h-5 text-blue-600" />}
+            icon={<Repeat2 className="w-5 h-5 text-blue-700" />}
             title="Recollect"
             value={money(dashboard.recollectAmount)}
             subtitle={`${dashboard.recollectCount} Donations`}
@@ -778,7 +778,7 @@ export function CollectionsDashboard({
           />
 
           <MetricCard
-            icon={<WalletCards className="w-5 h-5 text-violet-600" />}
+            icon={<WalletCards className="w-5 h-5 text-violet-700" />}
             title="Repayment"
             value={money(dashboard.repaymentAmount)}
             subtitle={`${dashboard.repaymentCount} Donations`}
@@ -786,7 +786,7 @@ export function CollectionsDashboard({
           />
 
           <MetricCard
-            icon={<ShieldAlert className="w-5 h-5 text-red-600" />}
+            icon={<ShieldAlert className="w-5 h-5 text-red-700" />}
             title="Repayment – Dispute"
             value={`${dashboard.disputeCount} Case${dashboard.disputeCount === 1 ? '' : 's'}`}
             subtitle="Payment dispute"
@@ -802,7 +802,7 @@ export function CollectionsDashboard({
           />
 
           <MetricCard
-            icon={<Users className="w-5 h-5 text-blue-600" />}
+            icon={<Users className="w-5 h-5 text-blue-700" />}
             title="Active Volunteers"
             value={`${dashboard.activeVolunteers}`}
             subtitle="Active volunteer accounts"
@@ -814,7 +814,7 @@ export function CollectionsDashboard({
       {/* ------------------------------------------------------------- */}
       {/* 2. COLLECTION WORKFLOW                                         */}
       {/* ------------------------------------------------------------- */}
-      <section className="rounded-xl border border-emerald-200 bg-white p-3">
+      <section className="rounded-xl border border-emerald-200 bg-white p-2">
         <SectionHeader
           number="2"
           title="Collection Workflow"
@@ -829,7 +829,7 @@ export function CollectionsDashboard({
               amount: dashboard.workflow.confirmation.amount,
               count: dashboard.workflow.confirmation.count,
               tone: 'orange',
-              icon: <Clock3 className="w-6 h-6 text-orange-500" />
+              icon: <Clock3 className="w-6 h-6 text-orange-700" />
             },
             {
               number: '2',
@@ -837,7 +837,7 @@ export function CollectionsDashboard({
               amount: dashboard.workflow.recollect.amount,
               count: dashboard.workflow.recollect.count,
               tone: 'blue',
-              icon: <Repeat2 className="w-6 h-6 text-blue-600" />
+              icon: <Repeat2 className="w-6 h-6 text-blue-700" />
             },
             {
               number: '3',
@@ -845,7 +845,7 @@ export function CollectionsDashboard({
               amount: dashboard.workflow.repayment.amount,
               count: dashboard.workflow.repayment.count,
               tone: 'purple',
-              icon: <CheckCircle2 className="w-6 h-6 text-violet-600" />
+              icon: <CheckCircle2 className="w-6 h-6 text-violet-700" />
             },
             {
               number: '4',
@@ -853,7 +853,7 @@ export function CollectionsDashboard({
               amount: dashboard.workflow.paid.amount,
               count: dashboard.workflow.paid.count,
               tone: 'green',
-              icon: <HandCoins className="w-6 h-6 text-emerald-600" />
+              icon: <HandCoins className="w-6 h-6 text-emerald-700" />
             }
           ].map(stage => (
             <div
@@ -914,7 +914,7 @@ export function CollectionsDashboard({
               <div className="flex items-center gap-2">
                 <ShieldAlert className="w-6 h-6 text-red-500" />
                 <div>
-                  <div className="text-[10px] font-black text-red-600">5</div>
+                  <div className="text-[10px] font-black text-red-700">5</div>
                   <div className="text-xs font-black text-slate-900">
                     Repayment – Dispute
                   </div>
@@ -947,7 +947,7 @@ export function CollectionsDashboard({
       {/* ------------------------------------------------------------- */}
       {/* 3. ACTION REQUIRED                                             */}
       {/* ------------------------------------------------------------- */}
-      <section className="rounded-xl border border-emerald-200 bg-white p-3">
+      <section className="rounded-xl border border-emerald-200 bg-white p-2">
         <SectionHeader
           number="3"
           title="Action Required"
@@ -957,7 +957,7 @@ export function CollectionsDashboard({
         <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
           <div className="rounded-xl border border-orange-100 bg-orange-50 p-3 flex items-center justify-between gap-3">
             <div className="flex items-center gap-2">
-              <Clock3 className="w-8 h-8 text-orange-500" />
+              <Clock3 className="w-8 h-8 text-orange-700" />
               <div>
                 <div className="text-xl font-black">{dashboard.confirmationCount}</div>
                 <div className="text-xs font-black">Confirmation Required</div>
@@ -1020,7 +1020,7 @@ export function CollectionsDashboard({
       {/* ------------------------------------------------------------- */}
       {/* 4. COLLECTION OVERVIEW                                         */}
       {/* ------------------------------------------------------------- */}
-      <section className="rounded-xl border border-emerald-200 bg-white p-3">
+      <section className="rounded-xl border border-emerald-200 bg-white p-2">
         <SectionHeader
           number="4"
           title="Collection Overview"
@@ -1071,7 +1071,7 @@ export function CollectionsDashboard({
                   Based on Paid collection days
                 </div>
               </div>
-              <BarChart3 className="w-4 h-4 text-blue-600" />
+              <BarChart3 className="w-4 h-4 text-blue-700" />
             </div>
 
             <div className="h-[150px] flex items-end gap-2 border-b border-slate-200 px-1">
@@ -1113,7 +1113,7 @@ export function CollectionsDashboard({
           <div className="rounded-xl border border-red-100 bg-white p-3">
             <div className="flex items-center justify-between mb-2 gap-2">
               <div className="flex items-center gap-2">
-                <Lock className="w-4 h-4 text-red-600" />
+                <Lock className="w-4 h-4 text-red-700" />
                 <div>
                   <div className="text-sm font-black text-slate-900">Payment Mode</div>
                   <div className="text-[10px] text-slate-500">Cash vs Direct UPI</div>
@@ -1128,7 +1128,7 @@ export function CollectionsDashboard({
             <div className="grid grid-cols-2 gap-2">
               <div className="rounded-lg border border-emerald-100 bg-emerald-50 p-2.5">
                 <div className="flex items-center gap-1.5">
-                  <Banknote className="w-5 h-5 text-emerald-600" />
+                  <Banknote className="w-5 h-5 text-emerald-700" />
                   <span className="text-[10px] font-black">Cash at Counter</span>
                 </div>
                 <div className="text-lg font-black font-mono mt-1">
@@ -1141,7 +1141,7 @@ export function CollectionsDashboard({
 
               <div className="rounded-lg border border-blue-100 bg-blue-50 p-2.5">
                 <div className="flex items-center gap-1.5">
-                  <QrCode className="w-5 h-5 text-blue-600" />
+                  <QrCode className="w-5 h-5 text-blue-700" />
                   <span className="text-[10px] font-black">Direct UPI</span>
                 </div>
                 <div className="text-lg font-black font-mono mt-1">
@@ -1311,7 +1311,7 @@ export function CollectionsDashboard({
             </div>
 
             <div className="rounded-xl bg-emerald-50 border border-emerald-100 p-3 text-center">
-              <CheckCircle2 className="w-6 h-6 mx-auto text-emerald-600" />
+              <CheckCircle2 className="w-6 h-6 mx-auto text-emerald-700" />
               <div className="text-[10px] font-bold mt-1">Resolved</div>
               <div className="text-xl font-black mt-1">
                 {dashboard.grievance.resolved}
@@ -1319,7 +1319,7 @@ export function CollectionsDashboard({
             </div>
 
             <div className="rounded-xl bg-orange-50 border border-orange-100 p-3 text-center">
-              <Clock3 className="w-6 h-6 mx-auto text-orange-500" />
+              <Clock3 className="w-6 h-6 mx-auto text-orange-700" />
               <div className="text-[10px] font-bold mt-1">Pending</div>
               <div className="text-xl font-black mt-1">
                 {dashboard.grievance.pending}
