@@ -821,7 +821,7 @@ export function CollectionsDashboard({
           subtitle="Track the flow of donations from confirmation to collection and see where action is needed."
         />
 
-        <div className="grid grid-cols-1 xl:grid-cols-[1fr_1fr_1fr_1fr_0.9fr] gap-2">
+        <div className="grid grid-cols-1 xl:grid-cols-[1fr_1fr_1fr_1fr_0.9fr] gap-1.5">
           {[
             {
               number: '1',
@@ -829,7 +829,7 @@ export function CollectionsDashboard({
               amount: dashboard.workflow.confirmation.amount,
               count: dashboard.workflow.confirmation.count,
               tone: 'orange',
-              icon: <Clock3 className="w-6 h-6 text-orange-700" />
+              icon: <Clock3 className="w-5 h-5 text-orange-700" />
             },
             {
               number: '2',
@@ -837,7 +837,7 @@ export function CollectionsDashboard({
               amount: dashboard.workflow.recollect.amount,
               count: dashboard.workflow.recollect.count,
               tone: 'blue',
-              icon: <Repeat2 className="w-6 h-6 text-blue-700" />
+              icon: <Repeat2 className="w-5 h-5 text-blue-700" />
             },
             {
               number: '3',
@@ -845,7 +845,7 @@ export function CollectionsDashboard({
               amount: dashboard.workflow.repayment.amount,
               count: dashboard.workflow.repayment.count,
               tone: 'purple',
-              icon: <CheckCircle2 className="w-6 h-6 text-violet-700" />
+              icon: <CheckCircle2 className="w-5 h-5 text-violet-700" />
             },
             {
               number: '4',
@@ -853,12 +853,12 @@ export function CollectionsDashboard({
               amount: dashboard.workflow.paid.amount,
               count: dashboard.workflow.paid.count,
               tone: 'green',
-              icon: <HandCoins className="w-6 h-6 text-emerald-700" />
+              icon: <HandCoins className="w-5 h-5 text-emerald-700" />
             }
           ].map(stage => (
             <div
               key={stage.number}
-              className={`rounded-xl border p-3 ${
+              className={`relative rounded-lg border px-2 py-1.5 ${
                 stage.tone === 'green'
                   ? 'bg-emerald-50 border-emerald-100'
                   : stage.tone === 'orange'
@@ -869,36 +869,38 @@ export function CollectionsDashboard({
               }`}
             >
               <div className="flex items-center gap-1.5">
-                <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center">
+                <div className="w-7 h-7 rounded-full bg-white flex items-center justify-center shrink-0">
                   {stage.icon}
                 </div>
 
-                <div>
-                  <div className="text-[10px] font-black uppercase tracking-wide opacity-70">
+                <div className="min-w-0">
+                  <div className="text-[9px] font-black uppercase tracking-wide opacity-70">
                     {stage.number}
                   </div>
-                  <div className="text-xs font-black text-slate-900">
+
+                  <div className="text-[11px] font-black text-slate-900 leading-tight">
                     {stage.title}
                   </div>
                 </div>
               </div>
 
-              <div className="mt-3 flex items-end justify-between">
+              <div className="mt-1.5 flex items-end justify-between">
                 <div>
-                  <div className="text-[10px] text-slate-500">
+                  <div className="text-[9px] text-slate-500 leading-none">
                     {stage.count} Donations
                   </div>
-                  <div className="text-lg font-black font-mono">
+
+                  <div className="text-[17px] leading-none font-black font-mono mt-0.5">
                     {money(stage.amount)}
                   </div>
                 </div>
 
-                <div className="text-[10px] font-bold text-slate-500">
+                <div className="text-[9px] font-bold text-slate-500">
                   {workflowShare(stage.amount)}%
                 </div>
               </div>
 
-              <div className="mt-2 h-2 rounded-full bg-white/70 overflow-hidden">
+              <div className="mt-1 h-1.5 rounded-full bg-white/70 overflow-hidden">
                 <div
                   className="h-full rounded-full bg-current opacity-70"
                   style={{
@@ -906,19 +908,28 @@ export function CollectionsDashboard({
                   }}
                 />
               </div>
+
+              {stage.number !== '4' && (
+                <ArrowRight className="hidden xl:block absolute -right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-blue-600 z-20" />
+              )}
             </div>
           ))}
 
-          <div className="space-y-2">
-            <div className="rounded-xl border border-red-100 bg-red-50 p-3">
+          <div className="space-y-1">
+            <div className="rounded-lg border border-red-100 bg-red-50 px-2 py-1.5">
               <div className="flex items-center gap-1.5">
-                <ShieldAlert className="w-6 h-6 text-red-500" />
-                <div>
-                  <div className="text-[10px] font-black text-red-700">5</div>
-                  <div className="text-xs font-black text-slate-900">
+                <ShieldAlert className="w-5 h-5 text-red-700 shrink-0" />
+
+                <div className="min-w-0">
+                  <div className="text-[9px] font-black text-red-700">
+                    5
+                  </div>
+
+                  <div className="text-[11px] font-black text-slate-900 leading-tight">
                     Repayment – Dispute
                   </div>
-                  <div className="text-[10px] text-slate-500">
+
+                  <div className="text-[9px] text-slate-500 leading-none mt-0.5">
                     {dashboard.workflow.dispute.count} Case
                     {dashboard.workflow.dispute.count === 1 ? '' : 's'}
                   </div>
@@ -926,15 +937,20 @@ export function CollectionsDashboard({
               </div>
             </div>
 
-            <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
+            <div className="rounded-lg border border-slate-200 bg-slate-50 px-2 py-1.5">
               <div className="flex items-center gap-1.5">
-                <Ban className="w-6 h-6 text-slate-500" />
-                <div>
-                  <div className="text-[10px] font-black text-slate-500">6</div>
-                  <div className="text-xs font-black text-slate-900">
+                <Ban className="w-5 h-5 text-slate-700 shrink-0" />
+
+                <div className="min-w-0">
+                  <div className="text-[9px] font-black text-slate-500">
+                    6
+                  </div>
+
+                  <div className="text-[11px] font-black text-slate-900 leading-tight">
                     Not Interested
                   </div>
-                  <div className="text-[10px] text-slate-500">
+
+                  <div className="text-[9px] text-slate-500 leading-none mt-0.5">
                     {dashboard.workflow.notInterested.count} Donations
                   </div>
                 </div>
