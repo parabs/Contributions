@@ -632,109 +632,118 @@ export function CollectionsDashboard({
                 onChange={setSelectedPaymentMode}
               />
 
-              <div className="relative">
+              <div className="flex items-center gap-1.5">
+
+                {/* Back */}
                 <button
                   type="button"
-                  onClick={() => setShowUserMenu(prev => !prev)}
-                  className="px-3 rounded-lg bg-white/10 hover:bg-white/15 border border-white/10 text-white text-[10px] font-bold inline-flex items-center gap-2"
+                  onClick={() => onBackToPortal?.()}
+                  title="Back to Volunteer Portal"
+                  className="w-7 h-7 rounded-md bg-white/10 hover:bg-white/20 border border-white/10 text-white inline-flex items-center justify-center transition"
                 >
-                  <UserCircle className="w-4 h-4 text-amber-300" />
+                  <ChevronLeft className="w-4 h-4" />
+                </button>
 
-                  <span className="max-w-[110px] truncate">
-                    {(() => {
-                      try {
-                        const saved = sessionStorage.getItem('sjst_active_volunteer');
-                        const parsed = saved ? JSON.parse(saved) : null;
-                        return parsed?.volunteerName || 'Volunteer';
-                      } catch {
-                        return 'Volunteer';
-                      }
-                    })()}
-                  </span>
-
-                  <ChevronDown
-                    className={`w-3 h-3 transition-transform ${
-                      showUserMenu ? 'rotate-180' : ''
+                {/* Refresh */}
+                <button
+                  type="button"
+                  onClick={refreshCalculation}
+                  title="Refresh Dashboard"
+                  className="w-7 h-7 rounded-md bg-white/10 hover:bg-white/20 border border-white/10 text-white inline-flex items-center justify-center transition"
+                >
+                  <RefreshCw
+                    className={`w-3.5 h-3.5 ${
+                      refreshing ? 'animate-spin' : ''
                     }`}
                   />
                 </button>
 
-                {showUserMenu && (
-                  <div className="absolute right-0 top-full mt-2 z-50 w-56 rounded-xl bg-white border border-slate-200 shadow-xl overflow-hidden text-slate-800">
+                {/* Export */}
+                <button
+                  type="button"
+                  onClick={exportReport}
+                  title="Export Report"
+                  className="w-7 h-7 rounded-md bg-white/10 hover:bg-white/20 border border-white/10 text-white inline-flex items-center justify-center transition"
+                >
+                  <Download className="w-3.5 h-3.5" />
+                </button>
 
-                    <div className="px-4 py-3 border-b border-slate-100">
-                      <div className="text-[9px] uppercase tracking-wide text-slate-400 font-bold">
-                        Logged in as
+                {/* User */}
+                <div className="relative">
+                  <button
+                    type="button"
+                    onClick={() => setShowUserMenu(prev => !prev)}
+                    title="User Profile"
+                    className="h-7 px-2 rounded-md bg-white/10 hover:bg-white/15 border border-white/10 text-white text-[9px] font-bold inline-flex items-center gap-1.5"
+                  >
+                    <UserCircle className="w-4 h-4 text-amber-300" />
+
+                    <span className="max-w-[90px] truncate">
+                      {(() => {
+                        try {
+                          const saved = sessionStorage.getItem(
+                            'sjst_active_volunteer'
+                          );
+                          const parsed = saved ? JSON.parse(saved) : null;
+                          return parsed?.volunteerName || 'Volunteer';
+                        } catch {
+                          return 'Volunteer';
+                        }
+                      })()}
+                    </span>
+
+                    <ChevronDown
+                      className={`w-3 h-3 transition-transform ${
+                        showUserMenu ? 'rotate-180' : ''
+                      }`}
+                    />
+                  </button>
+
+                  {showUserMenu && (
+                    <div className="absolute right-0 top-full mt-1.5 z-50 w-48 rounded-lg bg-white border border-slate-200 shadow-xl overflow-hidden text-slate-800">
+
+                      <div className="px-3 py-2 border-b border-slate-100">
+                        <div className="text-[8px] uppercase tracking-wide text-slate-400 font-bold">
+                          Logged in as
+                        </div>
+
+                        <div className="mt-0.5 text-xs font-black text-slate-900">
+                          {(() => {
+                            try {
+                              const saved = sessionStorage.getItem(
+                                'sjst_active_volunteer'
+                              );
+                              const parsed = saved ? JSON.parse(saved) : null;
+                              return parsed?.volunteerName || 'Volunteer';
+                            } catch {
+                              return 'Volunteer';
+                            }
+                          })()}
+                        </div>
+
+                        <div className="text-[9px] text-slate-500">
+                          {(() => {
+                            try {
+                              const saved = sessionStorage.getItem(
+                                'sjst_active_volunteer'
+                              );
+                              const parsed = saved ? JSON.parse(saved) : null;
+                              return (
+                                parsed?.role ||
+                                parsed?.roles ||
+                                'Volunteer'
+                              );
+                            } catch {
+                              return 'Volunteer';
+                            }
+                          })()}
+                        </div>
                       </div>
 
-                      <div className="mt-1 text-sm font-black text-slate-900">
-                        {(() => {
-                          try {
-                            const saved = sessionStorage.getItem('sjst_active_volunteer');
-                            const parsed = saved ? JSON.parse(saved) : null;
-                            return parsed?.volunteerName || 'Volunteer';
-                          } catch {
-                            return 'Volunteer';
-                          }
-                        })()}
-                      </div>
-
-                      <div className="mt-0.5 text-[10px] text-slate-500">
-                        {(() => {
-                          try {
-                            const saved = sessionStorage.getItem('sjst_active_volunteer');
-                            const parsed = saved ? JSON.parse(saved) : null;
-                            return parsed?.role || parsed?.roles || 'Volunteer';
-                          } catch {
-                            return 'Volunteer';
-                          }
-                        })()}
-                      </div>
                     </div>
+                  )}
+                </div>
 
-                    <div className="p-2">
-
-                      <button
-                        type="button"
-                        onClick={async () => {
-                          setShowUserMenu(false);
-                          await refreshCalculation();
-                        }}
-                        className="w-full px-3 py-2 rounded-lg hover:bg-slate-50 text-left text-xs font-bold flex items-center gap-2"
-                      >
-                        <RefreshCw className="w-4 h-4 text-slate-500" />
-                        Refresh Dashboard
-                      </button>
-
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setShowUserMenu(false);
-                          exportReport();
-                        }}
-                        className="w-full px-3 py-2 rounded-lg hover:bg-slate-50 text-left text-xs font-bold flex items-center gap-2"
-                      >
-                        <Download className="w-4 h-4 text-slate-500" />
-                        Export Report
-                      </button>
-
-                      <div className="my-1 border-t border-slate-100" />
-
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setShowUserMenu(false);
-                          onBackToPortal?.();
-                        }}
-                        className="w-full px-3 py-2 rounded-lg hover:bg-slate-50 text-left text-xs font-bold flex items-center gap-2"
-                      >
-                        <ChevronLeft className="w-4 h-4 text-slate-500" />
-                        Back to Portal
-                      </button>
-
-                    </div>
-                  </div>
-                )}
               </div>
               
             </div>
@@ -869,15 +878,15 @@ export function CollectionsDashboard({
               }`}
             >
               <div className="flex items-center gap-1.5">
+                <div className="w-6 h-6 rounded-full bg-white/80 flex items-center justify-center shrink-0 text-[10px] font-black text-slate-700">
+                  {stage.number}
+                </div>
+
                 <div className="w-7 h-7 rounded-full bg-white flex items-center justify-center shrink-0">
                   {stage.icon}
                 </div>
 
                 <div className="min-w-0">
-                  <div className="text-[9px] font-black uppercase tracking-wide opacity-70">
-                    {stage.number}
-                  </div>
-
                   <div className="text-[11px] font-black text-slate-900 leading-tight">
                     {stage.title}
                   </div>
@@ -886,12 +895,12 @@ export function CollectionsDashboard({
 
               <div className="mt-1.5 flex items-end justify-between">
                 <div>
-                  <div className="text-[9px] text-slate-500 leading-none">
-                    {stage.count} Donations
+                  <div className="text-[17px] leading-none font-black font-mono">
+                    {money(stage.amount)}
                   </div>
 
-                  <div className="text-[17px] leading-none font-black font-mono mt-0.5">
-                    {money(stage.amount)}
+                  <div className="text-[9px] text-slate-500 leading-none mt-0.5">
+                    {stage.count} Donations
                   </div>
                 </div>
 
