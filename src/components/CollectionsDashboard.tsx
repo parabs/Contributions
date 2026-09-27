@@ -1126,6 +1126,7 @@ export function CollectionsDashboard({
           number="4"
           title="Collection Overview"
           subtitle="Collection performance over different periods and recent trends."
+          showVisibility={false}
         />
 
        <div className="grid grid-cols-1 lg:grid-cols-[1.05fr_1.5fr_1.05fr] gap-1.5 items-start">
@@ -1162,7 +1163,7 @@ export function CollectionsDashboard({
             ))}
           </div>
 
-          <div className="rounded-xl border border-slate-200 bg-white p-2.5 h-[120px]">
+          <div className="rounded-xl border border-slate-200 bg-white p-2.5 h-[126px]">
 
             {/* Chart Header */}
             <div className="flex items-center justify-between mb-1">
@@ -1301,50 +1302,59 @@ export function CollectionsDashboard({
             <div className="grid grid-cols-2 gap-1.5">
 
               {/* Cash */}
-              <div className="rounded-lg border border-emerald-100 bg-emerald-50 px-2 py-1.5">
-                <div className="flex items-center gap-1.5">
-                  <Banknote className="w-4 h-4 text-emerald-700 shrink-0" />
+              <div className="flex items-start gap-2">
 
-                  <span className="text-[9px] font-black leading-tight text-emerald-800">
+                <div className="w-9 h-9 rounded-lg bg-white/80 flex items-center justify-center shrink-0">
+                  <Banknote className="w-5 h-5 text-emerald-700" />
+                </div>
+
+                <div className="min-w-0">
+                  <div className="text-[9px] font-black leading-tight">
                     Cash at Counter
-                  </span>
+                  </div>
+
+                  <div className="text-[17px] font-black font-mono leading-none mt-1">
+                    {money(dashboard.payment.cash.amount)}
+                  </div>
+
+                  <div className="text-[8px] text-emerald-700 font-semibold leading-tight mt-1">
+                    {dashboard.payment.cash.count} Contributions
+                  </div>
+
+                  <div className="text-[9px] text-emerald-700 font-black leading-tight mt-0.5">
+                    {percent(dashboard.payment.cash.share)}
+                  </div>
                 </div>
 
-                <div className="text-[17px] font-black font-mono leading-none mt-1">
-                  {money(dashboard.payment.cash.amount)}
-                </div>
-
-                <div className="text-[8px] text-emerald-700 font-semibold leading-tight mt-1">
-                  {dashboard.payment.cash.count} Contributions
-                </div>
-
-                <div className="text-[9px] text-emerald-700 font-black leading-tight mt-0.5">
-                  {percent(dashboard.payment.cash.share)}
-                </div>
               </div>
 
               {/* Digital UPI */}
               <div className="rounded-lg border border-blue-100 bg-blue-50 px-2 py-1.5">
-                <div className="flex items-center gap-1.5">
-                  <QrCode className="w-4 h-4 text-blue-700 shrink-0" />
+                <div className="flex items-start gap-2">
 
-                  <span className="text-[9px] font-black leading-tight text-blue-800">
-                    Digital UPI
-                  </span>
-                </div>
+                  <div className="w-9 h-9 rounded-lg bg-white/80 flex items-center justify-center shrink-0">
+                    <QrCode className="w-5 h-5 text-blue-700" />
+                  </div>
 
-                <div className="text-[17px] font-black font-mono leading-none mt-1">
-                  {money(dashboard.payment.upi.amount)}
-                </div>
+                  <div className="min-w-0">
+                    <div className="text-[9px] font-black leading-tight">
+                      Digital UPI
+                    </div>
 
-                <div className="text-[8px] text-blue-700 font-semibold leading-tight mt-1">
-                  {dashboard.payment.upi.count} Contributions
-                </div>
+                    <div className="text-[17px] font-black font-mono leading-none mt-1">
+                      {money(dashboard.payment.upi.amount)}
+                    </div>
 
-                <div className="text-[9px] text-blue-700 font-black leading-tight mt-0.5">
-                  {percent(dashboard.payment.upi.share)}
+                    <div className="text-[8px] text-blue-700 font-semibold leading-tight mt-1">
+                      {dashboard.payment.upi.count} Contributions
+                    </div>
+
+                    <div className="text-[9px] text-blue-700 font-black leading-tight mt-0.5">
+                      {percent(dashboard.payment.upi.share)}
+                    </div>
+                  </div>
+
                 </div>
-              </div>
 
             </div>
 
