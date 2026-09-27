@@ -1338,7 +1338,7 @@ export function CollectionsDashboard({
             <div className="grid grid-cols-2 gap-1.5">
 
               {/* Cash */}
-              <div className="flex items-start gap-1.5">
+              <div className="rounded-lg border border-emerald-100 bg-emerald-50 px-1.5 py-1 flex items-start gap-1.5">
 
                 <div className="w-8 h-8 rounded-lg bg-emerald-50 flex items-center justify-center shrink-0">
                   <Banknote className="w-4.5 h-4.5 text-emerald-700" />
