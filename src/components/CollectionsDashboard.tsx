@@ -1162,12 +1162,12 @@ export function CollectionsDashboard({
             ))}
           </div>
 
-          <div className="rounded-xl border border-slate-200 bg-white p-2.5 h-[142px]">
+          <div className="rounded-xl border border-slate-200 bg-white p-2.5 h-[132px]">
 
             {/* Chart Header */}
             <div className="flex items-center justify-between mb-1.5">
               <div>
-                <div className="text-sm font-black text-slate-900 leading-tight">
+                <div className="text-[12px] font-black text-slate-900 leading-tight">
                   Last 5 Available Collection Days
                 </div>
                 <div className="text-[9px] text-slate-500 leading-tight">
@@ -1179,7 +1179,7 @@ export function CollectionsDashboard({
             </div>
 
             {/* Chart Area */}
-            <div className="relative h-[98px]">
+            <div className="relative h-[90px]">
 
               {/* Y Axis Labels + Horizontal Grid */}
               <div className="absolute inset-0">
