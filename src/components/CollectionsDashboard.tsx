@@ -1443,16 +1443,17 @@ export function CollectionsDashboard({
         {/* =========================================================== */}
         {/* 5. SEVA-WISE COLLECTION                                    */}
         {/* =========================================================== */}
-        <section className="xl:col-span-4 xl:row-span-2 rounded-xl border border-red-100 bg-white p-2">
+        <section
+          className="xl:col-span-4 xl:col-start-1 xl:row-start-1 rounded-xl border border-red-100 bg-white p-2"
+        >
 
           <SectionHeader
             number="5"
             title="Seva-wise Collection"
-            subtitle="Category and detailed Seva collection."
+            subtitle="Collection by Seva category."
             restricted
           />
 
-          {/* Seva Summary Cards */}
           <div className="grid grid-cols-4 gap-1.5 mt-1">
 
             {categoryRows.slice(0, 4).map((row, index) => (
@@ -1480,68 +1481,69 @@ export function CollectionsDashboard({
 
           </div>
 
+        </section>
 
-          {/* Seva Collection Details */}
-          <div className="mt-2">
 
-            <div className="text-[10px] font-black mb-1">
-              Seva Collection Details
+        {/* =========================================================== */}
+        {/* 6. GRIEVANCE MANAGEMENT                                    */}
+        {/* =========================================================== */}
+        <section
+          className="xl:col-span-4 xl:col-start-1 xl:row-start-2 rounded-xl border border-red-100 bg-white p-2"
+        >
+
+          <SectionHeader
+            number="6"
+            title="Grievance Management"
+            subtitle="Grievance KPIs are reserved for the future resolution workflow."
+            restricted
+          />
+
+          <div className="grid grid-cols-3 gap-1.5 mt-1">
+
+            {/* Total Raised */}
+            <div className="rounded-lg bg-red-50 border border-red-100 p-2 text-center">
+
+              <ShieldAlert className="w-5 h-5 mx-auto text-red-500" />
+
+              <div className="text-[9px] font-bold mt-0.5">
+                Total Raised
+              </div>
+
+              <div className="text-lg font-black leading-none mt-0.5">
+                {dashboard.grievance.total}
+              </div>
+
             </div>
 
-            <div className="overflow-x-auto rounded-lg border border-slate-200">
 
-              <table className="w-full text-[8px]">
+            {/* Resolved */}
+            <div className="rounded-lg bg-emerald-50 border border-emerald-100 p-2 text-center">
 
-                <thead className="bg-slate-100">
-                  <tr>
-                    <th className="p-1.5 text-left">Seva</th>
-                    <th className="p-1.5 text-left">Category</th>
-                    <th className="p-1.5 text-right">Contributions</th>
-                    <th className="p-1.5 text-right">Collection</th>
-                    <th className="p-1.5 text-right">Share</th>
-                  </tr>
-                </thead>
+              <CheckCircle2 className="w-5 h-5 mx-auto text-emerald-700" />
 
-                <tbody>
+              <div className="text-[9px] font-bold mt-0.5">
+                Resolved
+              </div>
 
-                  {sevaRows.map(row => (
+              <div className="text-lg font-black leading-none mt-0.5">
+                {dashboard.grievance.resolved}
+              </div>
 
-                    <tr
-                      key={`${row.category}-${row.seva}`}
-                      className="border-t border-slate-100"
-                    >
+            </div>
 
-                      <td className="p-1.5 font-semibold whitespace-nowrap">
-                        {row.seva}
-                      </td>
 
-                      <td className="p-1.5 text-slate-500 whitespace-nowrap">
-                        {row.category}
-                      </td>
+            {/* Pending */}
+            <div className="rounded-lg bg-orange-50 border border-orange-100 p-2 text-center">
 
-                      <td className="p-1.5 text-right">
-                        {row.count}
-                      </td>
+              <Clock3 className="w-5 h-5 mx-auto text-orange-700" />
 
-                      <td className="p-1.5 text-right font-mono font-bold">
-                        {money(row.amount)}
-                      </td>
+              <div className="text-[9px] font-bold mt-0.5">
+                Pending
+              </div>
 
-                      <td className="p-1.5 text-right">
-                        {dashboard.paidAmount
-                          ? `${Math.round(
-                              (row.amount / dashboard.paidAmount) * 100
-                            )}%`
-                          : '0%'}
-                      </td>
-
-                    </tr>
-
-                  ))}
-
-                </tbody>
-
-              </table>
+              <div className="text-lg font-black leading-none mt-0.5">
+                {dashboard.grievance.pending}
+              </div>
 
             </div>
 
@@ -1551,13 +1553,14 @@ export function CollectionsDashboard({
 
 
         {/* =========================================================== */}
-        {/* 6. VOLUNTEER-WISE COLLECTION                               */}
+        {/* 7. VOLUNTEER-WISE COLLECTION                               */}
         {/* =========================================================== */}
-        
-        <section className="xl:col-span-4 xl:col-start-5 xl:row-start-1 rounded-xl border border-red-100 bg-white p-2">
+        <section
+          className="xl:col-span-4 xl:col-start-5 xl:row-start-1 xl:row-span-2 rounded-xl border border-red-100 bg-white p-2"
+        >
 
           <SectionHeader
-            number="6"
+            number="7"
             title="Volunteer-wise Collection"
             subtitle="Volunteer collection and operational view."
             restricted
@@ -1657,7 +1660,6 @@ export function CollectionsDashboard({
 
           </div>
 
-
           <button
             type="button"
             onClick={onOpenVolunteerManagement}
@@ -1671,75 +1673,11 @@ export function CollectionsDashboard({
 
 
         {/* =========================================================== */}
-        {/* 7. GRIEVANCE MANAGEMENT                                    */}
-        {/* =========================================================== */}
-        
-        <section className="xl:col-span-4 xl:col-start-5 xl:row-start-2 rounded-xl border border-red-100 bg-white p-2">
-          <SectionHeader
-            number="7"
-            title="Grievance Management"
-            subtitle="Grievance KPIs are reserved for the future resolution workflow."
-            restricted
-          />
-
-          <div className="grid grid-cols-3 gap-1.5 mt-1">
-
-            {/* Total Raised */}
-            <div className="rounded-lg bg-red-50 border border-red-100 p-2 text-center">
-
-              <ShieldAlert className="w-5 h-5 mx-auto text-red-500" />
-
-              <div className="text-[9px] font-bold mt-0.5">
-                Total Raised
-              </div>
-
-              <div className="text-lg font-black leading-none mt-0.5">
-                {dashboard.grievance.total}
-              </div>
-
-            </div>
-
-
-            {/* Resolved */}
-            <div className="rounded-lg bg-emerald-50 border border-emerald-100 p-2 text-center">
-
-              <CheckCircle2 className="w-5 h-5 mx-auto text-emerald-700" />
-
-              <div className="text-[9px] font-bold mt-0.5">
-                Resolved
-              </div>
-
-              <div className="text-lg font-black leading-none mt-0.5">
-                {dashboard.grievance.resolved}
-              </div>
-
-            </div>
-
-
-            {/* Pending */}
-            <div className="rounded-lg bg-orange-50 border border-orange-100 p-2 text-center">
-
-              <Clock3 className="w-5 h-5 mx-auto text-orange-700" />
-
-              <div className="text-[9px] font-bold mt-0.5">
-                Pending
-              </div>
-
-              <div className="text-lg font-black leading-none mt-0.5">
-                {dashboard.grievance.pending}
-              </div>
-
-            </div>
-
-          </div>
-
-        </section>
-
-
-        {/* =========================================================== */}
         {/* 8. RECENT COLLECTION ACTIVITY                              */}
         {/* =========================================================== */}
-        <section className="xl:col-span-4 xl:col-start-9 xl:row-start-1 xl:row-span-2 rounded-xl border border-red-100 bg-white p-2">
+        <section
+          className="xl:col-span-4 xl:col-start-9 xl:row-start-1 xl:row-span-2 rounded-xl border border-red-100 bg-white p-2"
+        >
 
           <SectionHeader
             number="8"
@@ -1871,7 +1809,6 @@ export function CollectionsDashboard({
                           '—'}
                       </td>
 
-                      {/* Receipt functionality retained */}
                       <td className="p-1.5 text-center">
 
                         {row.paymentStatus === 'Paid' &&
@@ -1902,7 +1839,6 @@ export function CollectionsDashboard({
 
                 })}
 
-
                 {recentActivity.length === 0 && (
 
                   <tr>
@@ -1924,7 +1860,6 @@ export function CollectionsDashboard({
 
           </div>
 
-
           <div className="mt-1 flex items-center justify-between text-[8px] text-slate-400">
 
             <span>
@@ -1936,7 +1871,6 @@ export function CollectionsDashboard({
               <span className="inline-flex items-center gap-1">
 
                 <RefreshCw className="w-3 h-3 animate-spin" />
-
                 Loading dashboard calculation…
 
               </span>
