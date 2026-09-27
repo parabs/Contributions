@@ -1165,7 +1165,7 @@ export function CollectionsDashboard({
           <div className="rounded-xl border border-slate-200 bg-white p-2.5 h-[120px]">
 
             {/* Chart Header */}
-            <div className="flex items-center justify-between mb-1.5">
+            <div className="flex items-center justify-between mb-1">
               <div>
                 <div className="text-[12px] font-black text-slate-900 leading-tight">
                   Last 5 Available Collection Days
