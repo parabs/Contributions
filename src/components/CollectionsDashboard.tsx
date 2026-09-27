@@ -1355,7 +1355,7 @@ export function CollectionsDashboard({
                   </div>
 
                 </div>
-
+              </div>
             </div>
 
             {/* Payment Mode Split */}
