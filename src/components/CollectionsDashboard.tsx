@@ -1303,7 +1303,7 @@ export function CollectionsDashboard({
             </div>
 
           </div>
-
+        </div>
       </section>
 
       {/* ------------------------------------------------------------- */}
