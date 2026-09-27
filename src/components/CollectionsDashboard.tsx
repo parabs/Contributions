@@ -1162,7 +1162,7 @@ export function CollectionsDashboard({
             ))}
           </div>
 
-          <div className="rounded-xl border border-slate-200 bg-white p-2.5 h-[132px]">
+          <div className="rounded-xl border border-slate-200 bg-white p-2.5 h-[120px]">
 
             {/* Chart Header */}
             <div className="flex items-center justify-between mb-1.5">
@@ -1179,7 +1179,7 @@ export function CollectionsDashboard({
             </div>
 
             {/* Chart Area */}
-            <div className="relative h-[90px]">
+            <div className="relative h-[82px]">
 
               {/* Y Axis Labels + Horizontal Grid */}
               <div className="absolute inset-0">
