@@ -1435,12 +1435,16 @@ export function CollectionsDashboard({
       </section>
 
       {/* ------------------------------------------------------------- */}
-      {/* 5 + 6 + 7 + 8                                                  */}
+      {/* 5 + 6 + 7 + 8                                                 */}
       {/* ------------------------------------------------------------- */}
-      <div className="grid grid-cols-1 xl:grid-cols-12 gap-2">
 
-        {/* 5. Seva */}
-        <section className="xl:col-span-4 rounded-xl border border-red-100 bg-white p-3">
+      <div className="grid grid-cols-1 xl:grid-cols-12 gap-2 items-start">
+
+        {/* =========================================================== */}
+        {/* 5. SEVA-WISE COLLECTION                                    */}
+        {/* =========================================================== */}
+        <section className="xl:col-span-4 xl:row-span-2 rounded-xl border border-red-100 bg-white p-2">
+
           <SectionHeader
             number="5"
             title="Seva-wise Collection"
@@ -1448,60 +1452,109 @@ export function CollectionsDashboard({
             restricted
           />
 
-          <div className="grid grid-cols-4 gap-1.5 items-start">
+          {/* Seva Summary Cards */}
+          <div className="grid grid-cols-4 gap-1.5 mt-1">
+
             {categoryRows.slice(0, 4).map((row, index) => (
+
               <div
                 key={row.category}
-                className="rounded-xl border border-slate-100 bg-slate-50 p-3"
+                className="rounded-lg border border-slate-100 bg-slate-50 px-1.5 py-1.5"
               >
-                <div className="text-[10px] font-black text-amber-700">
+
+                <div className="text-[9px] font-black text-amber-700 leading-tight">
                   {index + 1}. {row.category}
                 </div>
-                <div className="text-lg font-black font-mono mt-1">
+
+                <div className="text-[15px] font-black font-mono leading-none mt-1">
                   {money(row.amount)}
                 </div>
-                <div className="text-[9px] text-slate-500">
+
+                <div className="text-[8px] text-slate-500 leading-tight mt-1 whitespace-nowrap">
                   {row.count} Contributions • {Math.round(row.share * 100)}%
                 </div>
+
               </div>
+
             ))}
+
           </div>
 
-          <div className="mt-3">
-            <div className="text-xs font-black mb-2">Seva Collection Details</div>
+
+          {/* Seva Collection Details */}
+          <div className="mt-2">
+
+            <div className="text-[10px] font-black mb-1">
+              Seva Collection Details
+            </div>
+
             <div className="overflow-x-auto rounded-lg border border-slate-200">
-              <table className="w-full text-[9px]">
+
+              <table className="w-full text-[8px]">
+
                 <thead className="bg-slate-100">
                   <tr>
-                    <th className="p-2 text-left">Seva</th>
-                    <th className="p-2 text-left">Category</th>
-                    <th className="p-2 text-right">Contributions</th>
-                    <th className="p-2 text-right">Collection</th>
-                    <th className="p-2 text-right">Share</th>
+                    <th className="p-1.5 text-left">Seva</th>
+                    <th className="p-1.5 text-left">Category</th>
+                    <th className="p-1.5 text-right">Contributions</th>
+                    <th className="p-1.5 text-right">Collection</th>
+                    <th className="p-1.5 text-right">Share</th>
                   </tr>
                 </thead>
+
                 <tbody>
+
                   {sevaRows.map(row => (
-                    <tr key={`${row.category}-${row.seva}`} className="border-t border-slate-100">
-                      <td className="p-2 font-semibold">{row.seva}</td>
-                      <td className="p-2 text-slate-500">{row.category}</td>
-                      <td className="p-2 text-right">{row.count}</td>
-                      <td className="p-2 text-right font-mono font-bold">{money(row.amount)}</td>
-                      <td className="p-2 text-right">
+
+                    <tr
+                      key={`${row.category}-${row.seva}`}
+                      className="border-t border-slate-100"
+                    >
+
+                      <td className="p-1.5 font-semibold whitespace-nowrap">
+                        {row.seva}
+                      </td>
+
+                      <td className="p-1.5 text-slate-500 whitespace-nowrap">
+                        {row.category}
+                      </td>
+
+                      <td className="p-1.5 text-right">
+                        {row.count}
+                      </td>
+
+                      <td className="p-1.5 text-right font-mono font-bold">
+                        {money(row.amount)}
+                      </td>
+
+                      <td className="p-1.5 text-right">
                         {dashboard.paidAmount
-                          ? `${Math.round((row.amount / dashboard.paidAmount) * 100)}%`
+                          ? `${Math.round(
+                              (row.amount / dashboard.paidAmount) * 100
+                            )}%`
                           : '0%'}
                       </td>
+
                     </tr>
+
                   ))}
+
                 </tbody>
+
               </table>
+
             </div>
+
           </div>
+
         </section>
 
-        {/* 6. Volunteer */}
-        <section className="xl:col-span-4 rounded-xl border border-red-100 bg-white p-3">
+
+        {/* =========================================================== */}
+        {/* 6. VOLUNTEER-WISE COLLECTION                               */}
+        {/* =========================================================== */}
+        <section className="xl:col-span-4 rounded-xl border border-red-100 bg-white p-2">
+
           <SectionHeader
             number="6"
             title="Volunteer-wise Collection"
@@ -1509,58 +1562,118 @@ export function CollectionsDashboard({
             restricted
           />
 
-          <div className="overflow-x-auto rounded-lg border border-slate-200">
-            <table className="w-full text-[9px]">
+          <div className="overflow-x-auto rounded-lg border border-slate-200 mt-1">
+
+            <table className="w-full text-[8px]">
+
               <thead className="bg-slate-100">
+
                 <tr>
-                  <th className="p-2 text-left">Volunteer</th>
-                  <th className="p-2 text-left">Role</th>
-                  <th className="p-2 text-right">Amount Collected</th>
-                  <th className="p-2 text-right">Verified Seva</th>
-                  <th className="p-2 text-right">This Month</th>
-                  <th className="p-2 text-right">Grievances</th>
+
+                  <th className="p-1.5 text-left">
+                    Volunteer
+                  </th>
+
+                  <th className="p-1.5 text-left">
+                    Role
+                  </th>
+
+                  <th className="p-1.5 text-right">
+                    Collection
+                  </th>
+
+                  <th className="p-1.5 text-right">
+                    Verified Seva
+                  </th>
+
+                  <th className="p-1.5 text-right">
+                    This Month
+                  </th>
+
+                  <th className="p-1.5 text-right">
+                    Grievances
+                  </th>
+
                 </tr>
+
               </thead>
 
               <tbody>
+
                 {volunteerRows.map(row => (
-                  <tr key={row.id} className="border-t border-slate-100">
-                    <td className="p-2 font-bold">{row.name}</td>
-                    <td className="p-2 text-slate-500">{row.role}</td>
-                    <td className="p-2 text-right font-mono font-bold">
+
+                  <tr
+                    key={row.id}
+                    className="border-t border-slate-100"
+                  >
+
+                    <td className="p-1.5 font-bold whitespace-nowrap">
+                      {row.name}
+                    </td>
+
+                    <td className="p-1.5 text-slate-500 whitespace-nowrap">
+                      {row.role}
+                    </td>
+
+                    <td className="p-1.5 text-right font-mono font-bold">
                       {money(row.amount)}
                     </td>
-                    <td className="p-2 text-right">{row.verifiedSeva}</td>
-                    <td className="p-2 text-right font-mono font-bold text-blue-700">
+
+                    <td className="p-1.5 text-right">
+                      {row.verifiedSeva}
+                    </td>
+
+                    <td className="p-1.5 text-right font-mono font-bold text-blue-700">
                       {money(row.thisMonth)}
                     </td>
-                    <td className="p-2 text-right">{row.grievances}</td>
+
+                    <td className="p-1.5 text-right">
+                      {row.grievances}
+                    </td>
+
                   </tr>
+
                 ))}
 
                 {volunteerRows.length === 0 && (
+
                   <tr>
-                    <td colSpan={6} className="p-4 text-center text-slate-400">
+
+                    <td
+                      colSpan={6}
+                      className="p-3 text-center text-slate-400"
+                    >
                       No active volunteers available.
                     </td>
+
                   </tr>
+
                 )}
+
               </tbody>
+
             </table>
+
           </div>
+
 
           <button
             type="button"
             onClick={onOpenVolunteerManagement}
-            className="mt-2 text-[10px] font-bold text-amber-800 hover:underline inline-flex items-center gap-1"
+            className="mt-1 text-[9px] font-bold text-amber-800 hover:underline inline-flex items-center gap-1"
           >
             <Users className="w-3 h-3" />
             Manage Volunteers
           </button>
+
         </section>
 
-        {/* 7. Grievance */}
-        <section className="xl:col-span-4 rounded-xl border border-red-100 bg-white p-3">
+
+        {/* =========================================================== */}
+        {/* 7. GRIEVANCE MANAGEMENT                                    */}
+        {/* =========================================================== */}
+        <section className="xl:col-span-4 rounded-xl border border-red-100 bg-white p-2">
+
           <SectionHeader
             number="7"
             title="Grievance Management"
@@ -1568,150 +1681,273 @@ export function CollectionsDashboard({
             restricted
           />
 
-          <div className="grid grid-cols-3 gap-2">
-            <div className="rounded-xl bg-red-50 border border-red-100 p-3 text-center">
-              <ShieldAlert className="w-6 h-6 mx-auto text-red-500" />
-              <div className="text-[10px] font-bold mt-1">Total Raised</div>
-              <div className="text-xl font-black mt-1">
+          <div className="grid grid-cols-3 gap-1.5 mt-1">
+
+            {/* Total Raised */}
+            <div className="rounded-lg bg-red-50 border border-red-100 p-2 text-center">
+
+              <ShieldAlert className="w-5 h-5 mx-auto text-red-500" />
+
+              <div className="text-[9px] font-bold mt-0.5">
+                Total Raised
+              </div>
+
+              <div className="text-lg font-black leading-none mt-0.5">
                 {dashboard.grievance.total}
               </div>
+
             </div>
 
-            <div className="rounded-xl bg-emerald-50 border border-emerald-100 p-3 text-center">
-              <CheckCircle2 className="w-6 h-6 mx-auto text-emerald-700" />
-              <div className="text-[10px] font-bold mt-1">Resolved</div>
-              <div className="text-xl font-black mt-1">
+
+            {/* Resolved */}
+            <div className="rounded-lg bg-emerald-50 border border-emerald-100 p-2 text-center">
+
+              <CheckCircle2 className="w-5 h-5 mx-auto text-emerald-700" />
+
+              <div className="text-[9px] font-bold mt-0.5">
+                Resolved
+              </div>
+
+              <div className="text-lg font-black leading-none mt-0.5">
                 {dashboard.grievance.resolved}
               </div>
+
             </div>
 
-            <div className="rounded-xl bg-orange-50 border border-orange-100 p-3 text-center">
-              <Clock3 className="w-6 h-6 mx-auto text-orange-700" />
-              <div className="text-[10px] font-bold mt-1">Pending</div>
-              <div className="text-xl font-black mt-1">
+
+            {/* Pending */}
+            <div className="rounded-lg bg-orange-50 border border-orange-100 p-2 text-center">
+
+              <Clock3 className="w-5 h-5 mx-auto text-orange-700" />
+
+              <div className="text-[9px] font-bold mt-0.5">
+                Pending
+              </div>
+
+              <div className="text-lg font-black leading-none mt-0.5">
                 {dashboard.grievance.pending}
               </div>
+
             </div>
+
           </div>
 
-          <div className="mt-3 rounded-lg border border-dashed border-slate-200 bg-slate-50 p-3 text-[10px] text-slate-500">
-            Grievance resolution workflow is currently a placeholder. No resolution status is inferred from the existing donation workflow.
-          </div>
         </section>
-      </div>
 
-      {/* ------------------------------------------------------------- */}
-      {/* 8. RECENT COLLECTION ACTIVITY                                  */}
-      {/* ------------------------------------------------------------- */}
-      <section className="rounded-xl border border-red-100 bg-white p-3">
-        <SectionHeader
-          number="8"
-          title="Recent Collection Activity"
-          subtitle="Latest donation activity from the live Donations sheet."
-          restricted
-        />
 
-        <div className="overflow-x-auto rounded-lg border border-slate-200">
-          <table className="w-full text-[9px]">
-            <thead className="bg-slate-100">
-              <tr>
-                <th className="p-2 text-left">Donation ID</th>
-                <th className="p-2 text-left">Date</th>
-                <th className="p-2 text-left">Donor Name</th>
-                <th className="p-2 text-left">Seva</th>
-                <th className="p-2 text-right">Amount</th>
-                <th className="p-2 text-left">Mode</th>
-                <th className="p-2 text-left">Status</th>
-                <th className="p-2 text-left">Volunteer</th>
-                <th className="p-2 text-center">Receipt</th>
-              </tr>
-            </thead>
+        {/* =========================================================== */}
+        {/* 8. RECENT COLLECTION ACTIVITY                              */}
+        {/* =========================================================== */}
+        <section className="xl:col-span-4 xl:row-span-2 rounded-xl border border-red-100 bg-white p-2">
 
-            <tbody>
-              {recentActivity.map(row => {
-                const status = String(row.paymentStatus || '');
-                const statusClass =
-                  status === 'Paid'
-                    ? 'bg-emerald-100 text-emerald-700'
-                    : status === 'Confirmation Pending'
-                    ? 'bg-orange-100 text-orange-700'
-                    : status === 'Repayment - Dispute'
-                    ? 'bg-red-100 text-red-700'
-                    : status === 'Repayment'
-                    ? 'bg-violet-100 text-violet-700'
-                    : status === 'Not Interested'
-                    ? 'bg-slate-100 text-slate-600'
-                    : 'bg-blue-100 text-blue-700';
+          <SectionHeader
+            number="8"
+            title="Recent Collection Activity"
+            subtitle="Latest donation activity from the live Donations sheet."
+            restricted
+          />
 
-                return (
-                  <tr key={row.donationId} className="border-t border-slate-100 hover:bg-slate-50">
-                    <td className="p-2 font-mono font-bold whitespace-nowrap">
-                      {row.donationId}
-                    </td>
-                    <td className="p-2 whitespace-nowrap">
-                      {new Date(
-                        row.updatedAt || row.createdAt || row.submittedAt
-                      ).toLocaleDateString('en-IN', {
-                        day: '2-digit',
-                        month: 'short'
-                      })}
-                    </td>
-                    <td className="p-2 font-semibold">{row.donorName}</td>
-                    <td className="p-2">{row.sevaHead || (row as any).sevaCategory || '—'}</td>
-                    <td className="p-2 text-right font-mono font-bold">
-                      {money(row.amount)}
-                    </td>
-                    <td className="p-2">{row.paymentMode}</td>
-                    <td className="p-2">
-                      <span className={`px-2 py-0.5 rounded-full font-bold whitespace-nowrap ${statusClass}`}>
-                        {status}
-                      </span>
-                    </td>
-                    <td className="p-2 whitespace-nowrap">
-                      {row.volunteerName || row.confirmedBy || '—'}
-                    </td>
-                    <td className="p-2 text-center">
-                      {row.paymentStatus === 'Paid' && row.receiptUrl ? (
-                        <button
-                          type="button"
-                          onClick={() => onViewReceipt(row)}
-                          className="px-2 py-1 rounded-md bg-amber-700 hover:bg-amber-800 text-white font-bold inline-flex items-center gap-1"
-                        >
-                          <Receipt className="w-3 h-3" />
-                          View
-                        </button>
-                      ) : (
-                        <span className="text-slate-300">—</span>
-                      )}
-                    </td>
-                  </tr>
-                );
-              })}
+          <div className="overflow-x-auto rounded-lg border border-slate-200 mt-1">
 
-              {recentActivity.length === 0 && (
+            <table className="w-full text-[8px]">
+
+              <thead className="bg-slate-100">
+
                 <tr>
-                  <td colSpan={9} className="p-6 text-center text-slate-400">
-                    No recent collection activity available.
-                  </td>
+
+                  <th className="p-1.5 text-left">
+                    Donation ID
+                  </th>
+
+                  <th className="p-1.5 text-left">
+                    Date
+                  </th>
+
+                  <th className="p-1.5 text-left">
+                    Donor Name
+                  </th>
+
+                  <th className="p-1.5 text-left">
+                    Seva
+                  </th>
+
+                  <th className="p-1.5 text-right">
+                    Amount
+                  </th>
+
+                  <th className="p-1.5 text-left">
+                    Mode
+                  </th>
+
+                  <th className="p-1.5 text-left">
+                    Status
+                  </th>
+
+                  <th className="p-1.5 text-left">
+                    Volunteer
+                  </th>
+
+                  <th className="p-1.5 text-center">
+                    Receipt
+                  </th>
+
                 </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
 
-        <div className="mt-2 flex items-center justify-between text-[9px] text-slate-400">
-          <span>
-            Showing latest {recentActivity.length} non-cancelled records.
-          </span>
-          {loadingCalculation && (
-            <span className="inline-flex items-center gap-1">
-              <RefreshCw className="w-3 h-3 animate-spin" />
-              Loading dashboard calculation…
+              </thead>
+
+              <tbody>
+
+                {recentActivity.map(row => {
+
+                  const status = String(row.paymentStatus || '');
+
+                  const statusClass =
+                    status === 'Paid'
+                      ? 'bg-emerald-100 text-emerald-700'
+                      : status === 'Confirmation Pending'
+                      ? 'bg-orange-100 text-orange-700'
+                      : status === 'Repayment - Dispute'
+                      ? 'bg-red-100 text-red-700'
+                      : status === 'Repayment'
+                      ? 'bg-violet-100 text-violet-700'
+                      : status === 'Not Interested'
+                      ? 'bg-slate-100 text-slate-600'
+                      : 'bg-blue-100 text-blue-700';
+
+                  return (
+
+                    <tr
+                      key={row.donationId}
+                      className="border-t border-slate-100 hover:bg-slate-50"
+                    >
+
+                      <td className="p-1.5 font-mono font-bold whitespace-nowrap">
+                        {row.donationId}
+                      </td>
+
+                      <td className="p-1.5 whitespace-nowrap">
+                        {new Date(
+                          row.updatedAt ||
+                          row.createdAt ||
+                          row.submittedAt
+                        ).toLocaleDateString('en-IN', {
+                          day: '2-digit',
+                          month: 'short'
+                        })}
+                      </td>
+
+                      <td className="p-1.5 font-semibold whitespace-nowrap">
+                        {row.donorName}
+                      </td>
+
+                      <td className="p-1.5 whitespace-nowrap">
+                        {row.sevaHead ||
+                          (row as any).sevaCategory ||
+                          '—'}
+                      </td>
+
+                      <td className="p-1.5 text-right font-mono font-bold">
+                        {money(row.amount)}
+                      </td>
+
+                      <td className="p-1.5 whitespace-nowrap">
+                        {row.paymentMode}
+                      </td>
+
+                      <td className="p-1.5">
+
+                        <span
+                          className={`px-1.5 py-0.5 rounded-full font-bold whitespace-nowrap ${statusClass}`}
+                        >
+                          {status}
+                        </span>
+
+                      </td>
+
+                      <td className="p-1.5 whitespace-nowrap">
+                        {row.volunteerName ||
+                          row.confirmedBy ||
+                          '—'}
+                      </td>
+
+                      {/* Receipt functionality retained */}
+                      <td className="p-1.5 text-center">
+
+                        {row.paymentStatus === 'Paid' &&
+                        row.receiptUrl ? (
+
+                          <button
+                            type="button"
+                            onClick={() => onViewReceipt(row)}
+                            className="px-1.5 py-0.5 rounded-md bg-amber-700 hover:bg-amber-800 text-white font-bold inline-flex items-center gap-1"
+                          >
+                            <Receipt className="w-3 h-3" />
+                            View
+                          </button>
+
+                        ) : (
+
+                          <span className="text-slate-300">
+                            —
+                          </span>
+
+                        )}
+
+                      </td>
+
+                    </tr>
+
+                  );
+
+                })}
+
+
+                {recentActivity.length === 0 && (
+
+                  <tr>
+
+                    <td
+                      colSpan={9}
+                      className="p-4 text-center text-slate-400"
+                    >
+                      No recent collection activity available.
+                    </td>
+
+                  </tr>
+
+                )}
+
+              </tbody>
+
+            </table>
+
+          </div>
+
+
+          <div className="mt-1 flex items-center justify-between text-[8px] text-slate-400">
+
+            <span>
+              Showing latest {recentActivity.length} non-cancelled records.
             </span>
-          )}
-        </div>
-      </section>
 
+            {loadingCalculation && (
+
+              <span className="inline-flex items-center gap-1">
+
+                <RefreshCw className="w-3 h-3 animate-spin" />
+
+                Loading dashboard calculation…
+
+              </span>
+
+            )}
+
+          </div>
+
+        </section>
+
+      </div>
+      
       {/* Mobile role visibility note */}
       <div className="sm:hidden rounded-lg bg-emerald-50 border border-emerald-100 p-2 text-[9px] text-emerald-700 font-semibold">
         Dashboard visibility is currently common to authenticated roles. Actual role-based access control will be implemented separately.
