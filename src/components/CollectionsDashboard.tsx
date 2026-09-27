@@ -1162,52 +1162,121 @@ export function CollectionsDashboard({
             ))}
           </div>
 
-          <div className="rounded-lg border border-slate-200 bg-white px-2 py-1.5">
-            <div className="flex items-center justify-between mb-1">
+          <div className="rounded-xl border border-slate-200 bg-white p-2.5 h-full">
+
+            {/* Chart Header */}
+            <div className="flex items-center justify-between mb-1.5">
               <div>
-                <div className="text-sm font-black text-slate-900">
+                <div className="text-sm font-black text-slate-900 leading-tight">
                   Last 5 Available Collection Days
                 </div>
-                <div className="text-[10px] text-slate-500">
+                <div className="text-[9px] text-slate-500 leading-tight">
                   Based on Paid collection days
                 </div>
               </div>
-              <BarChart3 className="w-4 h-4 text-blue-700" />
+
+              <BarChart3 className="w-4 h-4 text-blue-600" />
             </div>
 
-            <div className="h-[95px] flex items-end gap-2 border-b border-slate-200 px-1">
-              {lastFiveDays.map(day => {
-                const height = Math.max(
-                  8,
-                  Math.round((day.amount / maxDayAmount) * 68)
-                );
+            {/* Chart Area */}
+            <div className="relative h-[145px]">
 
-                return (
-                  <div
-                    key={day.date}
-                    className="flex-1 h-full flex flex-col justify-end items-center gap-1"
-                  >
-                    <div className="text-[9px] font-black text-slate-700">
-                      {money(day.amount)}
-                    </div>
-                    <div
-                      className="w-full max-w-[46px] rounded-t-md bg-blue-500"
-                      style={{ height }}
-                      title={`${day.date}: ${money(day.amount)}`}
-                    />
-                    <div className="text-[9px] text-slate-500 truncate max-w-full">
-                      {day.date}
-                    </div>
-                  </div>
-                );
-              })}
+              {/* Y Axis Labels + Horizontal Grid */}
+              <div className="absolute inset-0">
 
-              {lastFiveDays.length === 0 && (
-                <div className="w-full h-full flex items-center justify-center text-xs text-slate-400">
-                  No collection-day data available.
+                {/* 20,000 */}
+                <div className="absolute top-0 left-0 right-0 flex items-center">
+                  <span className="w-10 text-[8px] text-slate-500 text-right pr-1">
+                    20,000
+                  </span>
+                  <div className="flex-1 border-t border-slate-200" />
                 </div>
-              )}
+
+                {/* 15,000 */}
+                <div className="absolute top-1/4 left-0 right-0 flex items-center">
+                  <span className="w-10 text-[8px] text-slate-500 text-right pr-1">
+                    15,000
+                  </span>
+                  <div className="flex-1 border-t border-slate-200" />
+                </div>
+
+                {/* 10,000 */}
+                <div className="absolute top-1/2 left-0 right-0 flex items-center">
+                  <span className="w-10 text-[8px] text-slate-500 text-right pr-1">
+                    10,000
+                  </span>
+                  <div className="flex-1 border-t border-slate-200" />
+                </div>
+
+                {/* 5,000 */}
+                <div className="absolute top-3/4 left-0 right-0 flex items-center">
+                  <span className="w-10 text-[8px] text-slate-500 text-right pr-1">
+                    5,000
+                  </span>
+                  <div className="flex-1 border-t border-slate-200" />
+                </div>
+
+                {/* 0 */}
+                <div className="absolute bottom-0 left-0 right-0 flex items-center">
+                  <span className="w-10 text-[8px] text-slate-500 text-right pr-1">
+                    0
+                  </span>
+                  <div className="flex-1 border-t border-slate-300" />
+                </div>
+
+              </div>
+
+              {/* Bars */}
+              <div className="absolute left-11 right-1 top-0 bottom-0 flex items-end gap-2">
+
+                {lastFiveDays.map(day => {
+
+                  const height = Math.max(
+                    8,
+                    Math.round(
+                      (day.amount / 20000) * 100
+                    )
+                  );
+
+                  return (
+                    <div
+                      key={day.date}
+                      className="flex-1 h-full flex flex-col justify-end items-center"
+                    >
+
+                      {/* Amount */}
+                      <div className="text-[8px] font-black text-slate-700 mb-0.5">
+                        {money(day.amount)}
+                      </div>
+
+                      {/* Bar */}
+                      <div
+                        className="w-full max-w-[42px] rounded-t-md bg-blue-500"
+                        style={{
+                          height: `${Math.min(100, height)}%`
+                        }}
+                        title={`${day.date}: ${money(day.amount)}`}
+                      />
+
+                      {/* Date */}
+                      <div className="text-[8px] text-slate-500 truncate max-w-full mt-0.5">
+                        {day.date}
+                      </div>
+
+                    </div>
+                  );
+                })}
+
+                {lastFiveDays.length === 0 && (
+                  <div className="w-full h-full flex items-center justify-center text-[10px] text-slate-400">
+                    No collection-day data available.
+                  </div>
+                )}
+
+              </div>
+
             </div>
+
           </div>
 
           {/* Payment Mode — restricted section within Collection Overview */}
