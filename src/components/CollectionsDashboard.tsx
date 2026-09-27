@@ -763,7 +763,7 @@ export function CollectionsDashboard({
 
         <div className="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-7 gap-2">
           <MetricCard
-            icon={<HandCoins className="w-5 h-5 text-emerald-700" />}
+            icon={<HandCoins className="w-5 h-5 text-emerald-600" />}
             title="Paid (Collection)"
             value={money(dashboard.paidAmount)}
             subtitle={`${dashboard.paidCount} Contributions`}
@@ -771,7 +771,7 @@ export function CollectionsDashboard({
           />
 
           <MetricCard
-            icon={<Clock3 className="w-5 h-5 text-orange-700" />}
+            icon={<Clock3 className="w-5 h-5 text-orange-600" />}
             title="Confirmation Required"
             value={money(dashboard.confirmationAmount)}
             subtitle={`${dashboard.confirmationCount} Donations`}
@@ -779,7 +779,7 @@ export function CollectionsDashboard({
           />
 
           <MetricCard
-            icon={<Repeat2 className="w-5 h-5 text-blue-700" />}
+            icon={<Repeat2 className="w-5 h-5 text-blue-600" />}
             title="Recollect"
             value={money(dashboard.recollectAmount)}
             subtitle={`${dashboard.recollectCount} Donations`}
@@ -787,7 +787,7 @@ export function CollectionsDashboard({
           />
 
           <MetricCard
-            icon={<WalletCards className="w-5 h-5 text-violet-700" />}
+            icon={<WalletCards className="w-5 h-5 text-violet-600" />}
             title="Repayment"
             value={money(dashboard.repaymentAmount)}
             subtitle={`${dashboard.repaymentCount} Donations`}
@@ -795,7 +795,7 @@ export function CollectionsDashboard({
           />
 
           <MetricCard
-            icon={<ShieldAlert className="w-5 h-5 text-red-700" />}
+            icon={<ShieldAlert className="w-5 h-5 text-red-600" />}
             title="Repayment – Dispute"
             value={`${dashboard.disputeCount} Case${dashboard.disputeCount === 1 ? '' : 's'}`}
             subtitle="Payment dispute"
@@ -1128,8 +1128,8 @@ export function CollectionsDashboard({
           subtitle="Collection performance over different periods and recent trends."
         />
 
-        <div className="grid grid-cols-1 lg:grid-cols-[1.05fr_1.5fr_1.05fr] gap-1.5">
-          <div className="grid grid-cols-4 gap-1.5">
+       <div className="grid grid-cols-1 lg:grid-cols-[1.05fr_1.5fr_1.05fr] gap-1.5 items-start">
+          <div className="grid grid-cols-4 gap-1.5 items-start">
             {[
               ['Till Date', dashboard.periods.tillDate, 'emerald'],
               ['This Year', dashboard.periods.thisYear, 'blue'],
@@ -1138,7 +1138,7 @@ export function CollectionsDashboard({
             ].map(([label, data, tone]) => (
               <div
                 key={String(label)}
-                className={`rounded-lg px-2 py-1.5 border ${
+                className={`self-start rounded-lg px-2 py-1.5 border ${
                   tone === 'emerald'
                     ? 'bg-emerald-50 border-emerald-100'
                     : tone === 'blue'
@@ -1175,11 +1175,11 @@ export function CollectionsDashboard({
               <BarChart3 className="w-4 h-4 text-blue-700" />
             </div>
 
-            <div className="h-[150px] flex items-end gap-2 border-b border-slate-200 px-1">
+            <div className="h-[95px] flex items-end gap-2 border-b border-slate-200 px-1">
               {lastFiveDays.map(day => {
                 const height = Math.max(
                   8,
-                  Math.round((day.amount / maxDayAmount) * 120)
+                  Math.round((day.amount / maxDayAmount) * 68)
                 );
 
                 return (
@@ -1212,60 +1212,98 @@ export function CollectionsDashboard({
 
           {/* Payment Mode — restricted section within Collection Overview */}
           <div className="rounded-lg border border-red-100 bg-white px-2 py-1.5">
-            <div className="flex items-center justify-between mb-2 gap-2">
+
+            {/* Header */}
+            <div className="flex items-center justify-between gap-2 mb-1.5">
               <div className="flex items-center gap-1.5">
-                <Lock className="w-4 h-4 text-red-700" />
-                <div>
-                  <div className="text-sm font-black text-slate-900">Payment Mode</div>
-                  <div className="text-[10px] text-slate-500">Cash vs Direct UPI</div>
+                <Lock className="w-3.5 h-3.5 text-red-700" />
+
+                <div className="text-[12px] font-black text-slate-900 leading-tight">
+                  Payment Mode
                 </div>
               </div>
 
-              <div className="rounded-full bg-red-50 border border-red-100 px-2 py-1 text-[9px] font-black text-red-700 whitespace-nowrap">
+              <div className="rounded-full bg-red-50 border border-red-100 px-2 py-0.5 text-[8px] font-black text-red-700 whitespace-nowrap">
                 Treasurer &amp; Trustees
               </div>
             </div>
 
-            <div className="grid grid-cols-4 gap-1.5">
-              <div className="rounded-lg border border-emerald-100 bg-emerald-50 p-2.5">
+            {/* Cash + Digital UPI */}
+            <div className="grid grid-cols-2 gap-1.5">
+
+              {/* Cash */}
+              <div className="rounded-lg border border-emerald-100 bg-emerald-50 px-2 py-1.5">
                 <div className="flex items-center gap-1.5">
-                  <Banknote className="w-5 h-5 text-emerald-700" />
-                  <span className="text-[10px] font-black">Cash at Counter</span>
+                  <Banknote className="w-4 h-4 text-emerald-700 shrink-0" />
+
+                  <span className="text-[9px] font-black leading-tight text-emerald-800">
+                    Cash at Counter
+                  </span>
                 </div>
-                <div className="text-lg font-black font-mono mt-1">
+
+                <div className="text-[17px] font-black font-mono leading-none mt-1">
                   {money(dashboard.payment.cash.amount)}
                 </div>
-                <div className="text-[9px] text-emerald-800 font-semibold">
-                  {dashboard.payment.cash.count} Contributions • {percent(dashboard.payment.cash.share)}
+
+                <div className="text-[8px] text-emerald-700 font-semibold leading-tight mt-1">
+                  {dashboard.payment.cash.count} Contributions
+                </div>
+
+                <div className="text-[9px] text-emerald-700 font-black leading-tight mt-0.5">
+                  {percent(dashboard.payment.cash.share)}
                 </div>
               </div>
 
-              <div className="rounded-lg border border-blue-100 bg-blue-50 p-2.5">
+              {/* Digital UPI */}
+              <div className="rounded-lg border border-blue-100 bg-blue-50 px-2 py-1.5">
                 <div className="flex items-center gap-1.5">
-                  <QrCode className="w-5 h-5 text-blue-700" />
-                  <span className="text-[10px] font-black">Direct UPI</span>
+                  <QrCode className="w-4 h-4 text-blue-700 shrink-0" />
+
+                  <span className="text-[9px] font-black leading-tight text-blue-800">
+                    Digital UPI
+                  </span>
                 </div>
-                <div className="text-lg font-black font-mono mt-1">
+
+                <div className="text-[17px] font-black font-mono leading-none mt-1">
                   {money(dashboard.payment.upi.amount)}
                 </div>
-                <div className="text-[9px] text-blue-800 font-semibold">
-                  {dashboard.payment.upi.count} Contributions • {percent(dashboard.payment.upi.share)}
+
+                <div className="text-[8px] text-blue-700 font-semibold leading-tight mt-1">
+                  {dashboard.payment.upi.count} Contributions
+                </div>
+
+                <div className="text-[9px] text-blue-700 font-black leading-tight mt-0.5">
+                  {percent(dashboard.payment.upi.share)}
                 </div>
               </div>
+
             </div>
 
-            <div className="mt-2 h-3 rounded-full overflow-hidden flex bg-slate-100">
+            {/* Payment Mode Split */}
+            <div className="mt-1.5 h-2.5 rounded-full overflow-hidden flex bg-slate-100">
               <div
                 className="bg-emerald-500 transition-all"
-                style={{ width: `${Math.max(0, Math.min(100, dashboard.payment.cash.share * 100))}%` }}
+                style={{
+                  width: `${Math.max(
+                    0,
+                    Math.min(100, dashboard.payment.cash.share * 100)
+                  )}%`
+                }}
               />
+
               <div
                 className="bg-blue-500 transition-all"
-                style={{ width: `${Math.max(0, Math.min(100, dashboard.payment.upi.share * 100))}%` }}
+                style={{
+                  width: `${Math.max(
+                    0,
+                    Math.min(100, dashboard.payment.upi.share * 100)
+                  )}%`
+                }}
               />
             </div>
+
           </div>
-        </div>
+
       </section>
 
       {/* ------------------------------------------------------------- */}
@@ -1282,7 +1320,7 @@ export function CollectionsDashboard({
             restricted
           />
 
-          <div className="grid grid-cols-4 gap-1.5">
+          <div className="grid grid-cols-4 gap-1.5 items-start">
             {categoryRows.slice(0, 4).map((row, index) => (
               <div
                 key={row.category}
