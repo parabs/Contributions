@@ -389,8 +389,7 @@ export function CollectionsDashboard({
   const activeVolunteerRows = useMemo(
     () =>
       volunteers
-        .filter(v => v.status === 'Active')
-        .filter(v => (v.role || '').toLowerCase().includes('volunteer'))
+        .filter(v => String(v.status || '').trim().toLowerCase() === 'active')
         .map(v => ({
           id: v.volunteerCode,
           name: v.volunteerName,
