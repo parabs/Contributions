@@ -1553,7 +1553,8 @@ export function CollectionsDashboard({
         {/* =========================================================== */}
         {/* 6. VOLUNTEER-WISE COLLECTION                               */}
         {/* =========================================================== */}
-        <section className="xl:col-span-4 rounded-xl border border-red-100 bg-white p-2">
+        
+        <section className="xl:col-span-4 xl:col-start-5 xl:row-start-1 rounded-xl border border-red-100 bg-white p-2">
 
           <SectionHeader
             number="6"
@@ -1672,8 +1673,8 @@ export function CollectionsDashboard({
         {/* =========================================================== */}
         {/* 7. GRIEVANCE MANAGEMENT                                    */}
         {/* =========================================================== */}
-        <section className="xl:col-span-4 rounded-xl border border-red-100 bg-white p-2">
-
+        
+        <section className="xl:col-span-4 xl:col-start-5 xl:row-start-2 rounded-xl border border-red-100 bg-white p-2">
           <SectionHeader
             number="7"
             title="Grievance Management"
@@ -1738,7 +1739,7 @@ export function CollectionsDashboard({
         {/* =========================================================== */}
         {/* 8. RECENT COLLECTION ACTIVITY                              */}
         {/* =========================================================== */}
-        <section className="xl:col-span-4 xl:row-span-2 rounded-xl border border-red-100 bg-white p-2">
+        <section className="xl:col-span-4 xl:col-start-9 xl:row-start-1 xl:row-span-2 rounded-xl border border-red-100 bg-white p-2">
 
           <SectionHeader
             number="8"
@@ -1947,7 +1948,7 @@ export function CollectionsDashboard({
         </section>
 
       </div>
-      
+
       {/* Mobile role visibility note */}
       <div className="sm:hidden rounded-lg bg-emerald-50 border border-emerald-100 p-2 text-[9px] text-emerald-700 font-semibold">
         Dashboard visibility is currently common to authenticated roles. Actual role-based access control will be implemented separately.
