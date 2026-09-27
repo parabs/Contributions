@@ -1122,72 +1122,101 @@ export function CollectionsDashboard({
       {/* 4. COLLECTION OVERVIEW                                         */}
       {/* ------------------------------------------------------------- */}
       <section className="rounded-xl border border-emerald-200 bg-white px-2 py-1.5">
-        <SectionHeader
-          number="4"
-          title="Collection Overview"
-          subtitle="Collection performance over different periods and recent trends."
-          showVisibility={false}
-        />
 
-       <div className="grid grid-cols-1 lg:grid-cols-[1.05fr_1.5fr_1.05fr] gap-1.5 items-start">
-          <div className="grid grid-cols-4 gap-1.5 items-start">
-            {[
-              ['Till Date', dashboard.periods.tillDate, 'emerald'],
-              ['This Year', dashboard.periods.thisYear, 'blue'],
-              ['This Month', dashboard.periods.thisMonth, 'violet'],
-              ['This Week', dashboard.periods.thisWeek, 'orange']
-            ].map(([label, data, tone]) => (
-              <div
-                key={String(label)}
-                className={`self-start rounded-lg px-2 py-1.5 border ${
-                  tone === 'emerald'
-                    ? 'bg-emerald-50 border-emerald-100'
-                    : tone === 'blue'
-                    ? 'bg-blue-50 border-blue-100'
-                    : tone === 'violet'
-                    ? 'bg-violet-50 border-violet-100'
-                    : 'bg-orange-50 border-orange-100'
-                }`}
-              >
-                <div className="flex items-center gap-1.5 text-[10px] font-black">
-                  <CalendarDays className="w-3.5 h-3.5" />
-                  {label}
+        <div className="grid grid-cols-1 lg:grid-cols-[1.05fr_1.5fr_1.05fr] gap-1.5 items-start">
+
+          {/* ========================================================= */}
+          {/* FRAME 1 — COLLECTION OVERVIEW + KPI CARDS                */}
+          {/* ========================================================= */}
+          <div className="rounded-xl border border-emerald-200 bg-white px-2 py-1.5 h-[110px]">
+
+            <SectionHeader
+              number="4"
+              title="Collection Overview"
+              subtitle="Collection performance over different periods and recent trends."
+              showVisibility={false}
+            />
+
+            {/* Four KPI Cards */}
+            <div className="grid grid-cols-4 gap-1.5 mt-1">
+
+              {[
+                ['Till Date', dashboard.periods.tillDate, 'emerald'],
+                ['This Year', dashboard.periods.thisYear, 'blue'],
+                ['This Month', dashboard.periods.thisMonth, 'violet'],
+                ['This Week', dashboard.periods.thisWeek, 'orange']
+              ].map(([label, data, tone]) => (
+
+                <div
+                  key={String(label)}
+                  className={`self-start rounded-lg px-2 py-1 border ${
+                    tone === 'emerald'
+                      ? 'bg-emerald-50 border-emerald-100'
+                      : tone === 'blue'
+                      ? 'bg-blue-50 border-blue-100'
+                      : tone === 'violet'
+                      ? 'bg-violet-50 border-violet-100'
+                      : 'bg-orange-50 border-orange-100'
+                  }`}
+                >
+
+                  {/* KPI Title */}
+                  <div className="flex items-center gap-1 text-[9px] font-black leading-tight whitespace-nowrap">
+                    <CalendarDays className="w-3 h-3 shrink-0" />
+                    {label}
+                  </div>
+
+                  {/* Amount */}
+                  <div className="text-[17px] font-black font-mono leading-none mt-1">
+                    {money((data as any).amount)}
+                  </div>
+
+                  {/* Contribution Count */}
+                  <div className="text-[8px] font-semibold text-slate-500 leading-tight mt-1 whitespace-nowrap">
+                    {(data as any).count} Contributions
+                  </div>
+
                 </div>
-                <div className="text-lg font-black font-mono mt-1">
-                  {money((data as any).amount)}
-                </div>
-                <div className="text-[9px] font-semibold text-slate-500">
-                  {(data as any).count} Contributions
-                </div>
-              </div>
-            ))}
+
+              ))}
+
+            </div>
+
           </div>
 
-          <div className="rounded-xl border border-slate-200 bg-white p-2.5 h-[126px]">
+
+          {/* ========================================================= */}
+          {/* FRAME 2 — LAST 5 AVAILABLE COLLECTION DAYS               */}
+          {/* ========================================================= */}
+          <div className="rounded-xl border border-slate-200 bg-white p-2 h-[110px]">
 
             {/* Chart Header */}
-            <div className="flex items-center justify-between mb-1">
+            <div className="flex items-center justify-between mb-0.5">
+
               <div>
-                <div className="text-[12px] font-black text-slate-900 leading-tight">
+                <div className="text-[11px] font-black text-slate-900 leading-tight">
                   Last 5 Available Collection Days
                 </div>
-                <div className="text-[9px] text-slate-500 leading-tight">
+
+                <div className="text-[8px] text-slate-500 leading-tight">
                   Based on Paid collection days
                 </div>
               </div>
 
               <BarChart3 className="w-4 h-4 text-blue-600" />
+
             </div>
 
+
             {/* Chart Area */}
-            <div className="relative h-[82px]">
+            <div className="relative h-[68px]">
 
               {/* Y Axis Labels + Horizontal Grid */}
               <div className="absolute inset-0">
 
                 {/* 20,000 */}
                 <div className="absolute top-0 left-0 right-0 flex items-center">
-                  <span className="w-10 text-[8px] text-slate-500 text-right pr-1">
+                  <span className="w-9 text-[7px] text-slate-500 text-right pr-1">
                     20,000
                   </span>
                   <div className="flex-1 border-t border-slate-200" />
@@ -1195,7 +1224,7 @@ export function CollectionsDashboard({
 
                 {/* 15,000 */}
                 <div className="absolute top-1/4 left-0 right-0 flex items-center">
-                  <span className="w-10 text-[8px] text-slate-500 text-right pr-1">
+                  <span className="w-9 text-[7px] text-slate-500 text-right pr-1">
                     15,000
                   </span>
                   <div className="flex-1 border-t border-slate-200" />
@@ -1203,7 +1232,7 @@ export function CollectionsDashboard({
 
                 {/* 10,000 */}
                 <div className="absolute top-1/2 left-0 right-0 flex items-center">
-                  <span className="w-10 text-[8px] text-slate-500 text-right pr-1">
+                  <span className="w-9 text-[7px] text-slate-500 text-right pr-1">
                     10,000
                   </span>
                   <div className="flex-1 border-t border-slate-200" />
@@ -1211,7 +1240,7 @@ export function CollectionsDashboard({
 
                 {/* 5,000 */}
                 <div className="absolute top-3/4 left-0 right-0 flex items-center">
-                  <span className="w-10 text-[8px] text-slate-500 text-right pr-1">
+                  <span className="w-9 text-[7px] text-slate-500 text-right pr-1">
                     5,000
                   </span>
                   <div className="flex-1 border-t border-slate-200" />
@@ -1219,7 +1248,7 @@ export function CollectionsDashboard({
 
                 {/* 0 */}
                 <div className="absolute bottom-0 left-0 right-0 flex items-center">
-                  <span className="w-10 text-[8px] text-slate-500 text-right pr-1">
+                  <span className="w-9 text-[7px] text-slate-500 text-right pr-1">
                     0
                   </span>
                   <div className="flex-1 border-t border-slate-300" />
@@ -1227,16 +1256,15 @@ export function CollectionsDashboard({
 
               </div>
 
+
               {/* Bars */}
-              <div className="absolute left-11 right-1 top-0 bottom-0 flex items-end gap-2">
+              <div className="absolute left-10 right-1 top-0 bottom-0 flex items-end gap-2">
 
                 {lastFiveDays.map(day => {
 
                   const height = Math.max(
                     8,
-                    Math.round(
-                      (day.amount / 20000) * 100
-                    )
+                    Math.round((day.amount / 20000) * 100)
                   );
 
                   return (
@@ -1246,7 +1274,7 @@ export function CollectionsDashboard({
                     >
 
                       {/* Amount */}
-                      <div className="text-[8px] font-black text-slate-700 mb-0.5">
+                      <div className="text-[7px] font-black text-slate-700 mb-0.5">
                         {money(day.amount)}
                       </div>
 
@@ -1260,7 +1288,7 @@ export function CollectionsDashboard({
                       />
 
                       {/* Date */}
-                      <div className="text-[8px] text-slate-500 truncate max-w-full mt-0.5">
+                      <div className="text-[7px] text-slate-500 truncate max-w-full mt-0.5">
                         {day.date}
                       </div>
 
@@ -1269,7 +1297,7 @@ export function CollectionsDashboard({
                 })}
 
                 {lastFiveDays.length === 0 && (
-                  <div className="w-full h-full flex items-center justify-center text-[10px] text-slate-400">
+                  <div className="w-full h-full flex items-center justify-center text-[9px] text-slate-400">
                     No collection-day data available.
                   </div>
                 )}
@@ -1280,86 +1308,104 @@ export function CollectionsDashboard({
 
           </div>
 
-          {/* Payment Mode — restricted section within Collection Overview */}
-          <div className="rounded-lg border border-red-100 bg-white px-2 py-1.5">
+
+          {/* ========================================================= */}
+          {/* FRAME 3 — PAYMENT MODE                                    */}
+          {/* ========================================================= */}
+          <div className="rounded-xl border border-red-100 bg-white px-2 py-1.5 h-[110px]">
 
             {/* Header */}
-            <div className="flex items-center justify-between gap-2 mb-1.5">
+            <div className="flex items-center justify-between gap-2 mb-1">
+
               <div className="flex items-center gap-1.5">
+
                 <Lock className="w-3.5 h-3.5 text-red-700" />
 
-                <div className="text-[12px] font-black text-slate-900 leading-tight">
+                <div className="text-[11px] font-black text-slate-900 leading-tight">
                   Payment Mode
                 </div>
+
               </div>
 
-              <div className="rounded-full bg-red-50 border border-red-100 px-2 py-0.5 text-[8px] font-black text-red-700 whitespace-nowrap">
+              <div className="rounded-full bg-red-50 border border-red-100 px-2 py-0.5 text-[7px] font-black text-red-700 whitespace-nowrap">
                 Treasurer &amp; Trustees
               </div>
+
             </div>
+
 
             {/* Cash + Digital UPI */}
             <div className="grid grid-cols-2 gap-1.5">
 
               {/* Cash */}
-              <div className="flex items-start gap-2">
+              <div className="flex items-start gap-1.5">
 
-                <div className="w-9 h-9 rounded-lg bg-white/80 flex items-center justify-center shrink-0">
-                  <Banknote className="w-5 h-5 text-emerald-700" />
+                <div className="w-8 h-8 rounded-lg bg-emerald-50 flex items-center justify-center shrink-0">
+                  <Banknote className="w-4.5 h-4.5 text-emerald-700" />
                 </div>
 
                 <div className="min-w-0">
-                  <div className="text-[9px] font-black leading-tight">
+
+                  <div className="text-[8px] font-black leading-tight whitespace-nowrap">
                     Cash at Counter
                   </div>
 
-                  <div className="text-[17px] font-black font-mono leading-none mt-1">
+                  <div className="text-[16px] font-black font-mono leading-none mt-1">
                     {money(dashboard.payment.cash.amount)}
                   </div>
 
-                  <div className="text-[8px] text-emerald-700 font-semibold leading-tight mt-1">
+                  <div className="text-[7px] text-emerald-700 font-semibold leading-tight mt-1">
                     {dashboard.payment.cash.count} Contributions
                   </div>
 
-                  <div className="text-[9px] text-emerald-700 font-black leading-tight mt-0.5">
+                  <div className="text-[8px] text-emerald-700 font-black leading-tight mt-0.5">
                     {percent(dashboard.payment.cash.share)}
                   </div>
+
                 </div>
 
               </div>
 
-              {/* Digital UPI */}
-              <div className="rounded-lg border border-blue-100 bg-blue-50 px-2 py-1.5">
-                <div className="flex items-start gap-2">
 
-                  <div className="w-9 h-9 rounded-lg bg-white/80 flex items-center justify-center shrink-0">
-                    <QrCode className="w-5 h-5 text-blue-700" />
+              {/* Digital UPI */}
+              <div className="rounded-lg border border-blue-100 bg-blue-50 px-1.5 py-1">
+
+                <div className="flex items-start gap-1.5">
+
+                  <div className="w-8 h-8 rounded-lg bg-white/80 flex items-center justify-center shrink-0">
+                    <QrCode className="w-4.5 h-4.5 text-blue-700" />
                   </div>
 
                   <div className="min-w-0">
-                    <div className="text-[9px] font-black leading-tight">
+
+                    <div className="text-[8px] font-black leading-tight whitespace-nowrap">
                       Digital UPI
                     </div>
 
-                    <div className="text-[17px] font-black font-mono leading-none mt-1">
+                    <div className="text-[16px] font-black font-mono leading-none mt-1">
                       {money(dashboard.payment.upi.amount)}
                     </div>
 
-                    <div className="text-[8px] text-blue-700 font-semibold leading-tight mt-1">
+                    <div className="text-[7px] text-blue-700 font-semibold leading-tight mt-1">
                       {dashboard.payment.upi.count} Contributions
                     </div>
 
-                    <div className="text-[9px] text-blue-700 font-black leading-tight mt-0.5">
+                    <div className="text-[8px] text-blue-700 font-black leading-tight mt-0.5">
                       {percent(dashboard.payment.upi.share)}
                     </div>
+
                   </div>
 
                 </div>
+
               </div>
+
             </div>
 
+
             {/* Payment Mode Split */}
-            <div className="mt-1.5 h-2.5 rounded-full overflow-hidden flex bg-slate-100">
+            <div className="mt-1 h-2.5 rounded-full overflow-hidden flex bg-slate-100">
+
               <div
                 className="bg-emerald-500 transition-all"
                 style={{
@@ -1379,10 +1425,13 @@ export function CollectionsDashboard({
                   )}%`
                 }}
               />
+
             </div>
 
           </div>
+
         </div>
+
       </section>
 
       {/* ------------------------------------------------------------- */}
