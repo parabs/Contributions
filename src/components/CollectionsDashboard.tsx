@@ -1437,7 +1437,7 @@ export function CollectionsDashboard({
       {/* 5 + 6 + 7 + 8                                                 */}
       {/* ------------------------------------------------------------- */}
 
-      <div className="grid grid-cols-1 xl:grid-cols-12 gap-2 items-start">
+      <div className="grid grid-cols-1 xl:grid-cols-12 gap-2 items-stretch">
 
         {/* =========================================================== */}
         {/* 5. SEVA-WISE COLLECTION                                    */}
@@ -1555,8 +1555,9 @@ export function CollectionsDashboard({
         {/* 7. VOLUNTEER-WISE COLLECTION                               */}
         {/* =========================================================== */}
         <section
-          className="xl:col-span-4 xl:col-start-5 xl:row-start-1 xl:row-span-2 rounded-xl border border-red-100 bg-white p-2"
+          className="xl:col-span-4 xl:col-start-5 xl:row-start-1 xl:row-span-2 h-full min-h-0 rounded-xl border border-red-100 bg-white p-2 flex flex-col"
         >
+          
 
           <SectionHeader
             number="7"
@@ -1564,8 +1565,7 @@ export function CollectionsDashboard({
             subtitle="Volunteer collection and operational view."
             restricted
           />
-
-          <div className="overflow-x-auto rounded-lg border border-slate-200 mt-1">
+          <div className="mt-1 flex-1 min-h-0 overflow-auto rounded-lg border border-slate-200">
 
             <table className="w-full text-[8px]">
 
@@ -1662,7 +1662,7 @@ export function CollectionsDashboard({
           <button
             type="button"
             onClick={onOpenVolunteerManagement}
-            className="mt-1 text-[9px] font-bold text-amber-800 hover:underline inline-flex items-center gap-1"
+            className="mt-1 shrink-0 text-[9px] font-bold text-amber-800 hover:underline inline-flex items-center gap-1"
           >
             <Users className="w-3 h-3" />
             Manage Volunteers
@@ -1674,9 +1674,9 @@ export function CollectionsDashboard({
         {/* =========================================================== */}
         {/* 8. RECENT COLLECTION ACTIVITY                              */}
         {/* =========================================================== */}
-        <section
-          className="xl:col-span-4 xl:col-start-9 xl:row-start-1 xl:row-span-2 rounded-xl border border-red-100 bg-white p-2"
-        >
+          <section
+            className="xl:col-span-4 xl:col-start-9 xl:row-start-1 xl:row-span-2 h-full min-h-0 rounded-xl border border-red-100 bg-white p-2 flex flex-col"
+          >
 
           <SectionHeader
             number="8"
@@ -1685,7 +1685,7 @@ export function CollectionsDashboard({
             restricted
           />
 
-          <div className="overflow-x-auto rounded-lg border border-slate-200 mt-1">
+          <div className="mt-1 flex-1 min-h-0 overflow-auto rounded-lg border border-slate-200">
 
             <table className="w-full text-[8px]">
 
