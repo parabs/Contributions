@@ -771,6 +771,44 @@ export function CollectionsDashboard({
   }, [dashboardDonations]);
 
   const lastFiveDays = useMemo(() => {
+    // Volunteer dashboard → calculate collection days from own donations
+    if (isVolunteer) {
+      const paidByDay = new Map<
+        string,
+        { date: string; amount: number }
+      >();
+
+      dashboardDonations
+        .filter(d => d.paymentStatus === 'Paid')
+        .forEach(d => {
+          const rawDate = d.updatedAt || d.createdAt || d.submittedAt;
+          const date = new Date(rawDate);
+
+          if (Number.isNaN(date.getTime())) return;
+
+          const key = `${date.getFullYear()}-${String(
+            date.getMonth() + 1
+          ).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+
+          const existing = paidByDay.get(key);
+
+          if (existing) {
+            existing.amount += Number(d.amount || 0);
+          } else {
+            paidByDay.set(key, {
+              date: `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()}`,
+              amount: Number(d.amount || 0)
+            });
+          }
+        });
+
+      return Array.from(paidByDay.entries())
+        .sort(([a], [b]) => a.localeCompare(b))
+        .slice(-5)
+        .map(([, value]) => value);
+    }
+
+    // Treasurer / Trustee / Admin → keep existing dashboard calculation
     const rows: { date: string; amount: number }[] = [];
 
     for (let row = 23; row <= 27; row++) {
@@ -786,8 +824,8 @@ export function CollectionsDashboard({
     }
 
     return rows;
-  }, [calculation]);
-
+  }, [isVolunteer, dashboardDonations, calculation]);
+  
   const maxDayAmount = Math.max(
     1,
     ...lastFiveDays.map(d => d.amount)
