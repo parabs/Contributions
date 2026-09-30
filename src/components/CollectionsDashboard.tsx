@@ -782,10 +782,41 @@ export function CollectionsDashboard({
           // Use submittedAt as the collection/donation date.
           // updatedAt can change later when the record is confirmed,
           // which can incorrectly move multiple donations to one day.
-          const rawDate = d.submittedAt || d.createdAt || d.updatedAt;
-          const date = new Date(rawDate);
+      const rawDate = d.submittedAt || d.createdAt || d.updatedAt;
 
-          if (Number.isNaN(date.getTime())) return;
+      let date = new Date(rawDate);
+
+      // Handle DD/MM/YYYY, hh:mm:ss am/pm format
+      if (Number.isNaN(date.getTime())) {
+        const match = String(rawDate).match(
+          /^(\d{2})\/(\d{2})\/(\d{4}),\s*(\d{1,2}):(\d{2}):(\d{2})\s*(am|pm)$/i
+        );
+
+        if (match) {
+          const [, day, month, year, hour, minute, second, meridiem] = match;
+
+          let hours = Number(hour);
+
+          if (meridiem.toLowerCase() === 'pm' && hours !== 12) {
+            hours += 12;
+          }
+
+          if (meridiem.toLowerCase() === 'am' && hours === 12) {
+            hours = 0;
+          }
+
+          date = new Date(
+            Number(year),
+            Number(month) - 1,
+            Number(day),
+            hours,
+            Number(minute),
+            Number(second)
+          );
+        }
+      }
+
+      if (Number.isNaN(date.getTime())) return;
 
           const key = [
             date.getFullYear(),
