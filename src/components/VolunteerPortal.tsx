@@ -927,6 +927,7 @@ React.useEffect(() => {
             donations={donations}
             volunteers={volunteers}
             trustConfig={trustConfig}
+            currentVolunteer={currentVolunteer}
             onViewReceipt={onViewReceipt}
             onOpenVolunteerManagement={
               onOpenVolunteerManagement || (() => {})

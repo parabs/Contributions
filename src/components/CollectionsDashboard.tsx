@@ -37,6 +37,7 @@ interface CollectionsDashboardProps {
   donations: DonationRecord[];
   volunteers: VolunteerRecord[];
   trustConfig: TrustConfig;
+  currentVolunteer: VolunteerRecord | null;
   onViewReceipt: (donation: DonationRecord) => void;
   onOpenVolunteerManagement: () => void;
   onBackToPortal?: () => void;
@@ -203,6 +204,178 @@ function buildDashboardData(rows: CalcRow[]): DashboardData {
   };
 }
 
+function buildVolunteerDashboardData(
+  donations: DonationRecord[],
+  currentVolunteer: VolunteerRecord | null
+): DashboardData {
+  const volunteerCode = String(currentVolunteer?.volunteerCode || '')
+    .trim()
+    .toLowerCase();
+
+  const volunteerName = String(currentVolunteer?.volunteerName || '')
+    .trim()
+    .toLowerCase();
+
+  const ownDonations = donations.filter(d => {
+    const confirmedBy = String(d.confirmedBy || '')
+      .trim()
+      .toLowerCase();
+
+    return (
+      (volunteerCode && confirmedBy.includes(volunteerCode)) ||
+      (volunteerName && confirmedBy === volunteerName) ||
+      (volunteerName && confirmedBy.startsWith(`${volunteerName} (`))
+    );
+  });
+
+  const byStatus = (status: string) =>
+    ownDonations.filter(
+      d =>
+        String(d.paymentStatus || '').trim().toLowerCase() ===
+        status.toLowerCase()
+    );
+
+  const amountOf = (rows: DonationRecord[]) =>
+    rows.reduce((sum, d) => sum + Number(d.amount || 0), 0);
+
+  const paid = byStatus('Paid');
+  const confirmation = byStatus('Confirmation Pending');
+  const recollect = byStatus('Recollect');
+  const repayment = byStatus('Repayment');
+  const dispute = byStatus('Repayment - Dispute');
+  const notInterested = byStatus('Not Interested');
+
+  const now = new Date();
+
+  const startOfYear = new Date(now.getFullYear(), 0, 1);
+
+  const startOfQuarter = new Date(
+    now.getFullYear(),
+    Math.floor(now.getMonth() / 3) * 3,
+    1
+  );
+
+  const startOfMonth = new Date(
+    now.getFullYear(),
+    now.getMonth(),
+    1
+  );
+
+  const startOfWeek = new Date(now);
+  const day = startOfWeek.getDay();
+  const diff = day === 0 ? 6 : day - 1;
+
+  startOfWeek.setDate(startOfWeek.getDate() - diff);
+  startOfWeek.setHours(0, 0, 0, 0);
+
+  const getDonationDate = (d: DonationRecord) =>
+    new Date(d.updatedAt || d.createdAt || d.submittedAt);
+
+  const paidInPeriod = (start: Date) =>
+    paid.filter(d => getDonationDate(d) >= start);
+
+  const thisYear = paidInPeriod(startOfYear);
+  const thisQuarter = paidInPeriod(startOfQuarter);
+  const thisMonth = paidInPeriod(startOfMonth);
+  const thisWeek = paidInPeriod(startOfWeek);
+
+  const cash = paid.filter(d => d.paymentMode === 'Cash');
+  const upi = paid.filter(d => d.paymentMode === 'UPI');
+
+  const paymentTotal = amountOf(paid);
+
+  return {
+    paidAmount: amountOf(paid),
+    paidCount: paid.length,
+
+    confirmationAmount: amountOf(confirmation),
+    confirmationCount: confirmation.length,
+
+    recollectAmount: amountOf(recollect),
+    recollectCount: recollect.length,
+
+    repaymentAmount: amountOf(repayment),
+    repaymentCount: repayment.length,
+
+    disputeCount: dispute.length,
+    notInterestedCount: notInterested.length,
+
+    // A Volunteer should not see the total active volunteer roster.
+    activeVolunteers: 1,
+
+    totalCollections: amountOf(paid),
+
+    workflow: {
+      confirmation: {
+        amount: amountOf(confirmation),
+        count: confirmation.length
+      },
+      recollect: {
+        amount: amountOf(recollect),
+        count: recollect.length
+      },
+      repayment: {
+        amount: amountOf(repayment),
+        count: repayment.length
+      },
+      paid: {
+        amount: amountOf(paid),
+        count: paid.length
+      },
+      dispute: {
+        amount: amountOf(dispute),
+        count: dispute.length
+      },
+      notInterested: {
+        amount: amountOf(notInterested),
+        count: notInterested.length
+      }
+    },
+
+    periods: {
+      tillDate: {
+        amount: amountOf(paid),
+        count: paid.length
+      },
+      thisYear: {
+        amount: amountOf(thisYear),
+        count: thisYear.length
+      },
+      thisQuarter: {
+        amount: amountOf(thisQuarter),
+        count: thisQuarter.length
+      },
+      thisMonth: {
+        amount: amountOf(thisMonth),
+        count: thisMonth.length
+      },
+      thisWeek: {
+        amount: amountOf(thisWeek),
+        count: thisWeek.length
+      }
+    },
+
+    payment: {
+      cash: {
+        amount: amountOf(cash),
+        count: cash.length,
+        share: paymentTotal > 0 ? amountOf(cash) / paymentTotal : 0
+      },
+      upi: {
+        amount: amountOf(upi),
+        count: upi.length,
+        share: paymentTotal > 0 ? amountOf(upi) / paymentTotal : 0
+      }
+    },
+
+    grievance: {
+      total: dispute.length,
+      resolved: 0,
+      pending: dispute.length
+    }
+  };
+}
+
 function SectionHeader({
   number,
   title,
@@ -323,6 +496,7 @@ export function CollectionsDashboard({
   donations,
   volunteers,
   trustConfig,
+  currentVolunteer,
   onViewReceipt,
   onOpenVolunteerManagement,
   onBackToPortal
@@ -381,10 +555,43 @@ export function CollectionsDashboard({
     setRefreshing(false);
   };
 
-  const dashboard = useMemo(
-    () => buildDashboardData(calculation),
-    [calculation]
-  );
+  const isVolunteer =
+    String(currentVolunteer?.role || '').trim().toLowerCase() === 'volunteer';
+
+  const dashboard = useMemo(() => {
+    if (isVolunteer && currentVolunteer) {
+      return buildVolunteerDashboardData(donations, currentVolunteer);
+    }
+
+    return buildDashboardData(calculation);
+  }, [isVolunteer, currentVolunteer, donations, calculation]);
+
+
+  const dashboardDonations = useMemo(() => {
+    if (!isVolunteer || !currentVolunteer) {
+      return donations;
+    }
+
+    const volunteerCode = String(currentVolunteer.volunteerCode || '')
+      .trim()
+      .toLowerCase();
+
+    const volunteerName = String(currentVolunteer.volunteerName || '')
+      .trim()
+      .toLowerCase();
+
+    return donations.filter(d => {
+      const confirmedBy = String(d.confirmedBy || '')
+        .trim()
+        .toLowerCase();
+
+      return (
+        (volunteerCode && confirmedBy.includes(volunteerCode)) ||
+        (volunteerName && confirmedBy === volunteerName) ||
+        (volunteerName && confirmedBy.startsWith(`${volunteerName} (`))
+      );
+    });
+  }, [donations, currentVolunteer, isVolunteer]);
 
   const activeVolunteerRows = useMemo(
     () =>
@@ -411,6 +618,50 @@ export function CollectionsDashboard({
    * until those values are exposed directly through the Volunteers sheet.
    */
   const volunteerRows = useMemo(() => {
+    if (isVolunteer && currentVolunteer) {
+      const ownVolunteer = activeVolunteerRows.find(
+        v =>
+          String(v.id || '').trim().toLowerCase() ===
+          String(currentVolunteer.volunteerCode || '').trim().toLowerCase()
+      );
+
+      if (!ownVolunteer) return [];
+
+      const related = dashboardDonations.filter(
+        d =>
+          d.paymentStatus === 'Paid' &&
+          String(d.confirmedBy || '').trim().toLowerCase() ===
+            String(currentVolunteer.volunteerCode || '').trim().toLowerCase()
+      );
+
+      const thisMonthStart = new Date();
+      thisMonthStart.setDate(1);
+      thisMonthStart.setHours(0, 0, 0, 0);
+
+      const thisMonth = related
+        .filter(d => {
+          const date = new Date(d.updatedAt || d.createdAt || d.submittedAt);
+          return date >= thisMonthStart;
+        })
+        .reduce((sum, d) => sum + Number(d.amount || 0), 0);
+
+      const grievances = dashboardDonations.filter(
+        d =>
+          String(d.confirmedBy || '').trim().toLowerCase() ===
+            String(currentVolunteer.volunteerCode || '').trim().toLowerCase() &&
+          String(d.paymentStatus || '').trim() === 'Repayment - Dispute'
+      ).length;
+
+      return [
+        {
+          ...ownVolunteer,
+          grievances,
+          thisMonth
+        }
+      ];
+    }
+
+    // Treasurer / Trustee / Admin — existing behavior unchanged
     return activeVolunteerRows.map(v => {
       const related = donations.filter(
         d =>
@@ -441,10 +692,20 @@ export function CollectionsDashboard({
         thisMonth
       };
     });
-  }, [activeVolunteerRows, donations]);
+  }, [
+    activeVolunteerRows,
+    donations,
+    dashboardDonations,
+    currentVolunteer,
+    isVolunteer
+  ]);
+
 
   const sevaRows = useMemo(() => {
-    const paid = donations.filter(d => d.paymentStatus === 'Paid');
+    const paid = dashboardDonations.filter(
+      d => d.paymentStatus === 'Paid'
+    );
+
 
     const map = new Map<
       string,
@@ -471,12 +732,12 @@ export function CollectionsDashboard({
     return Array.from(map.values())
       .sort((a, b) => b.amount - a.amount)
       .slice(0, 5);
-  }, [donations]);
+  }, [dashboardDonations]);
 
   const categoryRows = useMemo(() => {
     const map = new Map<string, { amount: number; count: number }>();
 
-    donations
+    dashboardDonations
       .filter(d => d.paymentStatus === 'Paid')
       .forEach(d => {
         const category = d.sevaCategory || 'General Seva';
@@ -496,10 +757,10 @@ export function CollectionsDashboard({
             : 0
       }))
       .sort((a, b) => b.amount - a.amount);
-  }, [donations, dashboard.paidAmount]);
+  }, [dashboardDonations, dashboard.paidAmount]);
 
   const recentActivity = useMemo(() => {
-    return [...donations]
+    return [...dashboardDonations]
       .filter(d => d.paymentStatus !== 'Cancelled')
       .sort((a, b) => {
         const da = new Date(a.updatedAt || a.createdAt || a.submittedAt).getTime();
@@ -507,7 +768,7 @@ export function CollectionsDashboard({
         return db - da;
       })
       .slice(0, 6);
-  }, [donations]);
+  }, [dashboardDonations]);
 
   const lastFiveDays = useMemo(() => {
     const rows: { date: string; amount: number }[] = [];
@@ -619,9 +880,13 @@ export function CollectionsDashboard({
 
               <FilterSelect
                 label="Volunteer"
-                value={selectedVolunteer}
-                options={['All', ...volunteerRows.map(r => r.name)]}
-                onChange={setSelectedVolunteer}
+                value={isVolunteer ? currentVolunteer?.volunteerName || 'All' : selectedVolunteer}
+                options={
+                  isVolunteer
+                    ? [currentVolunteer?.volunteerName || 'All']
+                    : ['All', ...volunteerRows.map(r => r.name)]
+                }
+                onChange={isVolunteer ? () => {} : setSelectedVolunteer}
               />
 
               <FilterSelect
