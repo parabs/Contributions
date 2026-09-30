@@ -366,8 +366,11 @@ const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
   // Automatically pull live rows from the single master Donations sheet on load if authenticated
   React.useEffect(() => {
     if (activeView === 'volunteer') {
+      // Load both Donations and Volunteers when the dashboard opens.
       handleRefreshFromGoogleSheet();
+      handleRefreshVolunteers();
     }
+
     if (activeView === 'publicDashboard') {
       handleRefreshDashboardCalculation();
     }
@@ -445,7 +448,7 @@ const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
     const seq = String(donations.length + 1).padStart(4, '0');
     const donationId = `SJST-${dateStr}-${seq}`;
     const confirmationCode = '';
-    const confirmedBy = `${formData.volunteerName} (${formData.volunteerCode})`;
+    const confirmedBy = formData.volunteerCode;
     const paymentStatus = 'Paid';
     const paymentReference = formData.paymentMode === 'Cash' ? 'CASH-COUNTER-DIRECT' : 'UPI-COUNTER-DIRECT';
     let driveReceiptUrl = `https://drive.google.com/file/d/receipt-${donationId}/view`;
@@ -622,7 +625,7 @@ const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
             action: 'confirm_sheet_donation',
             donationId: donationId.trim(),
             volunteerCode: currentVolunteer?.volunteerCode || '',
-            confirmedBy: volunteerName
+            confirmedBy: currentVolunteer?.volunteerCode || ''
           }),
           redirect: 'follow'
         }
@@ -637,7 +640,7 @@ const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
       const updatedRecord: DonationRecord = {
         ...target,
         paymentStatus: 'Paid',
-        confirmedBy: result.confirmedBy || volunteerName,
+        confirmedBy: currentVolunteer?.volunteerCode || '',
         confirmationCode: '',
         receiptUrl: result.receiptUrl || '',
         emailStatus: result.emailStatus || 'Not Required',
