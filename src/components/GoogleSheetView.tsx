@@ -22,6 +22,7 @@ import {
 interface GoogleSheetViewProps {
   donations: DonationRecord[];
   volunteers: VolunteerRecord[];
+  currentVolunteer: VolunteerRecord | null;
   onViewReceipt: (donation: DonationRecord) => void;
   onSendReceipt?: (donation: DonationRecord) => Promise<void>;
   onConfirmDonation?: (donationId: string, volunteerName: string) => void;
@@ -34,6 +35,7 @@ interface GoogleSheetViewProps {
 export function GoogleSheetView({
   donations,
   volunteers,
+  currentVolunteer,
   onViewReceipt,
   onSendReceipt,
   onConfirmDonation,
@@ -48,6 +50,16 @@ export function GoogleSheetView({
   const [modeFilter, setModeFilter] = useState<'All' | 'Cash' | 'UPI'>('All');
   const [volunteerFilter, setVolunteerFilter] = useState<string>('All');
   const [categoryFilter, setCategoryFilter] = useState<string>('All');
+
+  const currentRole = String(currentVolunteer?.role || '')
+  .trim()
+  .toLowerCase();
+
+  const isVolunteer = currentRole === 'volunteer';
+
+  const isViewOnlyRole =
+    currentRole === 'trustee' ||
+    currentRole === 'admin';
 
   // Confirmation Modal State
   const [confirmingDonation, setConfirmingDonation] = useState<DonationRecord | null>(null);
@@ -89,10 +101,36 @@ export function GoogleSheetView({
     }
   };
   
+  const visibleDonations = isVolunteer && currentVolunteer
+  ? donations.filter(d => {
+      const donationVolunteerName = String(d.volunteerName || '')
+        .trim()
+        .toLowerCase();
+
+      const confirmedBy = String(d.confirmedBy || '')
+        .trim()
+        .toLowerCase();
+
+      const volunteerName = String(currentVolunteer.volunteerName || '')
+        .trim()
+        .toLowerCase();
+
+      const volunteerCode = String(currentVolunteer.volunteerCode || '')
+        .trim()
+        .toLowerCase();
+
+      return (
+        donationVolunteerName === volunteerName ||
+        confirmedBy === volunteerName ||
+        confirmedBy.includes(volunteerCode)
+      );
+    })
+  : donations;
+
   // Live filter values derived from the Donations master sheet
   const volunteerOptions = Array.from(
     new Set(
-      donations
+      visibleDonations
         .map(d => String(d.volunteerName || '').trim())
         .filter(Boolean)
     )
@@ -107,7 +145,7 @@ export function GoogleSheetView({
   ).sort((a, b) => a.localeCompare(b));
 
   // Filter donations
-  const filteredDonations = donations.filter(d => {
+  const filteredDonations = visibleDonations.filter(d => {
     const search = searchTerm.trim().toLowerCase();
 
     const searchableText = [
@@ -140,8 +178,13 @@ export function GoogleSheetView({
         modeFilter.toLowerCase();
 
     const matchesVolunteer =
-      volunteerFilter === 'All' ||
-      String(d.volunteerName || '').trim() === volunteerFilter;
+      isVolunteer
+        ? String(d.volunteerName || '').trim() ===
+          String(currentVolunteer?.volunteerName || '').trim()
+        : (
+            volunteerFilter === 'All' ||
+            String(d.volunteerName || '').trim() === volunteerFilter
+          );
 
     const donationCategory = String(
       d.sevaHead || d.sevaCategory || ''
@@ -316,7 +359,7 @@ export function GoogleSheetView({
               </div>
 
               <div className="text-xs text-slate-500 font-medium self-center">
-                Showing <strong className="text-slate-900 font-mono">{filteredDonations.length}</strong> of {donations.length} records
+                Showing <strong className="text-slate-900 font-mono">{filteredDonations.length}</strong> of {visibleDonations.length} records
               </div>
             </div>
 
@@ -358,18 +401,31 @@ export function GoogleSheetView({
               {/* Volunteer Filter */}
               <div>
                 <label className="block text-[10px] font-bold uppercase text-slate-400 mb-1">Volunteer Filter</label>
-                <select
-                  value={volunteerFilter}
-                  onChange={e => setVolunteerFilter(e.target.value)}
-                  className="w-full px-2.5 py-2 rounded-xl border border-slate-200 bg-white text-xs font-medium text-slate-700"
-                >
-                  <option value="All">All Volunteers</option>
 
-                  {volunteerOptions.map(volunteer => (
-                    <option key={volunteer} value={volunteer}>
-                      {volunteer}
-                    </option>
-                  ))}
+                <select
+                  value={
+                    isVolunteer
+                      ? String(currentVolunteer?.volunteerName || '')
+                      : volunteerFilter
+                  }
+                  onChange={e => {
+                    if (!isVolunteer) {
+                      setVolunteerFilter(e.target.value);
+                    }
+                  }}
+                  disabled={isVolunteer}
+                  className="w-full px-2.5 py-2 rounded-xl border border-slate-200 bg-white text-xs font-medium text-slate-700 disabled:bg-slate-50 disabled:text-slate-500"
+                >
+
+                {!isVolunteer && (
+                  <option value="All">All Volunteers</option>
+                )}
+
+                {volunteerOptions.map(volunteer => (
+                  <option key={volunteer} value={volunteer}>
+                    {volunteer}
+                  </option>
+                ))}
                 </select>
               </div>
 
@@ -520,8 +576,11 @@ export function GoogleSheetView({
 
                       {/* Action */}
                       <td className="py-3 px-3 text-center">
-                        {row.paymentStatus === 'Confirmation Pending' && (
+
+                        {/* TRUSTEE / ADMIN → VIEW ONLY */}
+                        {!isViewOnlyRole && row.paymentStatus === 'Confirmation Pending' && (
                           <div className="flex items-center justify-center gap-1.5">
+
                             <button
                               type="button"
                               onClick={() => setConfirmingDonation(row)}
@@ -533,51 +592,19 @@ export function GoogleSheetView({
 
                             <button
                               type="button"
-                              className="px-2.5 py-1 bg-amber-600 hover:bg-amber-700 text-white rounded-lg text-[10px] font-bold transition cursor-pointer"
-                            >
-                              REPAYMENT
-                            </button>
-
-                            <button
-                              type="button"
-                              onClick={() => {
-                                if (onCancelDonation) {
-                                  onCancelDonation(
-                                    row.donationId,
-                                    row.volunteerName || 'Trust Volunteer'
-                                  );
-                                }
-                              }}
-                              className="px-2.5 py-1 bg-red-600 hover:bg-red-700 text-white rounded-lg text-[10px] font-bold transition cursor-pointer"
-                            >
-                              Cancel
-                            </button>
-                          </div>
-                        )}
-
-                        {row.paymentStatus === 'Paid' && (
-                          <div className="flex items-center justify-center gap-1.5">
-                            <button
-                              type="button"
                               onClick={async () => {
-                                if (!onSendReceipt) {
-                                  alert('Send Receipt handler is not available.');
+                                if (!onRepayment) {
+                                  alert('Repayment handler is not available.');
                                   return;
                                 }
 
-                                await onSendReceipt(row);
+                                await onRepayment(row);
                               }}
-                              className="px-2.5 py-1 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-[10px] font-bold transition cursor-pointer"
-                            >
-                              Send Receipte
-                            </button>
-
-                            <button
-                              type="button"
                               className="px-2.5 py-1 bg-amber-600 hover:bg-amber-700 text-white rounded-lg text-[10px] font-bold transition cursor-pointer"
                             >
                               Repayment
                             </button>
+
                             <button
                               type="button"
                               onClick={() => {
@@ -592,61 +619,33 @@ export function GoogleSheetView({
                             >
                               Cancel
                             </button>
+
                           </div>
                         )}
 
-                        {row.paymentStatus === 'Cancelled' && (
-                          <button
-                            type="button"
-                            onClick={async () => {
-                              if (!onRepayment) {
-                                alert('Repayment handler is not available.');
-                                return;
-                              }
-
-                              await onRepayment(row);
-                            }}
-                            className="px-2.5 py-1 bg-amber-600 hover:bg-amber-700 text-white rounded-lg text-[10px] font-bold transition cursor-pointer"
-                          >
-                            Repayment
-                          </button>
-                        )}
-
-                        {row.paymentStatus === 'Repayment' && (
+                        {/* PAID → VIEW + SEND ONLY */}
+                        {!isViewOnlyRole && row.paymentStatus === 'Paid' && (
                           <div className="flex items-center justify-center gap-1.5">
-                            <button
-                              type="button"
-                              onClick={async () => {
-                                if (!onConfirmRepayment) {
-                                  alert('Repayment confirmation handler is not available.');
-                                  return;
-                                }
 
-                                await onConfirmRepayment(row);
-                              }}
-                              className="px-2.5 py-1 bg-emerald-700 hover:bg-emerald-800 text-white rounded-lg text-[10px] font-bold inline-flex items-center gap-1 transition cursor-pointer"
-                            >
-                              <Check className="w-3 h-3" />
-                              <span>Confirm</span>
-                            </button>
+                            {onSendReceipt && (
+                              <button
+                                type="button"
+                                onClick={async () => {
+                                  await onSendReceipt(row);
+                                }}
+                                className="px-2.5 py-1 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-[10px] font-bold transition cursor-pointer"
+                              >
+                                Send Receipt
+                              </button>
+                            )}
 
-
-                            <button
-                              type="button"
-                              onClick={() => {
-                                if (onCancelDonation) {
-                                  onCancelDonation(
-                                    row.donationId,
-                                    row.volunteerName || 'Trust Volunteer'
-                                  );
-                                }
-                              }}
-                              className="px-2.5 py-1 bg-red-600 hover:bg-red-700 text-white rounded-lg text-[10px] font-bold transition cursor-pointer"
-                            >
-                              Cancel
-                            </button>
                           </div>
                         )}
+
+                        {/* CANCELLED → NO OPTIONS */}
+
+                        {/* ALL OTHER STATUSES → NO OPTIONS */}
+
                       </td>
                     </tr>
                   ))

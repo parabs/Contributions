@@ -1697,6 +1697,7 @@ React.useEffect(() => {
           <GoogleSheetView
             donations={donations}
             volunteers={volunteers}
+            currentVolunteer={currentVolunteer}
             onViewReceipt={onViewReceipt}
             onConfirmDonation={onConfirmDonationFromSheet || (() => {})}
             onSendReceipt={onSendReceipt}
