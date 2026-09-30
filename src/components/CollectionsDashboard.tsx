@@ -771,44 +771,51 @@ export function CollectionsDashboard({
   }, [dashboardDonations]);
 
   const lastFiveDays = useMemo(() => {
-    // Volunteer dashboard → calculate collection days from own donations
+    // Volunteer dashboard: calculate collection days from
+    // the volunteer's own Paid donations.
     if (isVolunteer) {
-      const paidByDay = new Map<
-        string,
-        { date: string; amount: number }
-      >();
+      const byDay = new Map<string, { date: string; amount: number }>();
 
       dashboardDonations
         .filter(d => d.paymentStatus === 'Paid')
         .forEach(d => {
-          const rawDate = d.updatedAt || d.createdAt || d.submittedAt;
+          // Use submittedAt as the collection/donation date.
+          // updatedAt can change later when the record is confirmed,
+          // which can incorrectly move multiple donations to one day.
+          const rawDate = d.submittedAt || d.createdAt || d.updatedAt;
           const date = new Date(rawDate);
 
           if (Number.isNaN(date.getTime())) return;
 
-          const key = `${date.getFullYear()}-${String(
-            date.getMonth() + 1
-          ).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+          const key = [
+            date.getFullYear(),
+            String(date.getMonth() + 1).padStart(2, '0'),
+            String(date.getDate()).padStart(2, '0')
+          ].join('-');
 
-          const existing = paidByDay.get(key);
+          const existing = byDay.get(key);
 
           if (existing) {
             existing.amount += Number(d.amount || 0);
           } else {
-            paidByDay.set(key, {
-              date: `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()}`,
+            byDay.set(key, {
+              date: date.toLocaleDateString('en-IN', {
+                day: 'numeric',
+                month: 'short'
+              }),
               amount: Number(d.amount || 0)
             });
           }
         });
 
-      return Array.from(paidByDay.entries())
+      return Array.from(byDay.entries())
         .sort(([a], [b]) => a.localeCompare(b))
         .slice(-5)
         .map(([, value]) => value);
     }
 
-    // Treasurer / Trustee / Admin → keep existing dashboard calculation
+    // Treasurer / Trustee / Admin:
+    // keep the existing Google Sheet calculation unchanged.
     const rows: { date: string; amount: number }[] = [];
 
     for (let row = 23; row <= 27; row++) {
@@ -824,8 +831,8 @@ export function CollectionsDashboard({
     }
 
     return rows;
-  }, [isVolunteer, dashboardDonations, calculation]);
-  
+  }, [isVolunteer, dashboardDonations, calculation]); 
+
   const maxDayAmount = Math.max(
     1,
     ...lastFiveDays.map(d => d.amount)
