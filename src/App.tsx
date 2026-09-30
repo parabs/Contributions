@@ -598,10 +598,10 @@ const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
         verifiedSeva: v.verifiedSeva ?? 0
       }))
 
-      alert(
-        '5. SETVOLUNTEERS CALLED\n\n' +
-        'Count: ' + result.volunteers.length
-      );
+    );
+    alert(
+      '4. MAPPED VOLUNTEERS:\n\n' +
+      JSON.stringify(mappedVolunteers, null, 2)
     );
   };
 
