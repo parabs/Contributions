@@ -560,31 +560,16 @@ const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
   };
 
   const handleRefreshVolunteers = async () => {
-     alert('1. VOLUNTEER LOAD START');
     const result = await googleSheetsService.fetchVolunteers();
 
-    alert(
-      '2. VOLUNTEER LOAD RESULT:\n\n' +
-      JSON.stringify(result, null, 2)
-    );
     //alert('VOLUNTEER REFRESH RESULT:\n\n' + JSON.stringify(result, null, 2));
     if (!result.success || !result.volunteers) {
-      alert(
-        '3. VOLUNTEER LOAD FAILED:\n\n' +
-        (result.error || 'Unable to load volunteers.')
-      );
-
       console.error(
         'VOLUNTEER REFRESH ERROR:',
         result.error || 'Unable to load volunteers.'
       );
       return;
     }
-
-    alert(
-      '4. VOLUNTEERS RECEIVED:\n\n' +
-      JSON.stringify(result.volunteers, null, 2)
-    );
 
     setVolunteers(
       result.volunteers.map(v => ({
@@ -598,10 +583,6 @@ const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
         verifiedSeva: v.verifiedSeva ?? 0
       }))
 
-    );
-    alert(
-      '4. MAPPED VOLUNTEERS:\n\n' +
-      JSON.stringify(mappedVolunteers, null, 2)
     );
   };
 

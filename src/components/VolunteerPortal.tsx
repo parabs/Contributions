@@ -114,6 +114,9 @@ export function VolunteerPortal({
     return null;
   });
 
+  const isVolunteer = currentVolunteer?.role === 'Volunteer';
+  const isTreasurer = currentVolunteer?.role === 'Treasurer';
+
   const [loginVolunteerCode, setLoginVolunteerCode] = useState(volunteers[0]?.volunteerCode || 'VOL001');
   const [loginAuthCode, setLoginAuthCode] = useState(volunteers[0]?.authCode || '246810');
   const [loginError, setLoginError] = useState('');
@@ -981,7 +984,9 @@ React.useEffect(() => {
             </button>
           )}
 
-          {onOpenVolunteerManagement && (
+
+{onOpenVolunteerManagement && currentVolunteer?.role !== 'Volunteer' && currentVolunteer?.role !== 'Treasurer' && (
+          {onOpenVolunteerManagement && !isVolunteer && !isTreasurer && (
             <button
               onClick={onOpenVolunteerManagement}
               className="px-3 py-2 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-950 border border-amber-200 text-xs font-bold flex items-center gap-1.5 transition cursor-pointer"
@@ -1059,19 +1064,20 @@ React.useEffect(() => {
           <span>Live Sheet</span>
         </button>
 
-        <button
-          onClick={() => setActiveInternalTab('emailConfig')}
-          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-xs transition shrink-0 cursor-pointer ${
-            activeInternalTab === 'emailConfig'
-              ? 'bg-amber-800 text-white shadow-xs'
-              : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
-          }`}
-        >
-          <Mail className="w-4 h-4" />
-          <span>Email Config</span>
-          <span className="w-2 h-2 rounded-full bg-emerald-500" />
-        </button>
-
+        {!isVolunteer && !isTreasurer && (
+          <button 
+            onClick={() => setActiveInternalTab('emailConfig')} 
+            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-xs transition shrink-0 cursor-pointer ${ 
+              activeInternalTab === 'emailConfig' 
+                ? 'bg-amber-800 text-white shadow-xs' 
+                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50' 
+            }`} 
+          > 
+            <Mail className="w-4 h-4" /> 
+            <span>Email Config</span> 
+            <span className="w-2 h-2 rounded-full bg-emerald-500" /> 
+          </button>
+        )}
         <button
           onClick={() => setActiveInternalTab('profile')}
           className={`px-4 py-2 rounded-lg text-sm font-medium transition ${
