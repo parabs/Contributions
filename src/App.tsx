@@ -448,7 +448,7 @@ const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
     const seq = String(donations.length + 1).padStart(4, '0');
     const donationId = `SJST-${dateStr}-${seq}`;
     const confirmationCode = '';
-    const confirmedBy = formData.volunteerCode;
+    const confirmedBy = formData.volunteerName;
     const paymentStatus = 'Paid';
     const paymentReference = formData.paymentMode === 'Cash' ? 'CASH-COUNTER-DIRECT' : 'UPI-COUNTER-DIRECT';
     let driveReceiptUrl = `https://drive.google.com/file/d/receipt-${donationId}/view`;
