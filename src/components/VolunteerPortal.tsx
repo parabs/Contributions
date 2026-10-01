@@ -18,6 +18,7 @@ import {
   KeyRound,
   BarChart3,
   Table,
+  Code2,
   Settings,
   ChevronRight,
   Bell,
