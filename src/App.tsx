@@ -826,12 +826,6 @@ const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
             </header>
           )}
         
-      {/* Real-time metrics strip */}
-      {!isVolunteerDashboard && (
-        <div className="bg-slate-900 text-slate-200 text-xs py-2 px-4 border-b border-slate-800">
-          
-        </div>
-      )}
 
       {/* Main Content Area */}
       <main className={
