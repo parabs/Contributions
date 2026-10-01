@@ -829,54 +829,7 @@ const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
       {/* Real-time metrics strip */}
       {!isVolunteerDashboard && (
         <div className="bg-slate-900 text-slate-200 text-xs py-2 px-4 border-b border-slate-800">
-          <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2">
-            <div className="flex items-center gap-4 flex-wrap">
-              <button
-                onClick={() => setActiveView('publicDashboard')}
-                className="hover:text-amber-300 transition cursor-pointer text-left"
-              >
-                💰 Total Seva Collection: <strong className="text-amber-400 font-mono">₹{totalCollection.toLocaleString('en-IN')}</strong>
-              </button>
-              <span className="text-slate-600">|</span>
-              <span>
-                🧾 Receipts Issued: <strong className="text-white font-mono">{totalPaidCount}</strong>
-              </span>
-              <span className="text-slate-600">|</span>
-              <button
-                onClick={() => setActiveView('volunteer')}
-                className="hover:text-amber-300 transition cursor-pointer flex items-center gap-1"
-              >
-                <span>⏳ Pending UPI:</span>
-                <strong className="text-amber-400 font-mono">{pendingUpiCount}</strong>
-              </button>
-            </div>
-
-            <div className="flex items-center gap-3 text-slate-400 text-[11px] flex-wrap">
-              {isGmailAuthenticated ? (
-                <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-emerald-950/80 border border-emerald-600/60 text-emerald-300 font-mono text-[11px]">
-                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                  <span>Google Sheet: <strong>Connected</strong></span>
-                </div>
-              ) : (
-                <button
-                  onClick={() => setActiveView('emailConfig')}
-                  className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-amber-950/80 hover:bg-amber-900 border border-amber-500/60 text-amber-300 font-mono text-[11px] transition cursor-pointer"
-                >
-                  <span className="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
-                  <span>Google Sheet: <strong>Connect Account</strong></span>
-                </button>
-              )}
-
-              <button
-                onClick={() => setActiveView('volunteer')}
-                className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-slate-800 hover:bg-slate-700 text-amber-300 font-mono text-[11px] border border-slate-700 transition cursor-pointer"
-              >
-                <Mail className="w-3 h-3 text-amber-400" />
-                <span>Sender: <strong>{trustConfig.email}</strong></span>
-                <span className="text-[10px] text-emerald-400 font-sans font-bold uppercase underline ml-1">Config</span>
-              </button>
-            </div>
-          </div>
+          
         </div>
       )}
 
