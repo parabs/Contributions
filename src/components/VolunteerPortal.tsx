@@ -1149,7 +1149,7 @@ React.useEffect(() => {
                     className="px-4 py-2 rounded-xl bg-amber-800 hover:bg-amber-900 text-white font-bold text-xs flex items-center gap-1.5 shadow-xs transition cursor-pointer"
                   >
                     <Receipt className="w-4 h-4" />
-                    <span>View / Print 80G Tax Receipt</span>
+                    <span>View / Print Receipt</span>
                   </button>
                   <button
                     type="button"
@@ -1183,7 +1183,7 @@ React.useEffect(() => {
                 {/* Devotee Email ID */}
                 <div>
                   <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                    Devotee Email ID (for 80G digital receipt)
+                    Devotee Email ID (for digital receipt)
                   </label>
                   <input
                     type="email"
@@ -1319,7 +1319,7 @@ React.useEffect(() => {
                   ) : (
                     <>
                       <CheckCircle2 className="w-5 h-5" />
-                      <span>Record {directPaymentMode} Offering (Instant 80G Receipt)</span>
+                      <span>Record {directPaymentMode} Offering (Instant Receipt)</span>
                     </>
                   )}
                 </button>

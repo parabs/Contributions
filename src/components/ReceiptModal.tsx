@@ -96,7 +96,7 @@ export function ReceiptModal({
 
       if (res.success && res.donation) {
         setCurrentDonation(res.donation);
-        setConfirmSuccessMsg('🎉 Offering confirmed & verified! Official 80G Tax Receipt generated.');
+        setConfirmSuccessMsg('🎉 Offering confirmed & verified! Official Receipt generated.');
       } else {
         setConfirmErrorMsg(res.error || 'Failed to verify donation.');
       }
@@ -212,7 +212,7 @@ export function ReceiptModal({
               <>
                 <span className="w-2.5 h-2.5 rounded-full bg-emerald-400" />
                 <span className="font-bold text-xs sm:text-sm text-emerald-300">
-                  Official Verified 80G Seva Receipt (210 × 105 mm)
+                  Official Verified Seva Receipt (210 × 105 mm)
                 </span>
               </>
             )}
@@ -279,7 +279,7 @@ export function ReceiptModal({
             <div className="flex items-center gap-2 text-amber-950">
               <Clock className="w-4 h-4 text-amber-700 shrink-0 animate-pulse" />
               <div>
-                <strong>Awaiting Verification:</strong> Devotee PIN is <span className="font-mono font-black text-amber-900 bg-amber-200/80 px-1.5 py-0.5 rounded border border-amber-400">{currentDonation.confirmationCode}</span>. Volunteer can confirm below to instantly generate the Final 80G Receipt.
+                <strong>Awaiting Verification:</strong> Devotee PIN is <span className="font-mono font-black text-amber-900 bg-amber-200/80 px-1.5 py-0.5 rounded border border-amber-400">{currentDonation.confirmationCode}</span>. Volunteer can confirm below to instantly generate the Final Receipt.
               </div>
             </div>
 
@@ -313,7 +313,7 @@ export function ReceiptModal({
                 ) : (
                   <>
                     <CheckCircle2 className="w-3.5 h-3.5" />
-                    <span>Confirm &amp; Issue Final 80G Receipt</span>
+                    <span>Confirm &amp; Issue Final Receipt</span>
                   </>
                 )}
               </button>
@@ -400,7 +400,7 @@ export function ReceiptModal({
                       <span className="font-bold text-amber-950">Regd. No.:</span> {trustConfig.regdNo} • <span className="font-bold text-amber-950">PAN:</span> {trustConfig.panNo || 'AAATS12018F'}
                     </div>
                     <div className="text-[9px] sm:text-[10px] font-sans text-slate-600 leading-tight truncate max-w-[420px]">
-                      {trustConfig.address || 'Flat No. 102, Shree Jagannath Dham, Ghodbunder Road, Thane (W) - 400615'}
+                      {trustConfig.address || 'Flat No. 103, G5,Unnathi Greens,G.B. Road, Kasarvadavali,  Thane (West) - 400615, Maharashtra'}
                     </div>
                     <div className="text-[9px] font-sans text-slate-600">
                       <strong>Email:</strong> <span className="text-amber-900 font-bold">{trustConfig.email}</span>
@@ -415,7 +415,7 @@ export function ReceiptModal({
                         ? 'bg-rose-100 text-rose-900 border border-rose-200' 
                         : 'bg-emerald-100 text-emerald-900 border border-emerald-200'
                     }`}>
-                      {isPending ? 'PROVISIONAL' : '80G RECEIPT'}
+                      {isPending ? 'PROVISIONAL' : 'RECEIPT'}
                     </div>
                     <div className="text-[10.5px]">
                       <span className="text-slate-500">Receipt No: </span>
@@ -540,7 +540,7 @@ export function ReceiptModal({
               {/* REQUIREMENT 3: SUBTLE DEVELOPER BRANDING & COMPLIANCE FOOTER */}
               <div className="mt-2 pt-1.5 border-t border-slate-200 text-center space-y-0.5 font-sans">
                 <div className="text-[8px] text-slate-400">
-                  {trustConfig.section80G || 'Donations exempt under Section 80G(5) of the Income Tax Act 1961'} • Computer Generated Receipt
+                  {trustConfig.section80G || 'All Donations exempt under Section 80G(5) of the Income Tax Act'} • Computer Generated Receipt
                 </div>
                 <div className="text-[7.5px] text-slate-500 font-medium tracking-wide">
                   Powered by <span className="font-semibold text-slate-600">Digital Donation Management Solution</span> | Developed by <span className="font-semibold text-slate-700">Sachin Parab</span> | <span className="font-mono">9892805337</span>

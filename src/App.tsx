@@ -908,23 +908,28 @@ const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
       </main>
 
 
-        <footer className="mt-auto bg-slate-900 text-slate-300 border-t border-slate-800 py-8 px-4 sm:px-6 lg:px-8">
-          <div className="max-w-4xl mx-auto text-center space-y-3">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-950/80 border border-amber-800/60 text-amber-300 text-xs font-bold tracking-wide uppercase">
-              <Sparkles className="w-3.5 h-3.5" />
-              <span>Digital Donation Solution</span>
-            </div>
-            <div className="text-sm sm:text-base font-semibold text-slate-100 font-serif">
-              Designed &amp; developed by <strong className="text-amber-400">Sachin Parab</strong>
-            </div>
-            <div className="text-sm sm:text-base font-bold text-amber-300 font-serif">
-              Your Challenge. My Solution.
-            </div>
-            <div className="pt-4 text-[11px] text-slate-500">
-              © {new Date().getFullYear()} Shree Jagannath Seva Trust, Thane • Autonomous Live Integration
-            </div>
+      <footer className="mt-auto bg-slate-900 text-slate-300 border-t border-slate-800 py-5 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-4xl mx-auto text-center space-y-1.5">
+
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-950/80 border border-amber-800/60 text-amber-300 text-xs font-bold tracking-wide uppercase">
+            <Sparkles className="w-3.5 h-3.5" />
+            <span>Digital Donation Solution</span>
           </div>
-        </footer>
+
+          <div className="text-sm font-semibold text-slate-100 font-serif">
+            Designed &amp; developed by <strong className="text-amber-400">Sachin Parab</strong>
+          </div>
+
+          <div className="text-sm font-bold text-amber-300 font-serif">
+            Your Challenge. My Solution.
+          </div>
+
+          <div className="pt-2 text-[10px] text-slate-500">
+            © {new Date().getFullYear()} Shree Jagannath Seva Trust, Thane • Autonomous Live Integration
+          </div>
+
+        </div>
+      </footer>
       
       {modalReceiptDonation && (
         <ReceiptModal
