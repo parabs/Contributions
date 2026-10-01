@@ -820,37 +820,7 @@ const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
                     )}
                   </button>
 
-                  {(currentRole === 'Trustee' || currentRole === 'Admin') && (
-                    <>
-                      <button
-                        onClick={() => setActiveView('emailConfig')}
-                        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-bold transition shrink-0 cursor-pointer ${
-                          activeView === 'emailConfig'
-                            ? 'bg-amber-800 text-white shadow-xs'
-                            : 'text-slate-600 hover:text-slate-900'
-                        }`}
-                      >
-                        <Mail className="w-4 h-4" />
-                        <span className="hidden sm:inline">Email &amp; Receipts</span>
-                        <span className="sm:hidden">Email</span>
-                        <span className="w-2 h-2 rounded-full bg-emerald-500" />
-                      </button>
-
-                      <button
-                        onClick={() => setActiveView('code')}
-                        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-bold transition shrink-0 cursor-pointer ${
-                          activeView === 'code'
-                            ? 'bg-amber-800 text-white shadow-xs'
-                            : 'text-slate-600 hover:text-slate-900'
-                        }`}
-                      >
-                        <Code2 className="w-4 h-4" />
-                        <span className="hidden sm:inline">Code &amp; Setup</span>
-                        <span className="sm:hidden">Code</span>
-                      </button>
-                    </>
-                  )}
-
+                  
                 </nav>
               </div>
             </header>
