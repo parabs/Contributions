@@ -889,29 +889,7 @@ const [trustConfig, setTrustConfig] = useState<TrustConfig>(() => {
       >
         {activeView === 'donor' && (
           <div className="space-y-6">
-            <div className="p-4 bg-amber-50/90 border border-amber-200 rounded-2xl flex items-start justify-between gap-3 text-xs text-amber-950">
-              <div className="flex items-start gap-2.5">
-                <Info className="w-4 h-4 text-amber-800 shrink-0 mt-0.5" />
-                <div>
-                  <strong>Devotee View Simulation:</strong> Select specific Seva Head, submit <strong>Cash</strong> (immediate verified receipt) or <strong>UPI</strong> (generates 6-digit confirmation code for volunteer verification).
-                </div>
-              </div>
-              <div className="flex items-center gap-3 shrink-0">
-                <button
-                  onClick={() => setActiveView('publicDashboard')}
-                  className="font-bold text-amber-900 hover:text-amber-950 underline cursor-pointer"
-                >
-                  Public Display →
-                </button>
-                <button
-                  onClick={() => setActiveView('volunteer')}
-                  className="font-bold text-amber-900 hover:text-amber-950 underline cursor-pointer"
-                >
-                  Volunteer Portal →
-                </button>
-              </div>
-            </div>
-
+            
             <DonorForm
               trustConfig={trustConfig}
               donations={donations}
