@@ -35,6 +35,7 @@ import { CollectionsDashboard } from './CollectionsDashboard';
 import { GoogleSheetView } from './GoogleSheetView';
 import { EmailConfigView } from './EmailConfigView';
 import * as googleSheetsService from '../services/googleSheetsService';
+import { CodeArtifacts } from './CodeArtifacts';
 
 interface VolunteerPortalProps {
   volunteers: VolunteerRecord[];
@@ -131,9 +132,15 @@ export function VolunteerPortal({
   const [resetPinError, setResetPinError] = useState('');
 
 
-const [activeInternalTab, setActiveInternalTab] = useState<
-  'verify' | 'directEntry' | 'detailedDashboard' | 'liveSheet' | 'emailConfig' | 'profile'
->('verify');
+  const [activeInternalTab, setActiveInternalTab] = useState<
+    'verify'
+    | 'directEntry'
+    | 'detailedDashboard'
+    | 'liveSheet'
+    | 'emailConfig'
+    | 'code'
+    | 'profile'
+  >('verify');
 
 React.useEffect(() => {
   const isDashboard =
@@ -1077,6 +1084,21 @@ React.useEffect(() => {
             <span className="w-2 h-2 rounded-full bg-emerald-500" /> 
           </button>
         )}
+
+        {!isVolunteer && !isTreasurer && (
+          <button
+            onClick={() => setActiveInternalTab('code')}
+            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-xs transition shrink-0 cursor-pointer ${
+              activeInternalTab === 'code'
+                ? 'bg-amber-800 text-white shadow-xs'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+            }`}
+          >
+            <Code2 className="w-4 h-4" />
+            <span>Code &amp; Setup</span>
+            <span className="w-2 h-2 rounded-full bg-emerald-500" />
+          </button>
+        )}
         <button
           onClick={() => setActiveInternalTab('profile')}
           className={`px-4 py-2 rounded-lg text-sm font-medium transition ${
@@ -1734,6 +1756,12 @@ React.useEffect(() => {
             recentDonations={donations}
             onViewReceipt={onViewReceipt}
           />
+        </div>
+      )}
+
+      {activeInternalTab === 'code' && (
+        <div className="space-y-4">
+          <CodeArtifacts />
         </div>
       )}
 
