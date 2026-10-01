@@ -985,7 +985,6 @@ React.useEffect(() => {
           )}
 
 
-{onOpenVolunteerManagement && currentVolunteer?.role !== 'Volunteer' && currentVolunteer?.role !== 'Treasurer' && (
           {onOpenVolunteerManagement && !isVolunteer && !isTreasurer && (
             <button
               onClick={onOpenVolunteerManagement}
