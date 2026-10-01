@@ -49,7 +49,7 @@ export function ReceiptModal({
   // Verification state within modal
   const [isConfirmingInModal, setIsConfirmingInModal] = useState(false);
   const [selectedVolunteer, setSelectedVolunteer] = useState<string>(
-    volunteers[0] ? `${volunteers[0].volunteerName} (${volunteers[0].volunteerCode})` : 'Mandap Volunteer (VOL001)'
+    volunteers[0]?.volunteerName || trustConfig.name
   );
   const [confirmSuccessMsg, setConfirmSuccessMsg] = useState<string | null>(null);
   const [confirmErrorMsg, setConfirmErrorMsg] = useState<string | null>(null);
@@ -291,12 +291,12 @@ export function ReceiptModal({
               >
                 {volunteers.length > 0 ? (
                   volunteers.map(v => (
-                    <option key={v.volunteerCode} value={`${v.volunteerName} (${v.volunteerCode})`}>
+                    <option key={v.volunteerCode} value={v.volunteerName}>
                       {v.volunteerName} ({v.volunteerCode})
                     </option>
                   ))
                 ) : (
-                  <option value="Mandap Volunteer (VOL001)">Ramesh Patel (VOL001)</option>
+                  <option value={trustConfig.name}>{trustConfig.name}</option>
                 )}
               </select>
 
